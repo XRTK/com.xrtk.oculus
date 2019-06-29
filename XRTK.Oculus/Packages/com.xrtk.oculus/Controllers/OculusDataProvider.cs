@@ -83,7 +83,7 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         public override void Update()
         {
-            OculusApi.stepType = OculusApi.Step.Render;
+            OculusApi.stepType = OVRPlugin.Step.Render;
             fixedUpdateCount = 0;
 
             deviceRefreshTimer += Time.unscaledDeltaTime;
@@ -103,7 +103,7 @@ namespace XRTK.Oculus.Controllers
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            OculusApi.stepType = OculusApi.Step.Physics;
+            OculusApi.stepType = OVRPlugin.Step.Physics;
 
             double predictionSeconds = (double)fixedUpdateCount * Time.fixedDeltaTime / Mathf.Max(Time.timeScale, 1e-6f);
             fixedUpdateCount++;
@@ -150,22 +150,38 @@ namespace XRTK.Oculus.Controllers
 
             var controllingHand = Handedness.Any;
 
-            //if (mlController.Type == MLInputControllerType.Control)
-            //{
-            //    switch (mlController.Hand)
-            //    {
-            //        case MLInput.Hand.Left:
-            //            controllingHand = Handedness.Left;
-            //            break;
-            //        case MLInput.Hand.Right:
-            //            controllingHand = Handedness.Right;
-            //            break;
-            //    }
-            //}
+            //Determine Handedness of the current controller
+            switch (controllerMask)
+            {
+                case OculusApi.Controller.LTrackedRemote:
+                case OculusApi.Controller.LTouch:
+                    controllingHand = Handedness.Left;
+                    break;
+                case OculusApi.Controller.RTrackedRemote:
+                case OculusApi.Controller.RTouch:
+                    controllingHand = Handedness.Right;
+                    break;
+                case OculusApi.Controller.Touchpad:
+                case OculusApi.Controller.Gamepad:
+                case OculusApi.Controller.Remote:
+                case OculusApi.Controller.Touch:
+                    controllingHand = Handedness.Both;
+                    break;
+            }
 
             var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
             var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, inputSource);
+            detectedController.controllerType = controllerMask;
+            switch (controllingHand)
+            {
+                case Handedness.Left:
+                    detectedController.NodeType = OVRPlugin.Node.HandLeft;
+                    break;
+                case Handedness.Right:
+                    detectedController.NodeType = OVRPlugin.Node.HandRight;
+                    break;
+            }
 
             if (!detectedController.SetupConfiguration(typeof(BaseOculusController)))
             {
@@ -284,14 +300,11 @@ namespace XRTK.Oculus.Controllers
         {
             switch (controllerMask)
             {
-
                 case OculusApi.Controller.LTouch:
                 case OculusApi.Controller.RTouch:
-                    Debug.LogError($"{controllerMask} found - assuming Rift?");
-                    return SupportedControllerType.OculusTouch;
                 case OculusApi.Controller.Touch:
-                    Debug.LogError($"{controllerMask} found - assuming Quest?");
-                    return SupportedControllerType.OculusQuest; // Guessing
+                    Debug.LogError($"{controllerMask} found - Rift or Quest - same controller");
+                    return SupportedControllerType.OculusTouch;
                 case OculusApi.Controller.Remote:
                     Debug.LogError($"{controllerMask} found - assuming Remote?");
                     return SupportedControllerType.OculusRemote;

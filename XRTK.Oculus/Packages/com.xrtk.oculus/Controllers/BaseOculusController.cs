@@ -1,6 +1,7 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.InputSystem;
@@ -17,6 +18,12 @@ namespace XRTK.Oculus.Controllers
             : base(trackingState, controllerHandedness, inputSource, interactions)
         {
         }
+
+        public OculusApi.Controller controllerType = OculusApi.Controller.None;
+        public OVRPlugin.Node NodeType = OVRPlugin.Node.None;
+
+        public OVRPlugin.ControllerState4 previousState = new OVRPlugin.ControllerState4();
+        public OVRPlugin.ControllerState4 currentState = new OVRPlugin.ControllerState4();
 
         public override MixedRealityInteractionMapping[] DefaultInteractions => new[]
         {
@@ -98,59 +105,96 @@ namespace XRTK.Oculus.Controllers
         private void UpdateControllerData()
         {
             var lastState = TrackingState;
-
             lastControllerPose = currentControllerPose;
 
-            //if (MlControllerReference.Type == MLInputControllerType.Control)
-            //{
-            //    // The source is either a hand or a controller that supports pointing.
-            //    // We can now check for position and rotation.
-            //    IsPositionAvailable = MlControllerReference.Dof != MLInputControllerDof.None;
+            currentState = OVRPlugin.GetControllerState4((uint)controllerType);
 
-            //    if (IsPositionAvailable)
-            //    {
-            //        IsPositionApproximate = MlControllerReference.CalibrationAccuracy <= MLControllerCalibAccuracy.Medium;
-            //    }
-            //    else
-            //    {
-            //        IsPositionApproximate = false;
-            //    }
+            if (currentState.LIndexTrigger >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LIndexTrigger;
+            if (currentState.LHandTrigger >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LHandTrigger;
+            if (currentState.LThumbstick.y >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LThumbstickUp;
+            if (currentState.LThumbstick.y <= -OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LThumbstickDown;
+            if (currentState.LThumbstick.x <= -OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LThumbstickLeft;
+            if (currentState.LThumbstick.x >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.LThumbstickRight;
 
-            //    IsRotationAvailable = MlControllerReference.Dof == MLInputControllerDof.Dof6;
+            if (currentState.RIndexTrigger >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RIndexTrigger;
+            if (currentState.RHandTrigger >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RHandTrigger;
+            if (currentState.RThumbstick.y >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RThumbstickUp;
+            if (currentState.RThumbstick.y <= -OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RThumbstickDown;
+            if (currentState.RThumbstick.x <= -OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RThumbstickLeft;
+            if (currentState.RThumbstick.x >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
+                currentState.Buttons |= (uint)OculusApi.RawButton.RThumbstickRight;
 
-            //    // Devices are considered tracked if we receive position OR rotation data from the sensors.
-            //    TrackingState = (IsPositionAvailable || IsRotationAvailable) ? TrackingState.Tracked : TrackingState.NotTracked;
-            //}
-            //else
-            //{
-            //    // The input source does not support tracking.
-            //    TrackingState = TrackingState.NotApplicable;
-            //}
+            previousState = currentState;
 
-            //currentControllerPose.Position = MlControllerReference.Position;
-            //currentControllerPose.Rotation = MlControllerReference.Orientation;
+            if (IsTrackedController(controllerType))
+            {
+                // The source is either a hand or a controller that supports pointing.
+                // We can now check for position and rotation.
+                IsPositionAvailable = OVRPlugin.GetNodePositionTracked(NodeType);
 
-            //// Raise input system events if it is enabled.
-            //if (lastState != TrackingState)
-            //{
-            //    MixedRealityToolkit.InputSystem?.RaiseSourceTrackingStateChanged(InputSource, this, TrackingState);
-            //}
+                if (IsPositionAvailable)
+                {
+                    IsPositionApproximate = OVRPlugin.GetNodePositionValid(NodeType);
+                }
+                else
+                {
+                    IsPositionApproximate = false;
+                }
 
-            //if (TrackingState == TrackingState.Tracked && lastControllerPose != currentControllerPose)
-            //{
-            //    if (IsPositionAvailable && IsRotationAvailable)
-            //    {
-            //        MixedRealityToolkit.InputSystem?.RaiseSourcePoseChanged(InputSource, this, currentControllerPose);
-            //    }
-            //    else if (IsPositionAvailable && !IsRotationAvailable)
-            //    {
-            //        MixedRealityToolkit.InputSystem?.RaiseSourcePositionChanged(InputSource, this, currentControllerPose.Position);
-            //    }
-            //    else if (!IsPositionAvailable && IsRotationAvailable)
-            //    {
-            //        MixedRealityToolkit.InputSystem?.RaiseSourceRotationChanged(InputSource, this, currentControllerPose.Rotation);
-            //    }
-            //}
+                IsRotationAvailable = OVRPlugin.GetNodeOrientationTracked(NodeType);
+
+                // Devices are considered tracked if we receive position OR rotation data from the sensors.
+                TrackingState = (IsPositionAvailable || IsRotationAvailable) ? TrackingState.Tracked : TrackingState.NotTracked;
+            }
+            else
+            {
+                // The input source does not support tracking.
+                TrackingState = TrackingState.NotApplicable;
+            }
+
+            currentControllerPose = OVRPlugin.GetNodePose(NodeType, OVRPlugin.Step.Render).ToMixedRealityPose();
+
+            // Raise input system events if it is enabled.
+            if (lastState != TrackingState)
+            {
+                MixedRealityToolkit.InputSystem?.RaiseSourceTrackingStateChanged(InputSource, this, TrackingState);
+            }
+
+            if (TrackingState == TrackingState.Tracked && lastControllerPose != currentControllerPose)
+            {
+                if (IsPositionAvailable && IsRotationAvailable)
+                {
+                    MixedRealityToolkit.InputSystem?.RaiseSourcePoseChanged(InputSource, this, currentControllerPose);
+                }
+                else if (IsPositionAvailable && !IsRotationAvailable)
+                {
+                    MixedRealityToolkit.InputSystem?.RaiseSourcePositionChanged(InputSource, this, currentControllerPose.Position);
+                }
+                else if (!IsPositionAvailable && IsRotationAvailable)
+                {
+                    MixedRealityToolkit.InputSystem?.RaiseSourceRotationChanged(InputSource, this, currentControllerPose.Rotation);
+                }
+            }
+        }
+
+        private bool IsTrackedController(OculusApi.Controller controller)
+        {
+            return controller == OculusApi.Controller.LTouch ||
+                controller == OculusApi.Controller.LTrackedRemote ||
+                controller == OculusApi.Controller.RTouch ||
+                controller == OculusApi.Controller.RTrackedRemote ||
+                controller == OculusApi.Controller.Touch;
         }
 
         private void UpdateButtonData(MixedRealityInteractionMapping interactionMapping)
@@ -279,12 +323,7 @@ namespace XRTK.Oculus.Controllers
         {
             Debug.Assert(interactionMapping.AxisType == AxisType.SixDof);
 
-            if (interactionMapping.InputType == DeviceInputType.SpatialPointer)
-            {
-                //currentPointerPose.Position = MlControllerReference.Position;
-                //currentPointerPose.Rotation = MlControllerReference.Orientation;
-            }
-            else
+            if (interactionMapping.InputType != DeviceInputType.SpatialPointer)
             {
                 Debug.LogError($"Input [{interactionMapping.InputType}] is not handled for this controller [{GetType().Name}]");
                 return;
