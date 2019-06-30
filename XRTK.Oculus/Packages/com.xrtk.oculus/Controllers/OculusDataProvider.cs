@@ -255,7 +255,6 @@ namespace XRTK.Oculus.Controllers
             lastDeviceList = OculusApi.connectedControllerTypes;
         }
 
-
         #region Controller Events
 
         private void OnControllerConnected(OculusApi.Controller controllerMask)
