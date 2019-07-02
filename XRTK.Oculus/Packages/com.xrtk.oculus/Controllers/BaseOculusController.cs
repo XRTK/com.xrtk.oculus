@@ -242,7 +242,9 @@ namespace XRTK.Oculus.Controllers
                 TrackingState = TrackingState.NotApplicable;
             }
 
-            currentControllerPose = OVRPlugin.GetNodePose(NodeType, OVRPlugin.Step.Render).ToMixedRealityPose();
+            var pose = OVRPlugin.GetNodePose(NodeType, OVRPlugin.Step.Render);
+
+            currentControllerPose = pose.ToMixedRealityPose();
 
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)
@@ -468,6 +470,27 @@ namespace XRTK.Oculus.Controllers
                 Debug.LogError($"Input [{interactionMapping.InputType}] is not handled for this controller [{GetType().Name}]");
                 return;
             }
+
+            //if (interactionMapping.InputType == DeviceInputType.SpatialPointer)
+            //{
+            //    pointerOffsetPose.Position = CurrentControllerPose.Position;
+            //    pointerOffsetPose.Rotation = CurrentControllerPose.Rotation * Quaternion.AngleAxis(PointerOffsetAngle, Vector3.left);
+
+            //    // Update the interaction data source
+            //    interactionMapping.PoseData = pointerOffsetPose;
+            //}
+            //else if (interactionMapping.InputType == DeviceInputType.SpatialGrip)
+            //{
+            //    // Update the interaction data source
+            //    interactionMapping.PoseData = CurrentControllerPose;
+            //}
+            //else
+            //{
+            //    Debug.LogWarning($"Unhandled Interaction {interactionMapping.Description}");
+            //    return;
+            //}
+
+            currentPointerPose = currentControllerPose;
 
             // Update the interaction data source
             interactionMapping.PoseData = currentPointerPose;
