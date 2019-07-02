@@ -81,7 +81,7 @@ namespace XRTK.Oculus.Controllers
         private MixedRealityPose currentPointerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose lastControllerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose currentControllerPose = MixedRealityPose.ZeroIdentity;
-        private float singleAxisValue = 0;
+        private float singleAxisValue = 0.0f;
         private Vector2 dualAxisPosition = Vector2.zero;
 
         /// <summary>
@@ -109,18 +109,21 @@ namespace XRTK.Oculus.Controllers
                     case DeviceInputType.Select:
                     case DeviceInputType.ButtonPress:
                     case DeviceInputType.TriggerPress:
+                    case DeviceInputType.ThumbStickPress:
                         UpdateButtonDataPress(Interactions[i]);
                         break;
                     case DeviceInputType.ButtonTouch:
                     case DeviceInputType.TriggerTouch:
                     case DeviceInputType.ThumbTouch:
                     case DeviceInputType.TouchpadTouch:
+                    case DeviceInputType.ThumbStickTouch:
                         UpdateButtonDataTouch(Interactions[i]);
                         break;
                     case DeviceInputType.ButtonNearTouch:
                     case DeviceInputType.TriggerNearTouch:
                     case DeviceInputType.ThumbNearTouch:
                     case DeviceInputType.TouchpadNearTouch:
+                    case DeviceInputType.ThumbStickNearTouch:
                         UpdateButtonDataNearTouch(Interactions[i]);
                         break;
                     case DeviceInputType.Trigger:
@@ -358,48 +361,37 @@ namespace XRTK.Oculus.Controllers
                 switch (interactionAxis1D)
                 {
                     case OculusApi.RawAxis1D.LIndexTrigger:
-                        if (((OculusApi.RawAxis1D)currentState.LIndexTrigger & interactionAxis1D) != 0)
-                        {
-                            singleAxisValue = currentState.LIndexTrigger;
+                        singleAxisValue = currentState.LIndexTrigger;
 
-                            //if (shouldApplyDeadzone)
-                            //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
-                        }
+                        singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
                         break;
                     case OculusApi.RawAxis1D.LHandTrigger:
-                        if (((OculusApi.RawAxis1D)currentState.LHandTrigger & interactionAxis1D) != 0)
-                        {
-                            singleAxisValue = currentState.LHandTrigger;
+                        singleAxisValue = currentState.LHandTrigger;
 
-                            //if (shouldApplyDeadzone)
-                            //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
-                        }
+                        singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
                         break;
                     case OculusApi.RawAxis1D.RIndexTrigger:
-                        if (((OculusApi.RawAxis1D)currentState.RIndexTrigger & interactionAxis1D) != 0)
-                        {
-                            singleAxisValue = currentState.RIndexTrigger;
+                        singleAxisValue = currentState.RIndexTrigger;
 
-                            //if (shouldApplyDeadzone)
-                            //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
-                        }
+                        singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
                         break;
                     case OculusApi.RawAxis1D.RHandTrigger:
-                        if (((OculusApi.RawAxis1D)currentState.RHandTrigger & interactionAxis1D) != 0)
-                        {
-                            singleAxisValue = currentState.RHandTrigger;
 
-                            //if (shouldApplyDeadzone)
-                            //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        singleAxisValue = currentState.RHandTrigger;
 
-                            singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
-                        }
+                        //if (shouldApplyDeadzone)
+                        //    singleAxisValue = OculusApi.CalculateDeadzone(singleAxisValue, OculusApi.AXIS_DEADZONE_THRESHOLD);
+
+                        singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
                         break;
                 }
             }
@@ -423,52 +415,40 @@ namespace XRTK.Oculus.Controllers
                 switch (interactionAxis2D)
                 {
                     case OculusApi.RawAxis2D.LThumbstick:
-                        if ((OculusApi.RawAxis2D.LThumbstick & interactionAxis2D) != 0)
-                        {
-                            dualAxisPosition.x = currentState.LThumbstick.x;
-                            dualAxisPosition.y = currentState.LThumbstick.y;
+                        dualAxisPosition.x = currentState.LThumbstick.x;
+                        dualAxisPosition.y = currentState.LThumbstick.y;
 
-                            //if (shouldApplyDeadzone)
-                            //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                        }
+                        dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
                         break;
                     case OculusApi.RawAxis2D.LTouchpad:
-                        if ((OculusApi.RawAxis2D.LTouchpad & interactionAxis2D) != 0)
-                        {
-                            dualAxisPosition.x = currentState.LTouchpad.x;
-                            dualAxisPosition.y = currentState.LTouchpad.y;
+                        dualAxisPosition.x = currentState.LTouchpad.x;
+                        dualAxisPosition.y = currentState.LTouchpad.y;
 
-                            //if (shouldApplyDeadzone)
-                            //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                        }
+                        dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
                         break;
                     case OculusApi.RawAxis2D.RThumbstick:
-                        if ((OculusApi.RawAxis2D.RThumbstick & interactionAxis2D) != 0)
-                        {
-                            dualAxisPosition.x = currentState.RThumbstick.x;
-                            dualAxisPosition.y = currentState.RThumbstick.y;
+                        dualAxisPosition.x = currentState.RThumbstick.x;
+                        dualAxisPosition.y = currentState.RThumbstick.y;
 
-                            //if (shouldApplyDeadzone)
-                            //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                        }
+                        dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
                         break;
                     case OculusApi.RawAxis2D.RTouchpad:
-                        if ((OculusApi.RawAxis2D.RTouchpad & interactionAxis2D) != 0)
-                        {
-                            dualAxisPosition.x = currentState.RTouchpad.x;
-                            dualAxisPosition.y = currentState.RTouchpad.y;
+                        dualAxisPosition.x = currentState.RTouchpad.x;
+                        dualAxisPosition.y = currentState.RTouchpad.y;
 
-                            //if (shouldApplyDeadzone)
-                            //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
+                        //if (shouldApplyDeadzone)
+                        //    dualAxisPosition = OculusApi.CalculateDeadzone(dualAxisPosition, OculusApi.AXIS_DEADZONE_THRESHOLD);
 
-                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                        }
+                        dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
                         break;
                 }
             }

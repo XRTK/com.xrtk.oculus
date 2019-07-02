@@ -140,15 +140,23 @@ namespace XRTK.Oculus.Controllers
 
             if (!addController) { return null; }
 
-            //var mlController = MLInput.GetController(controllerId);
-
-            //if (mlController == null) { return null; }
-
-            //if (mlController.Type == MLInputControllerType.None) { return null; }
             var currentControllerType = GetCurrentControllerType(controllerMask);
             Type controllerType = null;
 
-            var controllingHand = Handedness.Any;
+            switch (currentControllerType)
+            {
+                case SupportedControllerType.OculusTouch:
+                    controllerType = typeof(OculusTouchController);
+                    break;
+                case SupportedControllerType.OculusGo:
+                    controllerType = typeof(OculusGoController);
+                    break;
+                case SupportedControllerType.OculusRemote:
+                    controllerType = typeof(OculusRemoteController);
+                    break;
+            }
+
+                    var controllingHand = Handedness.Any;
 
             //Determine Handedness of the current controller
             switch (controllerMask)
@@ -183,7 +191,7 @@ namespace XRTK.Oculus.Controllers
                     break;
             }
 
-            if (!detectedController.SetupConfiguration(typeof(BaseOculusController)))
+            if (!detectedController.SetupConfiguration(controllerType))
             {
                 // Controller failed to be setup correctly.
                 // Return null so we don't raise the source detected.
@@ -223,6 +231,7 @@ namespace XRTK.Oculus.Controllers
                     {
                         if ((activeController & OculusApi.connectedControllerTypes) == activeController)
                         {
+                            //TODO: Won't this just create and add the controller
                             var controller = GetOrAddController(activeController);
 
                             if (controller != null)
