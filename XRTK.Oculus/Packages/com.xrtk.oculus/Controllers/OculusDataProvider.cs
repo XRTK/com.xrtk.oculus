@@ -222,14 +222,14 @@ namespace XRTK.Oculus.Controllers
 
             if (ActiveControllers.Count > 0)
             {
-                OculusApi.Controller[] activeControllers = null;
+                OculusApi.Controller[] activeControllers = new OculusApi.Controller[ActiveControllers.Count];
                 ActiveControllers.Keys.CopyTo(activeControllers, 0);
 
                 if (lastDeviceList != OculusApi.Controller.None && OculusApi.connectedControllerTypes == lastDeviceList)
                 {
                     foreach (var activeController in activeControllers)
                     {
-                        if ((activeController & OculusApi.connectedControllerTypes) == activeController)
+                        if ((activeController & OculusApi.connectedControllerTypes) != activeController)
                         {
                             //TODO: Won't this just create and add the controller
                             var controller = GetOrAddController(activeController);
