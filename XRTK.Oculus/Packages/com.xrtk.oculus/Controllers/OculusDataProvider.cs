@@ -294,7 +294,6 @@ namespace XRTK.Oculus.Controllers
                 case OculusApi.Controller.Touch:
                     return SupportedControllerType.OculusTouch;
                 case OculusApi.Controller.Remote:
-                    Debug.LogError($"{controllerMask} found - assuming Remote?");
                     return SupportedControllerType.OculusRemote;
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:

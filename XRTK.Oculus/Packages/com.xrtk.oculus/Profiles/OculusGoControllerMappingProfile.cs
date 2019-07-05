@@ -9,7 +9,7 @@ using XRTK.Providers.Controllers;
 
 namespace XRTK.Oculus.Profiles
 {
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Oculus Go Controller Mapping Profile", fileName = "OculusGoControllerMappingProfile")]
+    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Native Oculus Go Controller Mapping Profile", fileName = "OculusGoControllerMappingProfile")]
     public class OculusGoControllerMappingProfile : BaseMixedRealityControllerMappingProfile
     {
         /// <inheritdoc />
@@ -24,7 +24,8 @@ namespace XRTK.Oculus.Profiles
             {
                 ControllerMappings = new[]
                 {
-                    new MixedRealityControllerMapping("Oculus Go Controller", typeof(OculusGoController), Handedness.Both),
+                    new MixedRealityControllerMapping("Oculus Go Controller Left", typeof(OculusGoController), Handedness.Left),
+                    new MixedRealityControllerMapping("Oculus Go Controller Right", typeof(OculusGoController), Handedness.Right),
                 };
             }
 

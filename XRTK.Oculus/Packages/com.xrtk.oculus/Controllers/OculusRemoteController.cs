@@ -25,9 +25,14 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         public override MixedRealityInteractionMapping[] DefaultInteractions => new[]
         {
-            new MixedRealityInteractionMapping(0, "D-Pad Position", AxisType.DualAxis, DeviceInputType.DirectionalPad, ControllerMappingLibrary.AXIS_5, ControllerMappingLibrary.AXIS_6),
-            new MixedRealityInteractionMapping(1, "Button.One", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton0),
-            new MixedRealityInteractionMapping(2, "Button.Two", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton1),
+            new MixedRealityInteractionMapping(0, "Button.DpadUp", AxisType.Digital, DeviceInputType.ButtonPress, "DpadUp"),
+            new MixedRealityInteractionMapping(1, "Button.DpadDown", AxisType.Digital, DeviceInputType.ButtonPress, "DpadDown"),
+            new MixedRealityInteractionMapping(2, "Button.DpadLeft", AxisType.Digital, DeviceInputType.ButtonPress, "DpadLeft"),
+            new MixedRealityInteractionMapping(3, "Button.DpadRight", AxisType.Digital, DeviceInputType.ButtonPress, "DpadRight"),
+            new MixedRealityInteractionMapping(4, "Button.One", AxisType.Digital, DeviceInputType.ButtonPress, "One"),
+            new MixedRealityInteractionMapping(5, "Button.Two", AxisType.Digital, DeviceInputType.ButtonPress, "Two"),
+            new MixedRealityInteractionMapping(6, "Button.Start", AxisType.Digital, DeviceInputType.ButtonPress, "Start"),
+            new MixedRealityInteractionMapping(7, "Button.Back", AxisType.Digital, DeviceInputType.ButtonPress, "Back"),
         };
 
         /// <inheritdoc />
