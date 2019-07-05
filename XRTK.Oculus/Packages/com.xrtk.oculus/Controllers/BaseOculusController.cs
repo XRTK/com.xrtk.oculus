@@ -21,10 +21,10 @@ namespace XRTK.Oculus.Controllers
         }
 
         public OculusApi.Controller controllerType = OculusApi.Controller.None;
-        public OVRPlugin.Node NodeType = OVRPlugin.Node.None;
+        public OculusApi.Node NodeType = OculusApi.Node.None;
 
-        public OVRPlugin.ControllerState4 previousState = new OVRPlugin.ControllerState4();
-        public OVRPlugin.ControllerState4 currentState = new OVRPlugin.ControllerState4();
+        public OculusApi.ControllerState4 previousState = new OculusApi.ControllerState4();
+        public OculusApi.ControllerState4 currentState = new OculusApi.ControllerState4();
 
         public override MixedRealityInteractionMapping[] DefaultInteractions => new[]
         {
@@ -146,7 +146,7 @@ namespace XRTK.Oculus.Controllers
             lastControllerPose = currentControllerPose;
             previousState = currentState;
 
-            currentState = OVRPlugin.GetControllerState4((uint)controllerType);
+            currentState = OculusApi.GetControllerState4((uint)controllerType);
 
             if (currentState.LIndexTrigger >= OculusApi.AXIS_AS_BUTTON_THRESHOLD)
                 currentState.Buttons |= (uint)OculusApi.RawButton.LIndexTrigger;
@@ -220,18 +220,18 @@ namespace XRTK.Oculus.Controllers
             {
                 // The source is either a hand or a controller that supports pointing.
                 // We can now check for position and rotation.
-                IsPositionAvailable = OVRPlugin.GetNodePositionTracked(NodeType);
+                IsPositionAvailable = OculusApi.GetNodePositionTracked(NodeType);
 
                 if (IsPositionAvailable)
                 {
-                    IsPositionApproximate = OVRPlugin.GetNodePositionValid(NodeType);
+                    IsPositionApproximate = OculusApi.GetNodePositionValid(NodeType);
                 }
                 else
                 {
                     IsPositionApproximate = false;
                 }
 
-                IsRotationAvailable = OVRPlugin.GetNodeOrientationTracked(NodeType);
+                IsRotationAvailable = OculusApi.GetNodeOrientationTracked(NodeType);
 
                 // Devices are considered tracked if we receive position OR rotation data from the sensors.
                 TrackingState = (IsPositionAvailable || IsRotationAvailable) ? TrackingState.Tracked : TrackingState.NotTracked;
@@ -242,7 +242,7 @@ namespace XRTK.Oculus.Controllers
                 TrackingState = TrackingState.NotApplicable;
             }
 
-            var pose = OVRPlugin.GetNodePose(NodeType, OVRPlugin.Step.Render);
+            var pose = OculusApi.GetNodePose(NodeType, OculusApi.Step.Render);
 
             currentControllerPose = pose.ToMixedRealityPose();
 

@@ -16,12 +16,48 @@ namespace XRTK.Oculus
     {
         #region Oculus API Properties
 
-        private const string UNITY_MAGIC_LEAP_DLL = "UnityMagicLeap";
+	    private static System.Version _versionZero = new System.Version(0, 0, 0);
+        private static readonly System.Version OVRP_1_38_0_version = new System.Version(1, 38, 0);
+        private const string pluginName = "OVRPlugin";
+
+
+        private static System.Version _version;
+
+        public static System.Version version
+        {
+            get
+            {
+                if (_version == null)
+                {
+                    try
+                    {
+                        string pluginVersion = ovrp_GetVersion();
+
+                        if (pluginVersion != null)
+                        {
+                            // Truncate unsupported trailing version info for System.Version. Original string is returned if not present.
+                            pluginVersion = pluginVersion.Split('-')[0];
+                            _version = new System.Version(pluginVersion);
+                        }
+                        else
+                        {
+                            _version = _versionZero;
+                        }
+                    }
+                    catch
+                    {
+                        _version = _versionZero;
+                    }
+                }
+
+                return _version;
+            }
+        }
 
         internal static readonly float AXIS_AS_BUTTON_THRESHOLD = 0.5f;
         internal static readonly float AXIS_DEADZONE_THRESHOLD = 0.2f;
 
-        internal static OVRPlugin.Step stepType = OVRPlugin.Step.Render;
+        internal static Step stepType = Step.Render;
 
         private static OVRControllerBase[] controllers;
 
@@ -65,11 +101,252 @@ namespace XRTK.Oculus
 
         #region Oculus API import - tbc
 
-        //[DllImport(UNITY_MAGIC_LEAP_DLL)]
-        //public static extern void UnityMagicLeap_MeshingUpdateSettings(MeshingSettings newSettings);
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ovrp_GetVersion")]
+        private static extern IntPtr _ovrp_GetVersion();
+        public static string ovrp_GetVersion() { return Marshal.PtrToStringAnsi(_ovrp_GetVersion()); }
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_GetControllerState4(uint controllerMask, ref ControllerState4 controllerState);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern PoseStatef ovrp_GetNodePoseState(Step stepId, Node nodeId);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_GetDominantHand(out Handedness dominantHand);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetNodePresent(Node nodeId);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetNodeOrientationTracked(Node nodeId);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetNodePositionTracked(Node nodeId);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_GetNodeOrientationValid(Node nodeId, ref Bool nodeOrientationValid);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_GetNodePositionValid(Node nodeId, ref Bool nodePositionValid);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetBoundaryGeometry2(BoundaryType boundaryType, IntPtr points, ref int pointsCount);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Vector3f ovrp_GetBoundaryDimensions(BoundaryType boundaryType);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetBoundaryVisible();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_SetBoundaryVisible(bool value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SystemHeadset ovrp_GetSystemHeadsetType();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Controller ovrp_GetActiveController();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Controller ovrp_GetConnectedControllers();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_Update2(int stateId, int frameIndex, double predictionSeconds);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern HapticsDesc ovrp_GetControllerHapticsDesc(uint controllerMask);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern HapticsState ovrp_GetControllerHapticsState(uint controllerMask);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_RecenterTrackingOrigin(uint flags);
+
         #endregion Oculus API import - tbc
 
         #region Oculus Data Types
+
+        public enum Result
+        {
+            /// Success
+            Success = 0,
+
+            /// Failure
+            Failure = -1000,
+            Failure_InvalidParameter = -1001,
+            Failure_NotInitialized = -1002,
+            Failure_InvalidOperation = -1003,
+            Failure_Unsupported = -1004,
+            Failure_NotYetImplemented = -1005,
+            Failure_OperationFailed = -1006,
+            Failure_InsufficientSize = -1007,
+        }
+
+        public enum Bool
+        {
+            False = 0,
+            True
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vector2f
+        {
+            public float x;
+            public float y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vector3f
+        {
+            public float x;
+            public float y;
+            public float z;
+            public static readonly Vector3f zero = new Vector3f { x = 0.0f, y = 0.0f, z = 0.0f };
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}, {2}", x, y, z);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Quatf
+        {
+            public float x;
+            public float y;
+            public float z;
+            public float w;
+            public static readonly Quatf identity = new Quatf { x = 0.0f, y = 0.0f, z = 0.0f, w = 1.0f };
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Posef
+        {
+            public Quatf Orientation;
+            public Vector3f Position;
+            public static readonly Posef identity = new Posef { Orientation = Quatf.identity, Position = Vector3f.zero };
+            public override string ToString()
+            {
+                return string.Format("Position ({0}), Orientation({1})", Position, Orientation);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PoseStatef
+        {
+            public Posef Pose;
+            public Vector3f Velocity;
+            public Vector3f Acceleration;
+            public Vector3f AngularVelocity;
+            public Vector3f AngularAcceleration;
+            public double Time;
+
+            public static readonly PoseStatef identity = new PoseStatef
+            {
+                Pose = Posef.identity,
+                Velocity = Vector3f.zero,
+                Acceleration = Vector3f.zero,
+                AngularVelocity = Vector3f.zero,
+                AngularAcceleration = Vector3f.zero
+            };
+        }
+
+        public enum Node
+        {
+            None = -1,
+            EyeLeft = 0,
+            EyeRight = 1,
+            EyeCenter = 2,
+            HandLeft = 3,
+            HandRight = 4,
+            TrackerZero = 5,
+            TrackerOne = 6,
+            TrackerTwo = 7,
+            TrackerThree = 8,
+            Head = 9,
+            DeviceObjectZero = 10,
+            Count,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ControllerState4
+        {
+            public uint ConnectedControllers;
+            public uint Buttons;
+            public uint Touches;
+            public uint NearTouches;
+            public float LIndexTrigger;
+            public float RIndexTrigger;
+            public float LHandTrigger;
+            public float RHandTrigger;
+            public Vector2f LThumbstick;
+            public Vector2f RThumbstick;
+            public Vector2f LTouchpad;
+            public Vector2f RTouchpad;
+            public byte LBatteryPercentRemaining;
+            public byte RBatteryPercentRemaining;
+            public byte LRecenterCount;
+            public byte RRecenterCount;
+            public byte Reserved_27;
+            public byte Reserved_26;
+            public byte Reserved_25;
+            public byte Reserved_24;
+            public byte Reserved_23;
+            public byte Reserved_22;
+            public byte Reserved_21;
+            public byte Reserved_20;
+            public byte Reserved_19;
+            public byte Reserved_18;
+            public byte Reserved_17;
+            public byte Reserved_16;
+            public byte Reserved_15;
+            public byte Reserved_14;
+            public byte Reserved_13;
+            public byte Reserved_12;
+            public byte Reserved_11;
+            public byte Reserved_10;
+            public byte Reserved_09;
+            public byte Reserved_08;
+            public byte Reserved_07;
+            public byte Reserved_06;
+            public byte Reserved_05;
+            public byte Reserved_04;
+            public byte Reserved_03;
+            public byte Reserved_02;
+            public byte Reserved_01;
+            public byte Reserved_00;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HapticsBuffer
+        {
+            public IntPtr Samples;
+            public int SamplesCount;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HapticsState
+        {
+            public int SamplesAvailable;
+            public int SamplesQueued;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HapticsDesc
+        {
+            public int SampleRateHz;
+            public int SampleSizeInBytes;
+            public int MinimumSafeSamplesQueued;
+            public int MinimumBufferSamplesCount;
+            public int OptimalBufferSamplesCount;
+            public int MaximumBufferSamplesCount;
+        }
 
         [Flags]
         /// Raw button mappings that can be used to directly query the state of a controller.
@@ -167,30 +444,80 @@ namespace XRTK.Oculus
         /// Identifies a controller which can be used to query the virtual or raw input state.
         public enum Controller
         {
-            None = OVRPlugin.Controller.None,           ///< Null controller.
-            LTouch = OVRPlugin.Controller.LTouch,         ///< Left Oculus Touch controller. Virtual input mapping differs from the combined L/R Touch mapping.
-            RTouch = OVRPlugin.Controller.RTouch,         ///< Right Oculus Touch controller. Virtual input mapping differs from the combined L/R Touch mapping.
-            Touch = OVRPlugin.Controller.Touch,          ///< Combined Left/Right pair of Oculus Touch controllers.
-            Remote = OVRPlugin.Controller.Remote,         ///< Oculus Remote controller.
-            Gamepad = OVRPlugin.Controller.Gamepad,        ///< Xbox 360 or Xbox One gamepad on PC. Generic gamepad on Android.
-            Touchpad = OVRPlugin.Controller.Touchpad,       ///< GearVR touchpad on Android.
-            LTrackedRemote = OVRPlugin.Controller.LTrackedRemote, ///< Left GearVR tracked remote on Android.
-            RTrackedRemote = OVRPlugin.Controller.RTrackedRemote, ///< Right GearVR tracked remote on Android.
-            Active = OVRPlugin.Controller.Active,         ///< Default controller. Represents the controller that most recently registered a button press from the user.
-            All = OVRPlugin.Controller.All,            ///< Represents the logical OR of all controllers.
+            None = 0,
+            LTouch = 0x00000001,
+            RTouch = 0x00000002,
+            Touch = LTouch | RTouch,
+            Remote = 0x00000004,
+            Gamepad = 0x00000010,
+            Touchpad = 0x08000000,
+            LTrackedRemote = 0x01000000,
+            RTrackedRemote = 0x02000000,
+            Active = unchecked((int)0x80000000),
+            All = ~None,
         }
 
         public enum Handedness
         {
-            Unsupported = OVRPlugin.Handedness.Unsupported,
-            LeftHanded = OVRPlugin.Handedness.LeftHanded,
-            RightHanded = OVRPlugin.Handedness.RightHanded,
+            Unsupported = 0,
+            LeftHanded = 1,
+            RightHanded = 2,
         }
 
         public enum Step
         {
             Render = -1,
             Physics = 0,
+        }
+
+
+        public enum TrackingOrigin
+        {
+            EyeLevel = 0,
+            FloorLevel = 1,
+            Stage = 2,
+            Count,
+        }
+
+        public enum RecenterFlags
+        {
+            Default = 0,
+            Controllers = 0x40000000,
+            IgnoreAll = unchecked((int)0x80000000),
+            Count,
+        }
+
+        public enum BatteryStatus
+        {
+            Charging = 0,
+            Discharging,
+            Full,
+            NotCharging,
+            Unknown,
+        }
+
+        public enum BoundaryType
+        {
+            OuterBoundary = 0x0001,
+            PlayArea = 0x0100,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct BoundaryTestResult
+        {
+            public Bool IsTriggering;
+            public float ClosestDistance;
+            public Vector3f ClosestPoint;
+            public Vector3f ClosestPointNormal;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct BoundaryGeometry
+        {
+            public BoundaryType BoundaryType;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+            public Vector3f[] Points;
+            public int PointsCount;
         }
 
         #endregion Oculus Data Types
@@ -200,18 +527,18 @@ namespace XRTK.Oculus
         internal abstract class OVRControllerBase
         {
             public Controller controllerType = Controller.None;
-            public OVRPlugin.ControllerState4 previousState = new OVRPlugin.ControllerState4();
-            public OVRPlugin.ControllerState4 currentState = new OVRPlugin.ControllerState4();
+            public ControllerState4 previousState = new ControllerState4();
+            public ControllerState4 currentState = new ControllerState4();
             public bool shouldApplyDeadzone = true;
 
             public virtual void SetControllerVibration(float frequency, float amplitude)
             {
-                OVRPlugin.SetControllerVibration((uint)controllerType, frequency, amplitude);
+                OculusApi.SetControllerVibration((uint)controllerType, frequency, amplitude);
             }
 
             public virtual void RecenterController()
             {
-                OVRPlugin.RecenterTrackingOrigin(OVRPlugin.RecenterFlags.Controllers);
+                OculusApi.RecenterTrackingOrigin(RecenterFlags.Controllers);
             }
 
             public virtual bool WasRecentered()
@@ -384,21 +711,21 @@ namespace XRTK.Oculus
 
         #region Oculus Positional Tracking
 
-        public enum Node
+        public static ControllerState4 GetControllerState4(uint controllerMask)
         {
-            None = -1,
-            EyeLeft = 0,
-            EyeRight = 1,
-            EyeCenter = 2,
-            HandLeft = 3,
-            HandRight = 4,
-            TrackerZero = 5,
-            TrackerOne = 6,
-            TrackerTwo = 7,
-            TrackerThree = 8,
-            Head = 9,
-            DeviceObjectZero = 10,
-            Count,
+                ControllerState4 controllerState = new ControllerState4();
+                ovrp_GetControllerState4(controllerMask, ref controllerState);
+                return controllerState;
+        }
+
+        public static Posef GetNodePose(Node nodeId, Step stepId)
+        {
+                return ovrp_GetNodePoseState(stepId, nodeId).Pose;
+        }
+
+        public static Vector3f GetNodeVelocity(Node nodeId, Step stepId)
+        {
+                return ovrp_GetNodePoseState(stepId, nodeId).Velocity;
         }
 
         /// <summary>
@@ -411,7 +738,7 @@ namespace XRTK.Oculus
             {
                 case Controller.LTouch:
                 case Controller.LTrackedRemote:
-                        return OVRPlugin.GetNodePose(OVRPlugin.Node.HandLeft, stepType).ToOVRPose().position;
+                        return GetNodePose(Node.HandLeft, stepType).ToMixedRealityPose().Position;
                     //else
                     //{
                     //    Vector3 retVec;
@@ -421,7 +748,7 @@ namespace XRTK.Oculus
                     //}
                 case Controller.RTouch:
                 case Controller.RTrackedRemote:
-                        return OVRPlugin.GetNodePose(OVRPlugin.Node.HandRight, stepType).ToOVRPose().position;
+                        return GetNodePose(Node.HandRight, stepType).ToMixedRealityPose().Position;
                     //{
                     //    Vector3 retVec;
                     //    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(Node.RightHand, NodeStatePropertyType.Position, OVRPlugin.Node.HandRight, stepType, out retVec))
@@ -434,185 +761,156 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Gets the linear velocity of the given Controller local to its tracking space.
-        /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
-        /// </summary>
-        public static Vector3 GetLocalControllerVelocity(Controller controllerType)
-        {
-            Vector3 velocity = Vector3.zero;
-
-            switch (controllerType)
-            {
-                case Controller.LTouch:
-                case Controller.LTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.LeftHand, NodeStatePropertyType.Velocity, OVRPlugin.Node.HandLeft, stepType, out velocity))
-                    {
-                        return velocity;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                case Controller.RTouch:
-                case Controller.RTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.RightHand, NodeStatePropertyType.Velocity, OVRPlugin.Node.HandRight, stepType, out velocity))
-                    {
-                        return velocity;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                default:
-                    return Vector3.zero;
-            }
-        }
-
-        /// <summary>
-        /// Gets the linear acceleration of the given Controller local to its tracking space.
-        /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
-        /// </summary>
-        public static Vector3 GetLocalControllerAcceleration(Controller controllerType)
-        {
-            Vector3 accel = Vector3.zero;
-
-            switch (controllerType)
-            {
-                case Controller.LTouch:
-                case Controller.LTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.LeftHand, NodeStatePropertyType.Acceleration, OVRPlugin.Node.HandLeft, stepType, out accel))
-                    {
-                        return accel;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                case Controller.RTouch:
-                case Controller.RTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.RightHand, NodeStatePropertyType.Acceleration, OVRPlugin.Node.HandRight, stepType, out accel))
-                    {
-                        return accel;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                default:
-                    return Vector3.zero;
-            }
-        }
-
-        /// <summary>
-        /// Gets the rotation of the given Controller local to its tracking space.
-        /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Quaternion.identity.
-        /// </summary>
-        public static Quaternion GetLocalControllerRotation(Controller controllerType)
-        {
-            switch (controllerType)
-            {
-                case Controller.LTouch:
-                case Controller.LTrackedRemote:
-                        return OVRPlugin.GetNodePose(OVRPlugin.Node.HandLeft, stepType).ToOVRPose().orientation;
-                    //{
-                    //    Quaternion retQuat;
-                    //    if (OVRNodeStateProperties.GetNodeStatePropertyQuaternion(Node.LeftHand, NodeStatePropertyType.Orientation, OVRPlugin.Node.HandLeft, stepType, out retQuat))
-                    //        return retQuat;
-                    //    return Quaternion.identity;
-                    //}
-                case Controller.RTouch:
-                case Controller.RTrackedRemote:
-                        return OVRPlugin.GetNodePose(OVRPlugin.Node.HandRight, stepType).ToOVRPose().orientation;
-                    //{
-                    //    Quaternion retQuat;
-                    //    if (OVRNodeStateProperties.GetNodeStatePropertyQuaternion(Node.RightHand, NodeStatePropertyType.Orientation, OVRPlugin.Node.HandRight, stepType, out retQuat))
-                    //        return retQuat;
-                    //    return Quaternion.identity;
-                    //}
-                default:
-                    return Quaternion.identity;
-            }
-        }
-
-        /// <summary>
-        /// Gets the angular velocity of the given Controller local to its tracking space in radians per second around each axis.
-        /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
-        /// </summary>
-        public static Vector3 GetLocalControllerAngularVelocity(Controller controllerType)
-        {
-            Vector3 velocity = Vector3.zero;
-
-            switch (controllerType)
-            {
-                case Controller.LTouch:
-                case Controller.LTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.LeftHand, NodeStatePropertyType.AngularVelocity, OVRPlugin.Node.HandLeft, stepType, out velocity))
-                    {
-                        return velocity;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                case Controller.RTouch:
-                case Controller.RTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.RightHand, NodeStatePropertyType.AngularVelocity, OVRPlugin.Node.HandRight, stepType, out velocity))
-                    {
-                        return velocity;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                default:
-                    return Vector3.zero;
-            }
-        }
-
-        /// <summary>
-        /// Gets the angular acceleration of the given Controller local to its tracking space in radians per second per second around each axis.
-        /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
-        /// </summary>
-        public static Vector3 GetLocalControllerAngularAcceleration(Controller controllerType)
-        {
-            Vector3 accel = Vector3.zero;
-
-            switch (controllerType)
-            {
-                case Controller.LTouch:
-                case Controller.LTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.LeftHand, NodeStatePropertyType.AngularAcceleration, OVRPlugin.Node.HandLeft, stepType, out accel))
-                    {
-                        return accel;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                case Controller.RTouch:
-                case Controller.RTrackedRemote:
-                    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.RightHand, NodeStatePropertyType.AngularAcceleration, OVRPlugin.Node.HandRight, stepType, out accel))
-                    {
-                        return accel;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                default:
-                    return Vector3.zero;
-            }
-        }
-
-        /// <summary>
         /// Gets the dominant hand that the user has specified in settings, for mobile devices.
         /// </summary>
         public static Handedness GetDominantHand()
         {
-            return (Handedness)OVRPlugin.GetDominantHand();
+            Handedness dominantHand;
+
+            if (ovrp_GetDominantHand(out dominantHand) == Result.Success)
+            {
+                return dominantHand;
+            }
+
+            return Handedness.Unsupported;
+        }
+
+        public static bool GetNodePresent(Node nodeId)
+        {
+            return ovrp_GetNodePresent(nodeId) == Bool.True;
+        }
+
+        public static bool GetNodeOrientationTracked(Node nodeId)
+        {
+            return ovrp_GetNodeOrientationTracked(nodeId) == Bool.True;
+        }
+
+        public static bool GetNodeOrientationValid(Node nodeId)
+        {
+            if (version >= OVRP_1_38_0_version)
+            {
+                Bool orientationValid = Bool.False;
+                Result result = ovrp_GetNodeOrientationValid(nodeId, ref orientationValid);
+                return result == Result.Success && orientationValid == Bool.True;
+            }
+            else
+            {
+                return GetNodeOrientationTracked(nodeId);
+            }
+        }
+
+        public static bool GetNodePositionTracked(Node nodeId)
+        {
+            return ovrp_GetNodePositionTracked(nodeId) == Bool.True;
+        }
+
+        public static bool GetNodePositionValid(Node nodeId)
+        {
+            if (version >= OVRP_1_38_0_version)
+            {
+                Bool positionValid = Bool.False;
+                Result result = ovrp_GetNodePositionValid(nodeId, ref positionValid);
+                return result == Result.Success && positionValid == Bool.True;
+            }
+            else
+            {
+                return GetNodePositionTracked(nodeId);
+            }
+        }
+
+        public static bool UpdateNodePhysicsPoses(int frameIndex, double predictionSeconds)
+        {
+                return ovrp_Update2((int)Step.Physics, frameIndex, predictionSeconds) == Bool.True;
         }
 
         #endregion Oculus Positional Tracking
+
+        #region Oculus Controller Interactions
+
+        public static Vector3f GetBoundaryDimensions(BoundaryType boundaryType)
+        {
+                return ovrp_GetBoundaryDimensions(boundaryType);
+        }
+
+        public static bool GetBoundaryVisible()
+        {
+
+                return ovrp_GetBoundaryVisible() == Bool.True;
+        }
+
+        public static bool SetBoundaryVisible(bool value)
+        {
+                return ovrp_SetBoundaryVisible(value) == Bool.True;
+        }
+
+        public static SystemHeadset GetSystemHeadsetType()
+        {
+                return ovrp_GetSystemHeadsetType();
+        }
+
+        public static Controller GetActiveController()
+        {
+                return ovrp_GetActiveController();
+
+        }
+
+        public static Controller GetConnectedControllers()
+        {
+                return ovrp_GetConnectedControllers();
+        }
+
+        public static bool SetControllerVibration(uint controllerMask, float frequency, float amplitude)
+        {
+            return false;
+            //return OVRP_0_1_2.ovrp_SetControllerVibration(controllerMask, frequency, amplitude) == Bool.True;
+        }
+
+
+        public static HapticsDesc GetControllerHapticsDesc(uint controllerMask)
+        {
+            return ovrp_GetControllerHapticsDesc(controllerMask);
+        }
+
+        public static HapticsState GetControllerHapticsState(uint controllerMask)
+        {
+                return ovrp_GetControllerHapticsState(controllerMask);
+        }
+
+        public static bool SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer)
+        {
+                return ovrp_SetControllerHaptics(controllerMask, hapticsBuffer) == Bool.True;
+        }
+
+        public static bool RecenterTrackingOrigin(RecenterFlags flags)
+        { 
+            return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
+        }
+
+        public enum SystemHeadset
+        {
+            None = 0,
+            GearVR_R320, // Note4 Innovator
+            GearVR_R321, // S6 Innovator
+            GearVR_R322, // Commercial 1
+            GearVR_R323, // Commercial 2 (USB Type C)
+            GearVR_R324, // Commercial 3 (USB Type C)
+            GearVR_R325, // Commercial 4 (USB Type C)
+            Oculus_Go,
+            Oculus_Quest,
+
+            Rift_DK1 = 0x1000,
+            Rift_DK2,
+            Rift_CV1,
+            Rift_CB,
+            Rift_S,
+        }
+
+        public static bool GetBoundaryGeometry(BoundaryType boundaryType, IntPtr points, ref int pointsCount)
+        {
+                return ovrp_GetBoundaryGeometry2(boundaryType, points, ref pointsCount) == Bool.True;
+        }
+
+        #endregion Oculus Controller Interactions
 
         #region Oculus Input Validation
 
@@ -686,7 +984,7 @@ namespace XRTK.Oculus
 
         #region XRTKExtensions
 
-        public static Definitions.Utilities.MixedRealityPose ToMixedRealityPose(this OVRPlugin.Posef p)
+        public static Definitions.Utilities.MixedRealityPose ToMixedRealityPose(this Posef p)
         {
             return new Definitions.Utilities.MixedRealityPose
             (

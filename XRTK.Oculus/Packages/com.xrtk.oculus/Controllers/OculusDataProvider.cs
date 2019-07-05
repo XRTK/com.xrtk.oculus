@@ -83,7 +83,7 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         public override void Update()
         {
-            OculusApi.stepType = OVRPlugin.Step.Render;
+            OculusApi.stepType = OculusApi.Step.Render;
             fixedUpdateCount = 0;
 
             deviceRefreshTimer += Time.unscaledDeltaTime;
@@ -103,12 +103,12 @@ namespace XRTK.Oculus.Controllers
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            OculusApi.stepType = OVRPlugin.Step.Physics;
+            OculusApi.stepType = OculusApi.Step.Physics;
 
             double predictionSeconds = (double)fixedUpdateCount * Time.fixedDeltaTime / Mathf.Max(Time.timeScale, 1e-6f);
             fixedUpdateCount++;
 
-            OVRPlugin.UpdateNodePhysicsPoses(0, predictionSeconds);
+           OculusApi.UpdateNodePhysicsPoses(0, predictionSeconds);
         }
 
         /// <inheritdoc />
@@ -182,10 +182,10 @@ namespace XRTK.Oculus.Controllers
             switch (controllingHand)
             {
                 case Handedness.Left:
-                    detectedController.NodeType = OVRPlugin.Node.HandLeft;
+                    detectedController.NodeType = OculusApi.Node.HandLeft;
                     break;
                 case Handedness.Right:
-                    detectedController.NodeType = OVRPlugin.Node.HandRight;
+                    detectedController.NodeType = OculusApi.Node.HandRight;
                     break;
             }
 
@@ -211,8 +211,8 @@ namespace XRTK.Oculus.Controllers
         private void RefreshDevices()
         {
             // override locally derived active and connected controllers if plugin provides more accurate data
-            OculusApi.connectedControllerTypes = (OculusApi.Controller)OVRPlugin.GetConnectedControllers();
-            OculusApi.activeControllerType = (OculusApi.Controller)OVRPlugin.GetActiveController();
+            OculusApi.connectedControllerTypes = (OculusApi.Controller)OculusApi.GetConnectedControllers();
+            OculusApi.activeControllerType = (OculusApi.Controller)OculusApi.GetActiveController();
 
             //Noticed that the "active" controllers also mark the Tracked state.
             //Debug.LogError($"Connected =[{OculusApi.connectedControllerTypes}] - Active = [{OculusApi.activeControllerType}]");
