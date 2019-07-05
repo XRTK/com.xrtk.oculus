@@ -1,8 +1,7 @@
 {
     "name": "XRTK.Oculus",
     "references": [
-        "XRTK",
-        "Oculus.VR"
+        "XRTK"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
