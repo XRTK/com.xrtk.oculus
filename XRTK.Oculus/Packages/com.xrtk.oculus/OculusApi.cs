@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ namespace XRTK.Oculus
     {
         #region Oculus API Properties
 
-	    private static System.Version _versionZero = new System.Version(0, 0, 0);
+        private static System.Version _versionZero = new System.Version(0, 0, 0);
         private static readonly System.Version OVRP_1_38_0_version = new System.Version(1, 38, 0);
         private const string pluginName = "OVRPlugin";
 
@@ -832,9 +831,9 @@ namespace XRTK.Oculus
         /// <returns>Oculus native controller definition containing the current state values for input</returns>
         public static ControllerState4 GetControllerState4(uint controllerMask)
         {
-                ControllerState4 controllerState = new ControllerState4();
-                ovrp_GetControllerState4(controllerMask, ref controllerState);
-                return controllerState;
+            ControllerState4 controllerState = new ControllerState4();
+            ovrp_GetControllerState4(controllerMask, ref controllerState);
+            return controllerState;
         }
 
         /// <summary>
@@ -845,7 +844,7 @@ namespace XRTK.Oculus
         /// <returns>Oculus native Vector3 detailing the current input pose</returns>
         public static Posef GetNodePose(Node nodeId, Step stepId)
         {
-                return ovrp_GetNodePoseState(stepId, nodeId).Pose;
+            return ovrp_GetNodePoseState(stepId, nodeId).Pose;
         }
 
         /// <summary>
@@ -856,7 +855,7 @@ namespace XRTK.Oculus
         /// <returns>Oculus native Vector3 detailing the current input velocity</returns>
         public static Vector3f GetNodeVelocity(Node nodeId, Step stepId)
         {
-                return ovrp_GetNodePoseState(stepId, nodeId).Velocity;
+            return ovrp_GetNodePoseState(stepId, nodeId).Velocity;
         }
 
         /// <summary>
@@ -871,10 +870,10 @@ namespace XRTK.Oculus
             {
                 case Controller.LTouch:
                 case Controller.LTrackedRemote:
-                        return GetNodePose(Node.HandLeft, stepType).ToMixedRealityPose().Position;
+                    return GetNodePose(Node.HandLeft, stepType).ToMixedRealityPose().Position;
                 case Controller.RTouch:
                 case Controller.RTrackedRemote:
-                        return GetNodePose(Node.HandRight, stepType).ToMixedRealityPose().Position;
+                    return GetNodePose(Node.HandRight, stepType).ToMixedRealityPose().Position;
                 default:
                     return Vector3.zero;
             }
@@ -973,7 +972,7 @@ namespace XRTK.Oculus
         /// <returns></returns>
         public static bool UpdateNodePhysicsPoses(int frameIndex, double predictionSeconds)
         {
-                return ovrp_Update2((int)Step.Physics, frameIndex, predictionSeconds) == Bool.True;
+            return ovrp_Update2((int)Step.Physics, frameIndex, predictionSeconds) == Bool.True;
         }
 
         #endregion Oculus Positional Tracking
@@ -1001,7 +1000,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static Vector3f GetBoundaryDimensions(BoundaryType boundaryType)
         {
-                return ovrp_GetBoundaryDimensions(boundaryType);
+            return ovrp_GetBoundaryDimensions(boundaryType);
         }
 
         /// <summary>
@@ -1012,7 +1011,7 @@ namespace XRTK.Oculus
         public static bool GetBoundaryVisible()
         {
 
-                return ovrp_GetBoundaryVisible() == Bool.True;
+            return ovrp_GetBoundaryVisible() == Bool.True;
         }
 
         /// <summary>
@@ -1023,7 +1022,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static bool SetBoundaryVisible(bool value)
         {
-                return ovrp_SetBoundaryVisible(value) == Bool.True;
+            return ovrp_SetBoundaryVisible(value) == Bool.True;
         }
 
         /// <summary>
@@ -1033,7 +1032,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static SystemHeadset GetSystemHeadsetType()
         {
-                return ovrp_GetSystemHeadsetType();
+            return ovrp_GetSystemHeadsetType();
         }
 
         /// <summary>
@@ -1042,7 +1041,7 @@ namespace XRTK.Oculus
         /// <returns>Returns a bitmask of all detected and tracked controllers</returns>
         public static Controller GetActiveController()
         {
-                return ovrp_GetActiveController();
+            return ovrp_GetActiveController();
 
         }
 
@@ -1052,7 +1051,7 @@ namespace XRTK.Oculus
         /// <returns>Returns a bitmask of all connected controllers</returns>
         public static Controller GetConnectedControllers()
         {
-                return ovrp_GetConnectedControllers();
+            return ovrp_GetConnectedControllers();
         }
 
         /// <summary>
@@ -1087,7 +1086,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static HapticsState GetControllerHapticsState(uint controllerMask)
         {
-                return ovrp_GetControllerHapticsState(controllerMask);
+            return ovrp_GetControllerHapticsState(controllerMask);
         }
 
         /// <summary>
@@ -1099,7 +1098,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static bool SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer)
         {
-                return ovrp_SetControllerHaptics(controllerMask, hapticsBuffer) == Bool.True;
+            return ovrp_SetControllerHaptics(controllerMask, hapticsBuffer) == Bool.True;
         }
 
         /// <summary>
@@ -1109,7 +1108,7 @@ namespace XRTK.Oculus
         /// <returns>Returns true if the headset was successfuly recentered</returns>
         /// <remarks>For future use</remarks>
         public static bool RecenterTrackingOrigin(RecenterFlags flags)
-        { 
+        {
             return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
         }
 

@@ -10,7 +10,6 @@ using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
-
 namespace XRTK.Oculus.Controllers
 {
     public class OculusControllerDataProvider : BaseControllerDataProvider
@@ -80,7 +79,7 @@ namespace XRTK.Oculus.Controllers
             double predictionSeconds = (double)fixedUpdateCount * Time.fixedDeltaTime / Mathf.Max(Time.timeScale, 1e-6f);
             fixedUpdateCount++;
 
-           OculusApi.UpdateNodePhysicsPoses(0, predictionSeconds);
+            OculusApi.UpdateNodePhysicsPoses(0, predictionSeconds);
         }
 
         /// <inheritdoc />
@@ -269,7 +268,6 @@ namespace XRTK.Oculus.Controllers
                     return SupportedControllerType.OculusRemote;
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
-                    Debug.LogError($"{controllerMask} found - assuming Go?");
                     return SupportedControllerType.OculusGo;
                 default:
                     break;
