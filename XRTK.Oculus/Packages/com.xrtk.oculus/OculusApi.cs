@@ -1,7 +1,6 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -19,7 +18,6 @@ namespace XRTK.Oculus
 	    private static System.Version _versionZero = new System.Version(0, 0, 0);
         private static readonly System.Version OVRP_1_38_0_version = new System.Version(1, 38, 0);
         private const string pluginName = "OVRPlugin";
-
 
         private static System.Version _version;
 
@@ -93,13 +91,12 @@ namespace XRTK.Oculus
             set { controllers = value; }
         }
 
-
         internal static OculusApi.Controller activeControllerType = OculusApi.Controller.None;
         internal static OculusApi.Controller connectedControllerTypes = OculusApi.Controller.None;
 
         #endregion Oculus API Properties
 
-        #region Oculus API import - tbc
+        #region Oculus API import
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ovrp_GetVersion")]
         private static extern IntPtr _ovrp_GetVersion();
@@ -165,10 +162,16 @@ namespace XRTK.Oculus
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         public static extern Bool ovrp_RecenterTrackingOrigin(uint flags);
 
-        #endregion Oculus API import - tbc
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_SetControllerVibration(uint controllerMask, float frequency, float amplitude);
+
+        #endregion Oculus API import
 
         #region Oculus Data Types
 
+        /// <summary>
+        /// Oculus API result states
+        /// </summary>
         public enum Result
         {
             /// Success
@@ -185,12 +188,18 @@ namespace XRTK.Oculus
             Failure_InsufficientSize = -1007,
         }
 
+        /// <summary>
+        /// Oculus native Bool type, overridden from base .NET bool
+        /// </summary>
         public enum Bool
         {
             False = 0,
             True
         }
 
+        /// <summary>
+        /// Oculus API native Vector2
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Vector2f
         {
@@ -198,6 +207,9 @@ namespace XRTK.Oculus
             public float y;
         }
 
+        /// <summary>
+        /// Oculus API native Vector3
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Vector3f
         {
@@ -211,6 +223,9 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Oculus API native Quaternion
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Quatf
         {
@@ -225,6 +240,9 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Oculus API native Pose (Position + Rotation)
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Posef
         {
@@ -237,6 +255,10 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Oculus native pose extension, for velocity definitions
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct PoseStatef
         {
@@ -257,6 +279,9 @@ namespace XRTK.Oculus
             };
         }
 
+        /// <summary>
+        /// Oculus native node definition, detailing tracking objects
+        /// </summary>
         public enum Node
         {
             None = -1,
@@ -274,6 +299,9 @@ namespace XRTK.Oculus
             Count,
         }
 
+        /// <summary>
+        /// Oculus native controller data, combines all input in to a single state
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct ControllerState4
         {
@@ -323,6 +351,10 @@ namespace XRTK.Oculus
             public byte Reserved_00;
         }
 
+        /// <summary>
+        /// Oculus native haptics buffer management
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct HapticsBuffer
         {
@@ -330,6 +362,10 @@ namespace XRTK.Oculus
             public int SamplesCount;
         }
 
+        /// <summary>
+        /// Oculus native haptics state management
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct HapticsState
         {
@@ -337,6 +373,10 @@ namespace XRTK.Oculus
             public int SamplesQueued;
         }
 
+        /// <summary>
+        /// Oculus native haptics descriptive data
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct HapticsDesc
         {
@@ -348,8 +388,12 @@ namespace XRTK.Oculus
             public int MaximumBufferSamplesCount;
         }
 
+        /// <summary>
+        /// Oculus native button definitions
+        /// </summary>
+        /// <remarks>Oculus API only uses RAW definitions.  Oculus Asset also uses Virtual mappings, but it's not clear why
+        /// (Oculus) Raw button mappings that can be used to directly query the state of a controller.</remarks>
         [Flags]
-        /// Raw button mappings that can be used to directly query the state of a controller.
         public enum RawButton
         {
             None = 0,          ///< Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
@@ -384,8 +428,12 @@ namespace XRTK.Oculus
             Any = ~None,      ///< Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Any]
         }
 
+        /// <summary>
+        /// Oculus native touch definitions
+        /// </summary>
+        /// <remarks>Oculus API only uses RAW definitions.  Oculus Asset also uses Virtual mappings, but it's not clear why
+        /// (Oculus)  Raw capacitive touch mappings that can be used to directly query the state of a controller.</remarks>
         [Flags]
-        /// Raw capacitive touch mappings that can be used to directly query the state of a controller.
         public enum RawTouch
         {
             None = 0,                            ///< Maps to Physical Touch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
@@ -404,8 +452,12 @@ namespace XRTK.Oculus
             Any = ~None,                        ///< Maps to Physical Touch: [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad: Any], [Gamepad, Remote: None]
         }
 
+        /// <summary>
+        /// Oculus native near touch definitions
+        /// </summary>
+        /// <remarks>Oculus API only uses RAW definitions.  Oculus Asset also uses Virtual mappings, but it's not clear why
+        /// (Oculus) Raw near touch mappings that can be used to directly query the state of a controller.</remarks>
         [Flags]
-        /// Raw near touch mappings that can be used to directly query the state of a controller.
         public enum RawNearTouch
         {
             None = 0,          ///< Maps to Physical NearTouch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
@@ -416,8 +468,12 @@ namespace XRTK.Oculus
             Any = ~None,      ///< Maps to Physical NearTouch: [Touch, LTouch, RTouch: Any], [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
         }
 
+        /// <summary>
+        /// Oculus native single axis definitions
+        /// </summary>
+        /// <remarks>Oculus API only uses RAW definitions.  Oculus Asset also uses Virtual mappings, but it's not clear why
+        /// (Oculus) Raw 1-dimensional axis (float) mappings that can be used to directly query the state of a controller.</remarks>
         [Flags]
-        /// Raw 1-dimensional axis (float) mappings that can be used to directly query the state of a controller.
         public enum RawAxis1D
         {
             None = 0,     ///< Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
@@ -428,8 +484,12 @@ namespace XRTK.Oculus
             Any = ~None, ///< Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch: Any], [LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
         }
 
+        /// <summary>
+        /// Oculus native dual axis definitions
+        /// </summary>
+        /// <remarks>Oculus API only uses RAW definitions.  Oculus Asset also uses Virtual mappings, but it's not clear why
+        /// (Oculus) Raw 2-dimensional axis (Vector2) mappings that can be used to directly query the state of a controller.</remarks>
         [Flags]
-        /// Raw 2-dimensional axis (Vector2) mappings that can be used to directly query the state of a controller.
         public enum RawAxis2D
         {
             None = 0,     ///< Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
@@ -440,8 +500,11 @@ namespace XRTK.Oculus
             Any = ~None, ///< Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote: Any], [Touchpad, Remote: None]
         }
 
+        /// <summary>
+        /// Oculus native controller type definitions
+        /// </summary>
+        /// <remarks>(Oculus) Identifies a controller which can be used to query the virtual or raw input state.</remarks>
         [Flags]
-        /// Identifies a controller which can be used to query the virtual or raw input state.
         public enum Controller
         {
             None = 0,
@@ -457,6 +520,9 @@ namespace XRTK.Oculus
             All = ~None,
         }
 
+        /// <summary>
+        /// Oculus native controller Handedness definitions
+        /// </summary>
         public enum Handedness
         {
             Unsupported = 0,
@@ -464,13 +530,19 @@ namespace XRTK.Oculus
             RightHanded = 2,
         }
 
+        /// <summary>
+        /// Oculus native controller Render/Physics step definitions.  Used by the API when calculating feedback.
+        /// </summary>
         public enum Step
         {
             Render = -1,
             Physics = 0,
         }
 
-
+        /// <summary>
+        /// Oculus native controller Tracking definitions
+        /// </summary>
+        /// <remarks>For future use</remarks>
         public enum TrackingOrigin
         {
             EyeLevel = 0,
@@ -479,6 +551,10 @@ namespace XRTK.Oculus
             Count,
         }
 
+        /// <summary>
+        /// Oculus native controller recentering parameters
+        /// </summary>
+        /// <remarks>For future use</remarks>
         public enum RecenterFlags
         {
             Default = 0,
@@ -487,6 +563,10 @@ namespace XRTK.Oculus
             Count,
         }
 
+        /// <summary>
+        /// Oculus native battery status
+        /// </summary>
+        /// <remarks>For future use</remarks>
         public enum BatteryStatus
         {
             Charging = 0,
@@ -496,12 +576,20 @@ namespace XRTK.Oculus
             Unknown,
         }
 
+        /// <summary>
+        /// Oculus native boundary type setting
+        /// </summary>
+        /// <remarks>For future use</remarks>
         public enum BoundaryType
         {
             OuterBoundary = 0x0001,
             PlayArea = 0x0100,
         }
 
+        /// <summary>
+        /// Oculus native boundary collision test results
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct BoundaryTestResult
         {
@@ -511,6 +599,10 @@ namespace XRTK.Oculus
             public Vector3f ClosestPointNormal;
         }
 
+        /// <summary>
+        /// Oculus native boundary geometry data
+        /// </summary>
+        /// <remarks>For future use</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct BoundaryGeometry
         {
@@ -518,6 +610,28 @@ namespace XRTK.Oculus
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
             public Vector3f[] Points;
             public int PointsCount;
+        }
+
+        /// <summary>
+        /// Type of headset detected by the Oculus API
+        /// </summary>
+        public enum SystemHeadset
+        {
+            None = 0,
+            GearVR_R320, // Note4 Innovator
+            GearVR_R321, // S6 Innovator
+            GearVR_R322, // Commercial 1
+            GearVR_R323, // Commercial 2 (USB Type C)
+            GearVR_R324, // Commercial 3 (USB Type C)
+            GearVR_R325, // Commercial 4 (USB Type C)
+            Oculus_Go,
+            Oculus_Quest,
+
+            Rift_DK1 = 0x1000,
+            Rift_DK2,
+            Rift_CV1,
+            Rift_CB,
+            Rift_S,
         }
 
         #endregion Oculus Data Types
@@ -711,6 +825,11 @@ namespace XRTK.Oculus
 
         #region Oculus Positional Tracking
 
+        /// <summary>
+        /// Oculus native api translation, gets the current input state for all input based on the current controller bitmask
+        /// </summary>
+        /// <param name="controllerMask">Bit mask for the currently connected controllers</param>
+        /// <returns>Oculus native controller definition containing the current state values for input</returns>
         public static ControllerState4 GetControllerState4(uint controllerMask)
         {
                 ControllerState4 controllerState = new ControllerState4();
@@ -718,11 +837,23 @@ namespace XRTK.Oculus
                 return controllerState;
         }
 
+        /// <summary>
+        /// Oculus native api translation, gets the current input pose for a specific node type in the current render cycle
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <param name="stepId">render / physics step</param>
+        /// <returns>Oculus native Vector3 detailing the current input pose</returns>
         public static Posef GetNodePose(Node nodeId, Step stepId)
         {
                 return ovrp_GetNodePoseState(stepId, nodeId).Pose;
         }
 
+        /// <summary>
+        /// Oculus native api translation, gets the current input velocity for a specific node type in the current render cycle
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <param name="stepId">render / physics step</param>
+        /// <returns>Oculus native Vector3 detailing the current input velocity</returns>
         public static Vector3f GetNodeVelocity(Node nodeId, Step stepId)
         {
                 return ovrp_GetNodePoseState(stepId, nodeId).Velocity;
@@ -732,6 +863,8 @@ namespace XRTK.Oculus
         /// Gets the position of the given Controller local to its tracking space.
         /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
         /// </summary>
+        /// <param name="controllerType">Native Oculus Controller type</param>
+        /// <returns>Position of the selected controller</returns>
         public static Vector3 GetLocalControllerPosition(Controller controllerType)
         {
             switch (controllerType)
@@ -739,22 +872,9 @@ namespace XRTK.Oculus
                 case Controller.LTouch:
                 case Controller.LTrackedRemote:
                         return GetNodePose(Node.HandLeft, stepType).ToMixedRealityPose().Position;
-                    //else
-                    //{
-                    //    Vector3 retVec;
-                    //    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(Node.LeftHand, NodeStatePropertyType.Position, OVRPlugin.Node.HandLeft, stepType, out retVec))
-                    //        return retVec;
-                    //    return Vector3.zero;                //Will never be hit, but is a final fallback.
-                    //}
                 case Controller.RTouch:
                 case Controller.RTrackedRemote:
                         return GetNodePose(Node.HandRight, stepType).ToMixedRealityPose().Position;
-                    //{
-                    //    Vector3 retVec;
-                    //    if (OVRNodeStateProperties.GetNodeStatePropertyVector3(Node.RightHand, NodeStatePropertyType.Position, OVRPlugin.Node.HandRight, stepType, out retVec))
-                    //        return retVec;
-                    //    return Vector3.zero;
-                    //}
                 default:
                     return Vector3.zero;
             }
@@ -763,6 +883,8 @@ namespace XRTK.Oculus
         /// <summary>
         /// Gets the dominant hand that the user has specified in settings, for mobile devices.
         /// </summary>
+        /// <returns>Whether the left or right hand is dominant</returns>
+        /// <remarks>For future use</remarks>
         public static Handedness GetDominantHand()
         {
             Handedness dominantHand;
@@ -775,16 +897,31 @@ namespace XRTK.Oculus
             return Handedness.Unsupported;
         }
 
+        /// <summary>
+        /// Test for whether a specific Oculus Node is currently connected
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <returns>True or False depending on whether the input was detected</returns>
         public static bool GetNodePresent(Node nodeId)
         {
             return ovrp_GetNodePresent(nodeId) == Bool.True;
         }
 
+        /// <summary>
+        /// Test for the orientation for a tracked controller
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <returns>True or False depending on whether the orientation is tracked</returns>
         public static bool GetNodeOrientationTracked(Node nodeId)
         {
             return ovrp_GetNodeOrientationTracked(nodeId) == Bool.True;
         }
 
+        /// <summary>
+        /// Test for whether a specific Oculus Node orientation is valid
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <returns>True or False depending on whether the orientation is valid</returns>
         public static bool GetNodeOrientationValid(Node nodeId)
         {
             if (version >= OVRP_1_38_0_version)
@@ -799,11 +936,21 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Test for the position for a tracked controller
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <returns>True or False depending on whether the position is tracked</returns>
         public static bool GetNodePositionTracked(Node nodeId)
         {
             return ovrp_GetNodePositionTracked(nodeId) == Bool.True;
         }
 
+        /// <summary>
+        /// Test for whether a specific Oculus Node position is valid
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <returns>True or False depending on whether the position is valid</returns>
         public static bool GetNodePositionValid(Node nodeId)
         {
             if (version >= OVRP_1_38_0_version)
@@ -818,6 +965,12 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Update the Oculus API physicis calculations in the Native API
+        /// </summary>
+        /// <param name="frameIndex">Current render frame</param>
+        /// <param name="predictionSeconds">Seconds ahead to predict frames</param>
+        /// <returns></returns>
         public static bool UpdateNodePhysicsPoses(int frameIndex, double predictionSeconds)
         {
                 return ovrp_Update2((int)Step.Physics, frameIndex, predictionSeconds) == Bool.True;
@@ -827,92 +980,142 @@ namespace XRTK.Oculus
 
         #region Oculus Controller Interactions
 
+        /// <summary>
+        /// Oculus native api translation, for returning the points list of boundary elements
+        /// </summary>
+        /// <param name="boundaryType">oculus native type of boundary</param>
+        /// <param name="points">Pointer to a points list</param>
+        /// <param name="pointsCount">Ref to a Points counter</param>
+        /// <returns>Returns true if the boundary geometry was successulty retrieved </returns>
+        /// <remarks>For future use</remarks>
+        public static bool GetBoundaryGeometry(BoundaryType boundaryType, IntPtr points, ref int pointsCount)
+        {
+            return ovrp_GetBoundaryGeometry2(boundaryType, points, ref pointsCount) == Bool.True;
+        }
+
+        /// <summary>
+        /// Oculus native api translation, for querying of the boundary dimensions from the API 
+        /// </summary>
+        /// <param name="boundaryType">Oculus native BondaryType definiton </param>
+        /// <returns>Oculus Vector 3 of boundary whole boundary dimension</returns>
+        /// <remarks>For future use</remarks>
         public static Vector3f GetBoundaryDimensions(BoundaryType boundaryType)
         {
                 return ovrp_GetBoundaryDimensions(boundaryType);
         }
 
+        /// <summary>
+        /// Oculus native api translation, for querying if the boundary is being displayed in the shell
+        /// </summary>
+        /// <returns>States whether boundary is currently visible</returns>
+        /// <remarks>For future use</remarks>
         public static bool GetBoundaryVisible()
         {
 
                 return ovrp_GetBoundaryVisible() == Bool.True;
         }
 
+        /// <summary>
+        /// Oculus native api translation, for setting the visibility of the shell boundary
+        /// </summary>
+        /// <param name="value">Whether you want to enable (true) or disable the boundary display</param>
+        /// <returns>Returns true of a boundary is currently displayed</returns>
+        /// <remarks>For future use</remarks>
         public static bool SetBoundaryVisible(bool value)
         {
                 return ovrp_SetBoundaryVisible(value) == Bool.True;
         }
 
+        /// <summary>
+        /// Oculus native api translation, for getting the connected system headset type
+        /// </summary>
+        /// <returns>Native oculus headset type definition</returns>
+        /// <remarks>For future use</remarks>
         public static SystemHeadset GetSystemHeadsetType()
         {
                 return ovrp_GetSystemHeadsetType();
         }
 
+        /// <summary>
+        /// Oculus native api translation, for getting the list of actively tracked controllers
+        /// </summary>
+        /// <returns>Returns a bitmask of all detected and tracked controllers</returns>
         public static Controller GetActiveController()
         {
                 return ovrp_GetActiveController();
 
         }
 
+        /// <summary>
+        /// Oculus native api translation, for getting the list of connected controllers
+        /// </summary>
+        /// <returns>Returns a bitmask of all connected controllers</returns>
         public static Controller GetConnectedControllers()
         {
                 return ovrp_GetConnectedControllers();
         }
 
+        /// <summary>
+        /// Oculus native api translation, sets the current controller vibration level
+        /// </summary>
+        /// <param name="controllerMask">Controller mask for all controllers to affect</param>
+        /// <param name="frequency">Vibration frequency</param>
+        /// <param name="amplitude">Vibration amplitude</param>
+        /// <returns></returns>
+        /// <remarks>For future use</remarks>
         public static bool SetControllerVibration(uint controllerMask, float frequency, float amplitude)
         {
-            return false;
-            //return OVRP_0_1_2.ovrp_SetControllerVibration(controllerMask, frequency, amplitude) == Bool.True;
+            return ovrp_SetControllerVibration(controllerMask, frequency, amplitude) == Bool.True;
         }
 
-
+        /// <summary>
+        /// Oculus native api translation,  for getting the haptics profile for selected controllers
+        /// </summary>
+        /// <param name="controllerMask">Bitmask of controllers to query</param>
+        /// <returns>A native haptics profile</returns>
+        /// <remarks>For future use</remarks>
         public static HapticsDesc GetControllerHapticsDesc(uint controllerMask)
         {
             return ovrp_GetControllerHapticsDesc(controllerMask);
         }
 
+        /// <summary>
+        /// Oculus native api translation, for getting the current haptics state
+        /// </summary>
+        /// <param name="controllerMask">Bitmask of controllers to query</param>
+        /// <returns>A native haptics states</returns>
+        /// <remarks>For future use</remarks>
         public static HapticsState GetControllerHapticsState(uint controllerMask)
         {
                 return ovrp_GetControllerHapticsState(controllerMask);
         }
 
+        /// <summary>
+        /// Oculus native api translation, to set the current haptics levels for selected controllers
+        /// </summary>
+        /// <param name="controllerMask">Bitmask of controllers to query</param>
+        /// <param name="hapticsBuffer">Oculus native haptics buffer profile</param>
+        /// <returns>Returns true if the haptics interaction was successful</returns>
+        /// <remarks>For future use</remarks>
         public static bool SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer)
         {
                 return ovrp_SetControllerHaptics(controllerMask, hapticsBuffer) == Bool.True;
         }
 
+        /// <summary>
+        /// Oculus native api translation, force headset to recenter
+        /// </summary>
+        /// <param name="flags">native oculus recenter profile</param>
+        /// <returns>Returns true if the headset was successfuly recentered</returns>
+        /// <remarks>For future use</remarks>
         public static bool RecenterTrackingOrigin(RecenterFlags flags)
         { 
             return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
         }
 
-        public enum SystemHeadset
-        {
-            None = 0,
-            GearVR_R320, // Note4 Innovator
-            GearVR_R321, // S6 Innovator
-            GearVR_R322, // Commercial 1
-            GearVR_R323, // Commercial 2 (USB Type C)
-            GearVR_R324, // Commercial 3 (USB Type C)
-            GearVR_R325, // Commercial 4 (USB Type C)
-            Oculus_Go,
-            Oculus_Quest,
-
-            Rift_DK1 = 0x1000,
-            Rift_DK2,
-            Rift_CV1,
-            Rift_CB,
-            Rift_S,
-        }
-
-        public static bool GetBoundaryGeometry(BoundaryType boundaryType, IntPtr points, ref int pointsCount)
-        {
-                return ovrp_GetBoundaryGeometry2(boundaryType, points, ref pointsCount) == Bool.True;
-        }
-
         #endregion Oculus Controller Interactions
 
-        #region Oculus Input Validation
+        #region Oculus Input Functions
 
         internal static bool ShouldResolveController(Controller controllerType, Controller controllerMask)
         {
@@ -980,10 +1183,15 @@ namespace XRTK.Oculus
             return a;
         }
 
-        #endregion Oculus Input Validation
+        #endregion Oculus Input Functions
 
         #region XRTKExtensions
 
+        /// <summary>
+        /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
+        /// </summary>
+        /// <param name="p">Extension (this) base Oculus PoseF type</param>
+        /// <returns>Returns an XRTK MixedRealityPose</returns>
         public static Definitions.Utilities.MixedRealityPose ToMixedRealityPose(this Posef p)
         {
             return new Definitions.Utilities.MixedRealityPose

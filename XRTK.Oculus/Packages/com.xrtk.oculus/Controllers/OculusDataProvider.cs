@@ -52,35 +52,6 @@ namespace XRTK.Oculus.Controllers
         }
 
         /// <inheritdoc />
-        public override void Enable()
-        {
-            //if (!MLInput.IsStarted)
-            //{
-            //    var config = new MLInputConfiguration();
-            //    var result = MLInput.Start(config);
-
-            //    if (!result.IsOk)
-            //    {
-            //        Debug.LogError($"Error: failed starting MLInput: {result}");
-            //        return;
-            //    }
-            //}
-
-            //for (byte i = 0; i < 3; i++)
-            //{
-            //    // Currently no way to know what controllers are already connected.
-            //    // Just guessing there could be no more than 3: Two Spatial Controllers and Mobile App Controller.
-            //    var controller = GetController(i);
-
-            //    if (controller != null)
-            //    {
-            //        MixedRealityToolkit.InputSystem?.RaiseSourceDetected(controller.InputSource, controller);
-            //    }
-            //}
-
-        }
-
-        /// <inheritdoc />
         public override void Update()
         {
             OculusApi.stepType = OculusApi.Step.Render;
@@ -100,6 +71,7 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
+        /// <inheritdoc />
         public override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -208,14 +180,14 @@ namespace XRTK.Oculus.Controllers
             return detectedController;
         }
 
+        /// <remarks>
+        /// Noticed that the "active" controllers also mark the Tracked state.
+        /// </remarks>
         private void RefreshDevices()
         {
             // override locally derived active and connected controllers if plugin provides more accurate data
             OculusApi.connectedControllerTypes = (OculusApi.Controller)OculusApi.GetConnectedControllers();
             OculusApi.activeControllerType = (OculusApi.Controller)OculusApi.GetActiveController();
-
-            //Noticed that the "active" controllers also mark the Tracked state.
-            //Debug.LogError($"Connected =[{OculusApi.connectedControllerTypes}] - Active = [{OculusApi.activeControllerType}]");
 
             if (OculusApi.connectedControllerTypes == OculusApi.Controller.None) { return; }
 

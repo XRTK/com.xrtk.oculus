@@ -23,9 +23,8 @@ namespace XRTK.Oculus.Controllers
         {
         }
 
-        /// <remarks>
-        /// Note, MUST use RAW button types as that is what the API works with, DO NOT use Virtual!
-        /// </remarks>
+        /// <inheritdoc />
+        /// <remarks> Note, MUST use RAW button types as that is what the API works with, DO NOT use Virtual!</remarks>
         public override MixedRealityInteractionMapping[] DefaultLeftHandedInteractions => new[]
         {
             new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer, MixedRealityInputAction.None),

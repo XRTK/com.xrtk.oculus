@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.﻿
+﻿/// <inheritdoc />
+/// <remarks> Note, MUST use RAW button types as that is what the API works with, DO NOT use Virtual!</remarks>
 
 using UnityEditor;
 using XRTK.Inspectors.Profiles;

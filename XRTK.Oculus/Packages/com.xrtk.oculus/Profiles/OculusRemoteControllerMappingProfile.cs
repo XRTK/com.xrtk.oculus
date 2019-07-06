@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using UnityEngine;
@@ -8,7 +8,7 @@ using XRTK.Providers.Controllers;
 
 namespace XRTK.Oculus.Profiles
 {
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Oculus Remote Controller Mapping Profile", fileName = "OculusRemoteControllerMappingProfile")]
+    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Native Oculus Remote Controller Mapping Profile", fileName = "OculusRemoteControllerMappingProfile")]
     public class OculusRemoteControllerMappingProfile : BaseMixedRealityControllerMappingProfile
     {
         /// <inheritdoc />
