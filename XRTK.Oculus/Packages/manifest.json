@@ -3,7 +3,7 @@
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.textmeshpro": "2.0.0",
     "com.xrtk.core": "https://github.com/XRTK/XRTK-Core.git#0.1.13",
-    "com.xrtk.upm-git-extension": "https://github.com/XRTK/UpmGitExtension.git#0.9.5",
+    "com.xrtk.upm-git-extension": "https://github.com/XRTK/UpmGitExtension.git#0.9.6",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -37,12 +37,12 @@
   },
   "lock": {
     "com.xrtk.core": {
-      "hash": "f6a39a3fce074f7de2e6dc0153839d9ebcfeabf4",
+      "hash": "b220f864dd38be2f479a275df7ebe13a50cdce12",
       "revision": "0.1.13"
     },
     "com.xrtk.upm-git-extension": {
-      "hash": "4e5c893cdbb28c82f8d23756696515108fe130ef",
-      "revision": "0.9.5"
+      "hash": "7b3f68261095ff54e889ba2ae16df0a551012977",
+      "revision": "0.9.6"
     }
   }
 }
