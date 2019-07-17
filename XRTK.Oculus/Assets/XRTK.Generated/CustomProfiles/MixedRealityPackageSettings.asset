@@ -24,16 +24,16 @@ MonoBehaviour:
     uri: https://github.com/XRTK/WindowsMixedReality.git
     isDefaultPackage: 1
     isRequiredPackage: 0
-    isEnabled: 1
+    isEnabled: 0
   - name: com.xrtk.lumin
     displayName: XRTK.Lumin
     uri: https://github.com/XRTK/Lumin.git
     isDefaultPackage: 1
     isRequiredPackage: 0
-    isEnabled: 1
+    isEnabled: 0
   - name: com.xrtk.sdk
     displayName: XRTK.SDK
     uri: https://github.com/XRTK/SDK.git
     isDefaultPackage: 1
     isRequiredPackage: 0
-    isEnabled: 0
+    isEnabled: 1
