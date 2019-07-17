@@ -1,8 +1,9 @@
 {
   "dependencies": {
     "com.unity.package-manager-ui": "2.1.2",
-    "com.unity.textmeshpro": "2.0.0",
+    "com.unity.textmeshpro": "2.0.1",
     "com.xrtk.core": "https://github.com/XRTK/XRTK-Core.git#0.1.13",
+    "com.xrtk.sdk": "https://github.com/XRTK/SDK.git#0.1.8",
     "com.xrtk.upm-git-extension": "https://github.com/XRTK/UpmGitExtension.git#0.9.6",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -43,6 +44,10 @@
     "com.xrtk.upm-git-extension": {
       "hash": "7b3f68261095ff54e889ba2ae16df0a551012977",
       "revision": "0.9.6"
+    },
+    "com.xrtk.sdk": {
+      "hash": "2f176a543712dbbad1c0c89dc2b164dc71204209",
+      "revision": "0.1.8"
     }
   }
 }
