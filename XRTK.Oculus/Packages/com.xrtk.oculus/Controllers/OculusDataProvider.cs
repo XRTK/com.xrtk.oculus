@@ -150,6 +150,7 @@ namespace XRTK.Oculus.Controllers
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
             var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, inputSource);
             detectedController.controllerType = controllerMask;
+
             switch (controllingHand)
             {
                 case Handedness.Left:
@@ -164,7 +165,6 @@ namespace XRTK.Oculus.Controllers
             {
                 // Controller failed to be setup correctly.
                 // Return null so we don't raise the source detected.
-                Debug.LogError($"Failed to Setup {controllerType.Name} controller");
                 return null;
             }
 
@@ -185,8 +185,8 @@ namespace XRTK.Oculus.Controllers
         private void RefreshDevices()
         {
             // override locally derived active and connected controllers if plugin provides more accurate data
-            OculusApi.connectedControllerTypes = (OculusApi.Controller)OculusApi.GetConnectedControllers();
-            OculusApi.activeControllerType = (OculusApi.Controller)OculusApi.GetActiveController();
+            OculusApi.connectedControllerTypes = OculusApi.GetConnectedControllers();
+            OculusApi.activeControllerType = OculusApi.GetActiveController();
 
             if (OculusApi.connectedControllerTypes == OculusApi.Controller.None) { return; }
 
@@ -197,19 +197,27 @@ namespace XRTK.Oculus.Controllers
 
                 if (lastDeviceList != OculusApi.Controller.None && OculusApi.connectedControllerTypes != lastDeviceList)
                 {
-                    foreach (var activeController in activeControllers)
+                    for (var i = 0; i < activeControllers.Length; i++)
                     {
-                        if (activeController == OculusApi.Controller.Touch && ((OculusApi.Controller.LTouch & OculusApi.connectedControllerTypes) != OculusApi.Controller.LTouch))
+                        var activeController = activeControllers[i];
+
+                        switch (activeController)
                         {
-                            RaiseSourceLost(OculusApi.Controller.LTouch);
-                        }
-                        else if (activeController == OculusApi.Controller.Touch && ((OculusApi.Controller.RTouch & OculusApi.connectedControllerTypes) != OculusApi.Controller.RTouch))
-                        {
-                            RaiseSourceLost(OculusApi.Controller.RTouch);
-                        }
-                        else if ((activeController & OculusApi.connectedControllerTypes) != activeController)
-                        {
-                            RaiseSourceLost(activeController);
+                            case OculusApi.Controller.Touch
+                                when ((OculusApi.Controller.LTouch & OculusApi.connectedControllerTypes) != OculusApi.Controller.LTouch):
+                                RaiseSourceLost(OculusApi.Controller.LTouch);
+                                break;
+                            case OculusApi.Controller.Touch
+                                when ((OculusApi.Controller.RTouch & OculusApi.connectedControllerTypes) != OculusApi.Controller.RTouch):
+                                RaiseSourceLost(OculusApi.Controller.RTouch);
+                                break;
+                            default:
+                                if ((activeController & OculusApi.connectedControllerTypes) != activeController)
+                                {
+                                    RaiseSourceLost(activeController);
+                                }
+
+                                break;
                         }
                     }
                 }
@@ -269,8 +277,6 @@ namespace XRTK.Oculus.Controllers
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
                     return SupportedControllerType.OculusGo;
-                default:
-                    break;
             }
 
             Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to generic controller type");
