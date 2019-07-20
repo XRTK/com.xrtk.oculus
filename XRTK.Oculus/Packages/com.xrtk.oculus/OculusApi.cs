@@ -4,23 +4,21 @@
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus
 {
-    /// <summary>
-    /// Shamelessly lifted from the UnityEngine.XR.MagicLeap packages, but Unity had to make their class internal. Boo.
-    /// </summary>
     public static class OculusApi
     {
         #region Oculus API Properties
 
-        private static System.Version _versionZero = new System.Version(0, 0, 0);
-        private static readonly System.Version OVRP_1_38_0_version = new System.Version(1, 38, 0);
+        private static Version _versionZero = new Version(0, 0, 0);
+        private static readonly Version OVRP_1_38_0_version = new Version(1, 38, 0);
         private const string pluginName = "OVRPlugin";
 
-        private static System.Version _version;
+        private static Version _version;
 
-        public static System.Version version
+        public static Version Version
         {
             get
             {
@@ -34,7 +32,7 @@ namespace XRTK.Oculus
                         {
                             // Truncate unsupported trailing version info for System.Version. Original string is returned if not present.
                             pluginVersion = pluginVersion.Split('-')[0];
-                            _version = new System.Version(pluginVersion);
+                            _version = new Version(pluginVersion);
                         }
                         else
                         {
@@ -90,8 +88,8 @@ namespace XRTK.Oculus
             set { controllers = value; }
         }
 
-        internal static OculusApi.Controller activeControllerType = OculusApi.Controller.None;
-        internal static OculusApi.Controller connectedControllerTypes = OculusApi.Controller.None;
+        internal static Controller activeControllerType = Controller.None;
+        internal static Controller connectedControllerTypes = Controller.None;
 
         #endregion Oculus API Properties
 
@@ -184,7 +182,7 @@ namespace XRTK.Oculus
             Failure_Unsupported = -1004,
             Failure_NotYetImplemented = -1005,
             Failure_OperationFailed = -1006,
-            Failure_InsufficientSize = -1007,
+            Failure_InsufficientSize = -1007
         }
 
         /// <summary>
@@ -218,7 +216,7 @@ namespace XRTK.Oculus
             public static readonly Vector3f zero = new Vector3f { x = 0.0f, y = 0.0f, z = 0.0f };
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}", x, y, z);
+                return $"{x}, {y}, {z}";
             }
         }
 
@@ -235,7 +233,7 @@ namespace XRTK.Oculus
             public static readonly Quatf identity = new Quatf { x = 0.0f, y = 0.0f, z = 0.0f, w = 1.0f };
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+                return $"{x}, {y}, {z}, {w}";
             }
         }
 
@@ -250,7 +248,7 @@ namespace XRTK.Oculus
             public static readonly Posef identity = new Posef { Orientation = Quatf.identity, Position = Vector3f.zero };
             public override string ToString()
             {
-                return string.Format("Position ({0}), Orientation({1})", Position, Orientation);
+                return $"Position ({Position}), Orientation({Orientation})";
             }
         }
 
@@ -295,7 +293,7 @@ namespace XRTK.Oculus
             TrackerThree = 8,
             Head = 9,
             DeviceObjectZero = 10,
-            Count,
+            Count
         }
 
         /// <summary>
@@ -395,36 +393,126 @@ namespace XRTK.Oculus
         [Flags]
         public enum RawButton
         {
-            None = 0,          ///< Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            A = 0x00000001, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: A], [LTrackedRemote: LIndexTrigger], [RTrackedRemote: RIndexTrigger], [LTouch, Touchpad, Remote: None]
-            B = 0x00000002, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: B], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            X = 0x00000100, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: X], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            Y = 0x00000200, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: Y], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            Start = 0x00100000, ///< Maps to Physical Button: [Gamepad, Touch, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Start], [RTouch: None]
-            Back = 0x00200000, ///< Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Back], [Touch, LTouch, RTouch: None]
-            LShoulder = 0x00000800, ///< Maps to Physical Button: [Gamepad: LShoulder], [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LIndexTrigger = 0x10000000, ///< Maps to Physical Button: [Gamepad, Touch, LTouch, LTrackedRemote: LIndexTrigger], [RTouch, RTrackedRemote, Touchpad, Remote: None]
-            LHandTrigger = 0x20000000, ///< Maps to Physical Button: [Touch, LTouch: LHandTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstick = 0x00000400, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstick], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstickUp = 0x00000010, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickUp], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstickDown = 0x00000020, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickDown], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstickLeft = 0x00000040, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickLeft], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstickRight = 0x00000080, ///< Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickRight], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LTouchpad = 0x40000000, ///< Maps to Physical Button: [LTrackedRemote: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Touchpad, Remote: None]
-            RShoulder = 0x00000008, ///< Maps to Physical Button: [Gamepad: RShoulder], [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RIndexTrigger = 0x04000000, ///< Maps to Physical Button: [Gamepad, Touch, RTouch, RTrackedRemote: RIndexTrigger], [LTouch, LTrackedRemote, Touchpad, Remote: None]
-            RHandTrigger = 0x08000000, ///< Maps to Physical Button: [Touch, RTouch: RHandTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstick = 0x00000004, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstick], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstickUp = 0x00001000, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickUp], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstickDown = 0x00002000, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickDown], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstickLeft = 0x00004000, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickLeft], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstickRight = 0x00008000, ///< Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickRight], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RTouchpad = unchecked((int)0x80000000),///< Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            DpadUp = 0x00010000, ///< Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadUp], [Touch, LTouch, RTouch: None]
-            DpadDown = 0x00020000, ///< Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadDown], [Touch, LTouch, RTouch: None]
-            DpadLeft = 0x00040000, ///< Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadLeft], [Touch, LTouch, RTouch: None]
-            DpadRight = 0x00080000, ///< Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadRight], [Touch, LTouch, RTouch: None]
-            Any = ~None,      ///< Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Any]
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: A], [LTrackedRemote: LIndexTrigger], [RTrackedRemote: RIndexTrigger], [LTouch, Touchpad, Remote: None]
+            /// </summary>
+            A = 0x00000001,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: B], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            B = 0x00000002,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: X], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            X = 0x00000100,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: Y], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            Y = 0x00000200,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Start], [RTouch: None]
+            /// </summary>
+            Start = 0x00100000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Back], [Touch, LTouch, RTouch: None]
+            /// </summary>
+            Back = 0x00200000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad: LShoulder], [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LShoulder = 0x00000800,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch, LTrackedRemote: LIndexTrigger], [RTouch, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LIndexTrigger = 0x10000000,
+            /// <summary>
+            /// Maps to Physical Button: [Touch, LTouch: LHandTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LHandTrigger = 0x20000000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstick], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstick = 0x00000400,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickUp], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstickUp = 0x00000010,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickDown], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstickDown = 0x00000020,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickLeft], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstickLeft = 0x00000040,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch: LThumbstickRight], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstickRight = 0x00000080,
+            /// <summary>
+            /// Maps to Physical Button: [LTrackedRemote: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LTouchpad = 0x40000000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad: RShoulder], [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RShoulder = 0x00000008,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch, RTrackedRemote: RIndexTrigger], [LTouch, LTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RIndexTrigger = 0x04000000,
+            /// <summary>
+            /// Maps to Physical Button: [Touch, RTouch: RHandTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RHandTrigger = 0x08000000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstick], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstick = 0x00000004,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickUp], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstickUp = 0x00001000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickDown], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstickDown = 0x00002000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickLeft], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstickLeft = 0x00004000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, RTouch: RThumbstickRight], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstickRight = 0x00008000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RTouchpad = unchecked((int)0x80000000),
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadUp], [Touch, LTouch, RTouch: None]
+            /// </summary>
+            DpadUp = 0x00010000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadDown], [Touch, LTouch, RTouch: None]
+            /// </summary>
+            DpadDown = 0x00020000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadLeft], [Touch, LTouch, RTouch: None]
+            /// </summary>
+            DpadLeft = 0x00040000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: DpadRight], [Touch, LTouch, RTouch: None]
+            /// </summary>
+            DpadRight = 0x00080000,
+            /// <summary>
+            /// Maps to Physical Button: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: Any]
+            /// </summary>
+            Any = ~None
         }
 
         /// <summary>
@@ -435,20 +523,62 @@ namespace XRTK.Oculus
         [Flags]
         public enum RawTouch
         {
-            None = 0,                            ///< Maps to Physical Touch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            A = RawButton.A,                  ///< Maps to Physical Touch: [Touch, RTouch: A], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            B = RawButton.B,                  ///< Maps to Physical Touch: [Touch, RTouch: B], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            X = RawButton.X,                  ///< Maps to Physical Touch: [Touch, LTouch: X], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            Y = RawButton.Y,                  ///< Maps to Physical Touch: [Touch, LTouch: Y], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LIndexTrigger = 0x00001000,                   ///< Maps to Physical Touch: [Touch, LTouch: LIndexTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstick = RawButton.LThumbstick,        ///< Maps to Physical Touch: [Touch, LTouch: LThumbstick], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbRest = 0x00000800,                   ///< Maps to Physical Touch: [Touch, LTouch: LThumbRest], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LTouchpad = RawButton.LTouchpad,          ///< Maps to Physical Touch: [LTrackedRemote, Touchpad: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Remote: None]
-            RIndexTrigger = 0x00000010,                   ///< Maps to Physical Touch: [Touch, RTouch: RIndexTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbstick = RawButton.RThumbstick,        ///< Maps to Physical Touch: [Touch, RTouch: RThumbstick], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbRest = 0x00000008,                   ///< Maps to Physical Touch: [Touch, RTouch: RThumbRest], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RTouchpad = RawButton.RTouchpad,          ///< Maps to Physical Touch: [RTrackedRemote: RTouchpad], [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, Touchpad, Remote: None]
-            Any = ~None,                        ///< Maps to Physical Touch: [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad: Any], [Gamepad, Remote: None]
+            /// <summary>
+            /// Maps to Physical Touch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, RTouch: A], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            A = RawButton.A,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, RTouch: B], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            B = RawButton.B,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch: X], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            X = RawButton.X,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch: Y], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            Y = RawButton.Y,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch: LIndexTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LIndexTrigger = 0x00001000,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch: LThumbstick], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstick = RawButton.LThumbstick,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch: LThumbRest], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbRest = 0x00000800,
+            /// <summary>
+            /// Maps to Physical Touch: [LTrackedRemote, Touchpad: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Remote: None]
+            /// </summary>
+            LTouchpad = RawButton.LTouchpad,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, RTouch: RIndexTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RIndexTrigger = 0x00000010,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, RTouch: RThumbstick], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstick = RawButton.RThumbstick,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, RTouch: RThumbRest], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbRest = 0x00000008,
+            /// <summary>
+            /// Maps to Physical Touch: [RTrackedRemote: RTouchpad], [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RTouchpad = RawButton.RTouchpad,
+            /// <summary>
+            /// Maps to Physical Touch: [Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad: Any], [Gamepad, Remote: None]
+            /// </summary>
+            Any = ~None
         }
 
         /// <summary>
@@ -459,12 +589,30 @@ namespace XRTK.Oculus
         [Flags]
         public enum RawNearTouch
         {
-            None = 0,          ///< Maps to Physical NearTouch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LIndexTrigger = 0x00000001, ///< Maps to Physical NearTouch: [Touch, LTouch: Implies finger is in close proximity to LIndexTrigger.], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbButtons = 0x00000002, ///< Maps to Physical NearTouch: [Touch, LTouch: Implies thumb is in close proximity to LThumbstick OR X/Y buttons.], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RIndexTrigger = 0x00000004, ///< Maps to Physical NearTouch: [Touch, RTouch: Implies finger is in close proximity to RIndexTrigger.], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RThumbButtons = 0x00000008, ///< Maps to Physical NearTouch: [Touch, RTouch: Implies thumb is in close proximity to RThumbstick OR A/B buttons.], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            Any = ~None,      ///< Maps to Physical NearTouch: [Touch, LTouch, RTouch: Any], [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// <summary>
+            /// Maps to Physical NearTouch: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// Maps to Physical NearTouch: [Touch, LTouch: Implies finger is in close proximity to LIndexTrigger.], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LIndexTrigger = 0x00000001,
+            /// <summary>
+            /// Maps to Physical NearTouch: [Touch, LTouch: Implies thumb is in close proximity to LThumbstick OR X/Y buttons.], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbButtons = 0x00000002,
+            /// <summary>
+            /// Maps to Physical NearTouch: [Touch, RTouch: Implies finger is in close proximity to RIndexTrigger.], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RIndexTrigger = 0x00000004,
+            /// <summary>
+            /// Maps to Physical NearTouch: [Touch, RTouch: Implies thumb is in close proximity to RThumbstick OR A/B buttons.], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbButtons = 0x00000008,
+            /// <summary>
+            /// Maps to Physical NearTouch: [Touch, LTouch, RTouch: Any], [Gamepad, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            Any = ~None
         }
 
         /// <summary>
@@ -475,12 +623,30 @@ namespace XRTK.Oculus
         [Flags]
         public enum RawAxis1D
         {
-            None = 0,     ///< Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LIndexTrigger = 0x01,  ///< Maps to Physical Axis1D: [Gamepad, Touch, LTouch: LIndexTrigger], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LHandTrigger = 0x04,  ///< Maps to Physical Axis1D: [Touch, LTouch: LHandTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RIndexTrigger = 0x02,  ///< Maps to Physical Axis1D: [Gamepad, Touch, RTouch: RIndexTrigger], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RHandTrigger = 0x08,  ///< Maps to Physical Axis1D: [Touch, RTouch: RHandTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            Any = ~None, ///< Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch: Any], [LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// <summary>
+            /// Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// Maps to Physical Axis1D: [Gamepad, Touch, LTouch: LIndexTrigger], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LIndexTrigger = 0x01,
+            /// <summary>
+            /// Maps to Physical Axis1D: [Touch, LTouch: LHandTrigger], [Gamepad, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LHandTrigger = 0x04,
+            /// <summary>
+            /// Maps to Physical Axis1D: [Gamepad, Touch, RTouch: RIndexTrigger], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RIndexTrigger = 0x02,
+            /// <summary>
+            /// Maps to Physical Axis1D: [Touch, RTouch: RHandTrigger], [Gamepad, LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RHandTrigger = 0x08,
+            /// <summary>
+            /// Maps to Physical Axis1D: [Gamepad, Touch, LTouch, RTouch: Any], [LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            Any = ~None
         }
 
         /// <summary>
@@ -491,12 +657,30 @@ namespace XRTK.Oculus
         [Flags]
         public enum RawAxis2D
         {
-            None = 0,     ///< Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LThumbstick = 0x01,  ///< Maps to Physical Axis2D: [Gamepad, Touch, LTouch: LThumbstick], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            LTouchpad = 0x04,  ///< Maps to Physical Axis2D: [LTrackedRemote, Touchpad: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Remote: None]
-            RThumbstick = 0x02,  ///< Maps to Physical Axis2D: [Gamepad, Touch, RTouch: RThumbstick], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
-            RTouchpad = 0x08,  ///< Maps to Physical Axis2D: [RTrackedRemote: RTouchpad], [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, Touchpad, Remote: None]
-            Any = ~None, ///< Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote: Any], [Touchpad, Remote: None]
+            /// <summary>
+            /// Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// Maps to Physical Axis2D: [Gamepad, Touch, LTouch: LThumbstick], [RTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            LThumbstick = 0x01,
+            /// <summary>
+            /// Maps to Physical Axis2D: [LTrackedRemote, Touchpad: LTouchpad], [Gamepad, Touch, LTouch, RTouch, RTrackedRemote, Remote: None]
+            /// </summary>
+            LTouchpad = 0x04,
+            /// <summary>
+            /// Maps to Physical Axis2D: [Gamepad, Touch, RTouch: RThumbstick], [LTouch, LTrackedRemote, RTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RThumbstick = 0x02,
+            /// <summary>
+            /// Maps to Physical Axis2D: [RTrackedRemote: RTouchpad], [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, Touchpad, Remote: None]
+            /// </summary>
+            RTouchpad = 0x08,
+            /// <summary>
+            /// Maps to Physical Axis2D: [Gamepad, Touch, LTouch, RTouch, LTrackedRemote, RTrackedRemote: Any], [Touchpad, Remote: None]
+            /// </summary>
+            Any = ~None
         }
 
         /// <summary>
@@ -516,7 +700,7 @@ namespace XRTK.Oculus
             LTrackedRemote = 0x01000000,
             RTrackedRemote = 0x02000000,
             Active = unchecked((int)0x80000000),
-            All = ~None,
+            All = ~None
         }
 
         /// <summary>
@@ -526,7 +710,7 @@ namespace XRTK.Oculus
         {
             Unsupported = 0,
             LeftHanded = 1,
-            RightHanded = 2,
+            RightHanded = 2
         }
 
         /// <summary>
@@ -535,7 +719,7 @@ namespace XRTK.Oculus
         public enum Step
         {
             Render = -1,
-            Physics = 0,
+            Physics = 0
         }
 
         /// <summary>
@@ -547,11 +731,11 @@ namespace XRTK.Oculus
             EyeLevel = 0,
             FloorLevel = 1,
             Stage = 2,
-            Count,
+            Count
         }
 
         /// <summary>
-        /// Oculus native controller recentering parameters
+        /// Oculus native controller re-centering parameters
         /// </summary>
         /// <remarks>For future use</remarks>
         public enum RecenterFlags
@@ -559,7 +743,7 @@ namespace XRTK.Oculus
             Default = 0,
             Controllers = 0x40000000,
             IgnoreAll = unchecked((int)0x80000000),
-            Count,
+            Count
         }
 
         /// <summary>
@@ -572,7 +756,7 @@ namespace XRTK.Oculus
             Discharging,
             Full,
             NotCharging,
-            Unknown,
+            Unknown
         }
 
         /// <summary>
@@ -582,7 +766,7 @@ namespace XRTK.Oculus
         public enum BoundaryType
         {
             OuterBoundary = 0x0001,
-            PlayArea = 0x0100,
+            PlayArea = 0x0100
         }
 
         /// <summary>
@@ -630,7 +814,7 @@ namespace XRTK.Oculus
             Rift_DK2,
             Rift_CV1,
             Rift_CB,
-            Rift_S,
+            Rift_S
         }
 
         #endregion Oculus Data Types
@@ -651,7 +835,7 @@ namespace XRTK.Oculus
 
             public virtual void RecenterController()
             {
-                OculusApi.RecenterTrackingOrigin(RecenterFlags.Controllers);
+                RecenterTrackingOrigin(RecenterFlags.Controllers);
             }
 
             public virtual bool WasRecentered()
@@ -923,16 +1107,14 @@ namespace XRTK.Oculus
         /// <returns>True or False depending on whether the orientation is valid</returns>
         public static bool GetNodeOrientationValid(Node nodeId)
         {
-            if (version >= OVRP_1_38_0_version)
+            if (Version >= OVRP_1_38_0_version)
             {
                 Bool orientationValid = Bool.False;
                 Result result = ovrp_GetNodeOrientationValid(nodeId, ref orientationValid);
                 return result == Result.Success && orientationValid == Bool.True;
             }
-            else
-            {
-                return GetNodeOrientationTracked(nodeId);
-            }
+
+            return GetNodeOrientationTracked(nodeId);
         }
 
         /// <summary>
@@ -952,20 +1134,18 @@ namespace XRTK.Oculus
         /// <returns>True or False depending on whether the position is valid</returns>
         public static bool GetNodePositionValid(Node nodeId)
         {
-            if (version >= OVRP_1_38_0_version)
+            if (Version >= OVRP_1_38_0_version)
             {
                 Bool positionValid = Bool.False;
                 Result result = ovrp_GetNodePositionValid(nodeId, ref positionValid);
                 return result == Result.Success && positionValid == Bool.True;
             }
-            else
-            {
-                return GetNodePositionTracked(nodeId);
-            }
+
+            return GetNodePositionTracked(nodeId);
         }
 
         /// <summary>
-        /// Update the Oculus API physicis calculations in the Native API
+        /// Update the Oculus API physics calculations in the Native API
         /// </summary>
         /// <param name="frameIndex">Current render frame</param>
         /// <param name="predictionSeconds">Seconds ahead to predict frames</param>
@@ -985,7 +1165,7 @@ namespace XRTK.Oculus
         /// <param name="boundaryType">oculus native type of boundary</param>
         /// <param name="points">Pointer to a points list</param>
         /// <param name="pointsCount">Ref to a Points counter</param>
-        /// <returns>Returns true if the boundary geometry was successulty retrieved </returns>
+        /// <returns>Returns true if the boundary geometry was successfully retrieved </returns>
         /// <remarks>For future use</remarks>
         public static bool GetBoundaryGeometry(BoundaryType boundaryType, IntPtr points, ref int pointsCount)
         {
@@ -995,7 +1175,7 @@ namespace XRTK.Oculus
         /// <summary>
         /// Oculus native api translation, for querying of the boundary dimensions from the API 
         /// </summary>
-        /// <param name="boundaryType">Oculus native BondaryType definiton </param>
+        /// <param name="boundaryType">Oculus native <see cref="BoundaryType"/> definition </param>
         /// <returns>Oculus Vector 3 of boundary whole boundary dimension</returns>
         /// <remarks>For future use</remarks>
         public static Vector3f GetBoundaryDimensions(BoundaryType boundaryType)
@@ -1105,7 +1285,7 @@ namespace XRTK.Oculus
         /// Oculus native api translation, force headset to recenter
         /// </summary>
         /// <param name="flags">native oculus recenter profile</param>
-        /// <returns>Returns true if the headset was successfuly recentered</returns>
+        /// <returns>Returns true if the headset was successfully re-centered</returns>
         /// <remarks>For future use</remarks>
         public static bool RecenterTrackingOrigin(RecenterFlags flags)
         {
@@ -1191,9 +1371,9 @@ namespace XRTK.Oculus
         /// </summary>
         /// <param name="p">Extension (this) base Oculus PoseF type</param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static Definitions.Utilities.MixedRealityPose ToMixedRealityPose(this Posef p)
+        public static MixedRealityPose ToMixedRealityPose(this Posef p)
         {
-            return new Definitions.Utilities.MixedRealityPose
+            return new MixedRealityPose
             (
                 position: new Vector3(p.Position.x, p.Position.y, -p.Position.z),
                 rotation: new Quaternion(-p.Orientation.x, -p.Orientation.y, p.Orientation.z, p.Orientation.w)
