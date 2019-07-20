@@ -100,32 +100,6 @@ namespace XRTK.Oculus.Controllers
 
         private BaseOculusController GetOrAddController(OculusApi.Controller controllerMask, bool addController = true)
         {
-            //If a device is already registered with the ID provided, just return it.
-            if (ActiveControllers.ContainsKey(controllerMask))
-            {
-                var controller = ActiveControllers[controllerMask];
-                Debug.Assert(controller != null);
-                return controller;
-            }
-
-            if (!addController) { return null; }
-
-            var currentControllerType = GetCurrentControllerType(controllerMask);
-            Type controllerType = null;
-
-            switch (currentControllerType)
-            {
-                case SupportedControllerType.OculusTouch:
-                    controllerType = typeof(OculusTouchController);
-                    break;
-                case SupportedControllerType.OculusGo:
-                    controllerType = typeof(OculusGoController);
-                    break;
-                case SupportedControllerType.OculusRemote:
-                    controllerType = typeof(OculusRemoteController);
-                    break;
-            }
-
             var controllingHand = Handedness.Any;
 
             //Determine Handedness of the current controller
@@ -146,9 +120,37 @@ namespace XRTK.Oculus.Controllers
                     break;
             }
 
+            var supportedControllerType = GetCurrentControllerType(controllerMask);
+
+            //If a device is already registered with the ID provided, just return it.
+            IMixedRealityController controller = null;
+
+            if (MixedRealityToolkit.InputSystem.TryGetController(supportedControllerType, Handedness.None, out controller))
+            {
+                Debug.Assert(controller != null);
+                return controller as BaseOculusController;
+            }
+
+            if (!addController) { return null; }
+
+            Type controllerType = null;
+
+            switch (supportedControllerType)
+            {
+                case SupportedControllerType.OculusTouch:
+                    controllerType = typeof(OculusTouchController);
+                    break;
+                case SupportedControllerType.OculusGo:
+                    controllerType = typeof(OculusGoController);
+                    break;
+                case SupportedControllerType.OculusRemote:
+                    controllerType = typeof(OculusRemoteController);
+                    break;
+            }
+
             var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-            var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, inputSource);
+            var detectedController = new BaseOculusController(TrackingState.NotTracked, supportedControllerType, controllingHand, inputSource);
             detectedController.controllerType = controllerMask;
 
             switch (controllingHand)
@@ -246,7 +248,7 @@ namespace XRTK.Oculus.Controllers
         {
             var controller = GetOrAddController(controllerType);
 
-            if (controller != null)
+            if (controller != null && controller.InputSource != null && !MixedRealityToolkit.InputSystem.DetectedInputSources.Contains(controller.InputSource))
             {
                 MixedRealityToolkit.InputSystem?.RaiseSourceDetected(controller.InputSource, controller);
             }

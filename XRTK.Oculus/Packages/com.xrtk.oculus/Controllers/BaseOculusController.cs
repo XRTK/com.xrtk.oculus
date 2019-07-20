@@ -15,8 +15,8 @@ namespace XRTK.Oculus.Controllers
 {
     public class BaseOculusController : BaseController
     {
-        public BaseOculusController(TrackingState trackingState, Handedness controllerHandedness, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
-            : base(trackingState, controllerHandedness, inputSource, interactions)
+        public BaseOculusController(TrackingState trackingState, SupportedControllerType controllerType, Handedness controllerHandedness, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
+            : base(trackingState, controllerType, controllerHandedness, inputSource, interactions)
         {
         }
 
@@ -83,7 +83,7 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// Updates the controller's interaction mappings and ready the current input values.
         /// </summary>
-        public void UpdateController()
+        public override void UpdateController()
         {
             if (!Enabled) { return; }
 
