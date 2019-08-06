@@ -943,6 +943,14 @@ namespace XRTK.Oculus
             }
         }
 
+        private class OVRControllerGamepadMac : OVRControllerBase
+        {
+            public OVRControllerGamepadMac()
+            {
+                controllerType = Controller.Gamepad;
+            }
+        }
+
         private class OVRControllerGamepadAndroid : OVRControllerBase
         {
             public OVRControllerGamepadAndroid()
