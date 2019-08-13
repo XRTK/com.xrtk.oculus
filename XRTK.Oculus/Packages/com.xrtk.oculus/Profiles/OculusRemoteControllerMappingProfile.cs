@@ -5,6 +5,7 @@ using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Oculus.Controllers;
 using XRTK.Definitions.Controllers;
+using XRTK.Providers.Controllers;
 
 namespace XRTK.Oculus.Profiles
 {
