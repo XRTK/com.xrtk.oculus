@@ -36,4 +36,4 @@ MonoBehaviour:
     uri: https://github.com/XRTK/SDK.git
     isDefaultPackage: 1
     isRequiredPackage: 0
-    isEnabled: 1
+    isEnabled: 0
