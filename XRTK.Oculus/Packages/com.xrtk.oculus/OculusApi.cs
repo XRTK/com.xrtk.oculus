@@ -65,23 +65,23 @@ namespace XRTK.Oculus
                     controllers = new OVRControllerBase[]
                     {
 #if UNITY_ANDROID && !UNITY_EDITOR
-			            new OVRControllerGamepadAndroid(),
-			            new OVRControllerTouchpad(),
-			            new OVRControllerLTrackedRemote(),
-			            new OVRControllerRTrackedRemote(),
-			            new OVRControllerLTouch(),
-			            new OVRControllerRTouch(),
-			            new OVRControllerTouch(),
+                        new OVRControllerGamepadAndroid(),
+                        new OVRControllerTouchpad(),
+                        new OVRControllerLTrackedRemote(),
+                        new OVRControllerRTrackedRemote(),
+                        new OVRControllerLTouch(),
+                        new OVRControllerRTouch(),
+                        new OVRControllerTouch(),
 #elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-			            new OVRControllerGamepadMac(),
+                        new OVRControllerGamepadMac(),
 #else
-			            new OVRControllerGamepadPC(),
+                        new OVRControllerGamepadPC(),
                         new OVRControllerLTouch(),
                         new OVRControllerRTouch(),
                         new OVRControllerRemote(),
                         new OVRControllerTouch(),
 #endif
-		            };
+                    };
                 }
                 return controllers;
             }
@@ -1078,9 +1078,7 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static Handedness GetDominantHand()
         {
-            Handedness dominantHand;
-
-            if (ovrp_GetDominantHand(out dominantHand) == Result.Success)
+            if (ovrp_GetDominantHand(out var dominantHand) == Result.Success)
             {
                 return dominantHand;
             }
@@ -1377,14 +1375,14 @@ namespace XRTK.Oculus
         /// <summary>
         /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
         /// </summary>
-        /// <param name="p">Extension (this) base Oculus PoseF type</param>
+        /// <param name="pose">Extension (this) base Oculus PoseF type</param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this Posef p)
+        public static MixedRealityPose ToMixedRealityPose(this Posef pose)
         {
             return new MixedRealityPose
             (
-                position: new Vector3(p.Position.x, p.Position.y, -p.Position.z),
-                rotation: new Quaternion(-p.Orientation.x, -p.Orientation.y, p.Orientation.z, p.Orientation.w)
+                position: new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z),
+                rotation: new Quaternion(-pose.Orientation.x, -pose.Orientation.y, pose.Orientation.z, pose.Orientation.w)
             );
         }
 
