@@ -33,6 +33,10 @@ namespace XRTK.Oculus
                             // Truncate unsupported trailing version info for System.Version. Original string is returned if not present.
                             pluginVersion = pluginVersion.Split('-')[0];
                             _version = new Version(pluginVersion);
+                            if (Debug.isDebugBuild)
+                            {
+                                Debug.Log($"Oculus API version detected was - [{_version.ToString()}]");
+                            }
                         }
                         else
                         {
@@ -98,6 +102,18 @@ namespace XRTK.Oculus
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ovrp_GetVersion")]
         private static extern IntPtr _ovrp_GetVersion();
         public static string ovrp_GetVersion() { return Marshal.PtrToStringAnsi(_ovrp_GetVersion()); }
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TrackingOrigin ovrp_GetTrackingOriginType();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_SetTrackingOriginType(TrackingOrigin originType);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Posef ovrp_GetTrackingCalibratedOrigin();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrpi_SetTrackingCalibratedOrigin();        
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         public static extern Result ovrp_GetControllerState4(uint controllerMask, ref ControllerState4 controllerState);
@@ -1161,6 +1177,31 @@ namespace XRTK.Oculus
             return ovrp_Update2((int)Step.Physics, frameIndex, predictionSeconds) == Bool.True;
         }
 
+        public static TrackingOrigin GetTrackingOriginType()
+        {
+            return ovrp_GetTrackingOriginType();
+        }
+
+        public static bool SetTrackingOriginType(TrackingOrigin originType)
+        {
+            return ovrp_SetTrackingOriginType(originType) == Bool.True;
+        }
+
+        public static Posef GetTrackingCalibratedOrigin()
+        {
+            return ovrp_GetTrackingCalibratedOrigin();
+        }
+
+        public static bool SetTrackingCalibratedOrigin()
+        {
+            return ovrpi_SetTrackingCalibratedOrigin() == Bool.True;
+        }
+
+        public static bool RecenterTrackingOrigin(RecenterFlags flags)
+        {
+            return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
+        }        
+
         #endregion Oculus Positional Tracking
 
         #region Oculus Controller Interactions
@@ -1285,17 +1326,6 @@ namespace XRTK.Oculus
         public static bool SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer)
         {
             return ovrp_SetControllerHaptics(controllerMask, hapticsBuffer) == Bool.True;
-        }
-
-        /// <summary>
-        /// Oculus native api translation, force headset to recenter
-        /// </summary>
-        /// <param name="flags">native oculus recenter profile</param>
-        /// <returns>Returns true if the headset was successfully re-centered</returns>
-        /// <remarks>For future use</remarks>
-        public static bool RecenterTrackingOrigin(RecenterFlags flags)
-        {
-            return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
         }
 
         #endregion Oculus Controller Interactions
