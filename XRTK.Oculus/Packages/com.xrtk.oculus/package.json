@@ -2,13 +2,16 @@
   "name": "com.xrtk.oculus",
   "displayName": "XRTK.Oculus",
   "description": "The Oculus platform components for the Mixed Reality Toolkit",
+  "tags": [
+    "xrtk",
+    "vr",
+    "mixed",
+    "reality",
+    "oculus"
+  ],
   "version": "0.1.3",
   "unity": "2019.1",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/XRTK/Oculus.git"
-  },
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
