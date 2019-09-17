@@ -31,7 +31,7 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// Dictionary to capture all active controllers detected
         /// </summary>
-        protected static readonly Dictionary<OculusApi.Controller, BaseOculusController> ActiveControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
+        private static readonly Dictionary<OculusApi.Controller, BaseOculusController> ActiveControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
 
         private float deviceRefreshTimer;
         private OculusApi.Controller lastDeviceList;
@@ -147,20 +147,21 @@ namespace XRTK.Oculus.Controllers
                     break;
             }
 
-            var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
-            var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-            var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, inputSource);
-            detectedController.controllerType = controllerMask;
+            var nodeType = OculusApi.Node.None;
 
             switch (controllingHand)
             {
                 case Handedness.Left:
-                    detectedController.NodeType = OculusApi.Node.HandLeft;
+                    nodeType = OculusApi.Node.HandLeft;
                     break;
                 case Handedness.Right:
-                    detectedController.NodeType = OculusApi.Node.HandRight;
+                    nodeType = OculusApi.Node.HandRight;
                     break;
             }
+
+            var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
+            var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
+            var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
 
             if (!detectedController.SetupConfiguration(controllerType))
             {
@@ -193,7 +194,7 @@ namespace XRTK.Oculus.Controllers
 
             if (ActiveControllers.Count > 0)
             {
-                OculusApi.Controller[] activeControllers = new OculusApi.Controller[ActiveControllers.Count];
+                var activeControllers = new OculusApi.Controller[ActiveControllers.Count];
                 ActiveControllers.Keys.CopyTo(activeControllers, 0);
 
                 if (lastDeviceList != OculusApi.Controller.None && OculusApi.connectedControllerTypes != lastDeviceList)
@@ -230,8 +231,15 @@ namespace XRTK.Oculus.Controllers
                 {
                     if (OculusApi.Controllers[i].controllerType == OculusApi.Controller.Touch)
                     {
-                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.LTouch)) { RaiseSourceDetected(OculusApi.Controller.LTouch); }
-                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.RTouch)) { RaiseSourceDetected(OculusApi.Controller.RTouch); }
+                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.LTouch))
+                        {
+                            RaiseSourceDetected(OculusApi.Controller.LTouch);
+                        }
+
+                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.RTouch))
+                        {
+                            RaiseSourceDetected(OculusApi.Controller.RTouch);
+                        }
                     }
                     else if (!ActiveControllers.ContainsKey(OculusApi.Controllers[i].controllerType))
                     {
