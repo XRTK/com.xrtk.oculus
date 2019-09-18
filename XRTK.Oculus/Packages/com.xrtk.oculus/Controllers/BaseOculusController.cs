@@ -38,7 +38,7 @@ namespace XRTK.Oculus.Controllers
         }
 
         /// <summary>
-        /// The Oculus Note Type.
+        /// The Oculus Node Type.
         /// </summary>
         public OculusApi.Node NodeType { get; }
 
