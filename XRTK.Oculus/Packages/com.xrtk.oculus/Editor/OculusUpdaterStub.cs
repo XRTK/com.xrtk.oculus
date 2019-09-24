@@ -24,9 +24,9 @@ using System.Collections;
 
 namespace XRTK.Oculus
 {
-	public class OculusUpdaterStub : ScriptableObject
+	internal class OculusUpdaterStub : ScriptableObject
 	{
-		// Stub helper class to locate OVR Utilities Path through Unity Editor API.
+		// Stub helper class to locate Utilities Path through Unity Editor API.
 		// Required to be a standalone class in a separate file or else MonoScript.FromScriptableObject() returns an empty string path.
 	}
 }

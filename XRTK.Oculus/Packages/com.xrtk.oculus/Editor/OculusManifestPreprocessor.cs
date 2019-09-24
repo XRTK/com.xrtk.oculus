@@ -27,7 +27,7 @@ namespace XRTK.Oculus
 {
 	public class OculusManifestPreprocessor
 	{
-		[MenuItem("Mixed Reality Toolkit/Tools/Create store-compatible AndroidManifest.xml", false, 100000)]
+		[MenuItem("Mixed Reality Toolkit/Tools/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
 		public static void GenerateManifestForSubmission()
 		{
 			var so = ScriptableObject.CreateInstance(typeof(OculusUpdaterStub));
