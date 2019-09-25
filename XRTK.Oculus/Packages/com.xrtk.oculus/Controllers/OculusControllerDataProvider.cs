@@ -31,29 +31,18 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// Dictionary to capture all active controllers detected
         /// </summary>
-        private static readonly Dictionary<OculusApi.Controller, BaseOculusController> ActiveControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
+        private readonly Dictionary<OculusApi.Controller, BaseOculusController> activeControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
 
         private float deviceRefreshTimer;
         private OculusApi.Controller lastDeviceList;
 
         private int fixedUpdateCount = 0;
 
-        /// <inheritdoc/>
-        public override IMixedRealityController[] GetActiveControllers()
-        {
-            var list = new List<IMixedRealityController>();
-
-            foreach (var controller in ActiveControllers.Values)
-            {
-                list.Add(controller);
-            }
-
-            return list.ToArray();
-        }
-
         /// <inheritdoc />
         public override void Update()
         {
+            base.Update();
+
             OculusApi.stepType = OculusApi.Step.Render;
             fixedUpdateCount = 0;
 
@@ -65,7 +54,7 @@ namespace XRTK.Oculus.Controllers
                 RefreshDevices();
             }
 
-            foreach (var controller in ActiveControllers)
+            foreach (var controller in activeControllers)
             {
                 controller.Value?.UpdateController();
             }
@@ -86,25 +75,20 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         public override void Disable()
         {
-            foreach (var activeController in ActiveControllers)
+            foreach (var activeController in activeControllers)
             {
-                var controller = GetOrAddController(activeController.Key, false);
-
-                if (controller != null)
-                {
-                    MixedRealityToolkit.InputSystem?.RaiseSourceLost(controller.InputSource, controller);
-                }
+                RaiseSourceLost(activeController.Key);
             }
 
-            ActiveControllers.Clear();
+            activeControllers.Clear();
         }
 
         private BaseOculusController GetOrAddController(OculusApi.Controller controllerMask, bool addController = true)
         {
             //If a device is already registered with the ID provided, just return it.
-            if (ActiveControllers.ContainsKey(controllerMask))
+            if (activeControllers.ContainsKey(controllerMask))
             {
-                var controller = ActiveControllers[controllerMask];
+                var controller = activeControllers[controllerMask];
                 Debug.Assert(controller != null);
                 return controller;
             }
@@ -177,7 +161,8 @@ namespace XRTK.Oculus.Controllers
 
             detectedController.TryRenderControllerModel(controllerType);
 
-            ActiveControllers.Add(controllerMask, detectedController);
+            activeControllers.Add(controllerMask, detectedController);
+            AddController(detectedController);
             return detectedController;
         }
 
@@ -192,16 +177,16 @@ namespace XRTK.Oculus.Controllers
 
             if (OculusApi.connectedControllerTypes == OculusApi.Controller.None) { return; }
 
-            if (ActiveControllers.Count > 0)
+            if (activeControllers.Count > 0)
             {
-                var activeControllers = new OculusApi.Controller[ActiveControllers.Count];
-                ActiveControllers.Keys.CopyTo(activeControllers, 0);
+                var controllers = new OculusApi.Controller[activeControllers.Count];
+                activeControllers.Keys.CopyTo(controllers, 0);
 
                 if (lastDeviceList != OculusApi.Controller.None && OculusApi.connectedControllerTypes != lastDeviceList)
                 {
-                    for (var i = 0; i < activeControllers.Length; i++)
+                    for (var i = 0; i < controllers.Length; i++)
                     {
-                        var activeController = activeControllers[i];
+                        var activeController = controllers[i];
 
                         switch (activeController)
                         {
@@ -231,17 +216,17 @@ namespace XRTK.Oculus.Controllers
                 {
                     if (OculusApi.Controllers[i].controllerType == OculusApi.Controller.Touch)
                     {
-                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.LTouch))
+                        if (!activeControllers.ContainsKey(OculusApi.Controller.LTouch))
                         {
                             RaiseSourceDetected(OculusApi.Controller.LTouch);
                         }
 
-                        if (!ActiveControllers.ContainsKey(OculusApi.Controller.RTouch))
+                        if (!activeControllers.ContainsKey(OculusApi.Controller.RTouch))
                         {
                             RaiseSourceDetected(OculusApi.Controller.RTouch);
                         }
                     }
-                    else if (!ActiveControllers.ContainsKey(OculusApi.Controllers[i].controllerType))
+                    else if (!activeControllers.ContainsKey(OculusApi.Controllers[i].controllerType))
                     {
                         RaiseSourceDetected(OculusApi.Controllers[i].controllerType);
                     }
@@ -268,9 +253,10 @@ namespace XRTK.Oculus.Controllers
             if (controller != null)
             {
                 MixedRealityToolkit.InputSystem?.RaiseSourceLost(controller.InputSource, controller);
+                RemoveController(controller);
             }
 
-            ActiveControllers.Remove(activeController);
+            activeControllers.Remove(activeController);
         }
 
         private SupportedControllerType GetCurrentControllerType(OculusApi.Controller controllerMask)
