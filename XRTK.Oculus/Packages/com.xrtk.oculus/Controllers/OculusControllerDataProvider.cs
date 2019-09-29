@@ -76,7 +76,7 @@ namespace XRTK.Oculus.Controllers
         {
             foreach (var activeController in activeControllers)
             {
-                RaiseSourceLost(activeController.Key);
+                RaiseSourceLost(activeController.Key, false);
             }
 
             activeControllers.Clear();
@@ -245,7 +245,7 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
-        private void RaiseSourceLost(OculusApi.Controller activeController)
+        private void RaiseSourceLost(OculusApi.Controller activeController, bool clearFromRegistry = true)
         {
             var controller = GetOrAddController(activeController, false);
 
@@ -255,7 +255,10 @@ namespace XRTK.Oculus.Controllers
                 RemoveController(controller);
             }
 
-            activeControllers.Remove(activeController);
+            if (clearFromRegistry)
+            {
+                activeControllers.Remove(activeController);
+            }
         }
 
         private SupportedControllerType GetCurrentControllerType(OculusApi.Controller controllerMask)
