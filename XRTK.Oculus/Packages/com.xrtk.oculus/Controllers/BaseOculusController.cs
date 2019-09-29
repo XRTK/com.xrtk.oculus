@@ -105,12 +105,9 @@ namespace XRTK.Oculus.Controllers
         private float singleAxisValue = 0.0f;
         private Vector2 dualAxisPosition = Vector2.zero;
 
-        /// <inheritdoc />
-        public override void UpdateController()
+        public void UpdateController()
         {
             if (!Enabled) { return; }
-
-            base.UpdateController();
 
             UpdateControllerData();
 
