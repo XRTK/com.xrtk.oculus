@@ -105,12 +105,12 @@ namespace XRTK.Oculus.Controllers
         private float singleAxisValue = 0.0f;
         private Vector2 dualAxisPosition = Vector2.zero;
 
-        /// <summary>
-        /// Updates the controller's interaction mappings and ready the current input values.
-        /// </summary>
-        public void UpdateController()
+        /// <inheritdoc />
+        public override void UpdateController()
         {
             if (!Enabled) { return; }
+
+            base.UpdateController();
 
             UpdateControllerData();
 
@@ -122,42 +122,46 @@ namespace XRTK.Oculus.Controllers
 
             for (int i = 0; i < Interactions?.Length; i++)
             {
-                switch (Interactions[i].InputType)
+                var interactionMapping = Interactions[i];
+
+                switch (interactionMapping.InputType)
                 {
                     case DeviceInputType.SpatialPointer:
-                        UpdatePoseData(Interactions[i]);
+                        UpdatePoseData(interactionMapping);
                         break;
                     case DeviceInputType.Select:
                     case DeviceInputType.ButtonPress:
                     case DeviceInputType.TriggerPress:
                     case DeviceInputType.ThumbStickPress:
-                        UpdateButtonDataPress(Interactions[i]);
+                        UpdateButtonDataPress(interactionMapping);
                         break;
                     case DeviceInputType.ButtonTouch:
                     case DeviceInputType.TriggerTouch:
                     case DeviceInputType.ThumbTouch:
                     case DeviceInputType.TouchpadTouch:
                     case DeviceInputType.ThumbStickTouch:
-                        UpdateButtonDataTouch(Interactions[i]);
+                        UpdateButtonDataTouch(interactionMapping);
                         break;
                     case DeviceInputType.ButtonNearTouch:
                     case DeviceInputType.TriggerNearTouch:
                     case DeviceInputType.ThumbNearTouch:
                     case DeviceInputType.TouchpadNearTouch:
                     case DeviceInputType.ThumbStickNearTouch:
-                        UpdateButtonDataNearTouch(Interactions[i]);
+                        UpdateButtonDataNearTouch(interactionMapping);
                         break;
                     case DeviceInputType.Trigger:
-                        UpdateSingleAxisData(Interactions[i]);
+                        UpdateSingleAxisData(interactionMapping);
                         break;
                     case DeviceInputType.ThumbStick:
                     case DeviceInputType.Touchpad:
-                        UpdateDualAxisData(Interactions[i]);
+                        UpdateDualAxisData(interactionMapping);
                         break;
                     default:
-                        Debug.LogError($"Input [{Interactions[i].InputType}] is not handled for this controller [{GetType().Name}]");
+                        Debug.LogError($"Input [{interactionMapping.InputType}] is not handled for this controller [{GetType().Name}]");
                         break;
                 }
+
+                interactionMapping.RaiseInputAction(InputSource, ControllerHandedness);
             }
         }
 
@@ -300,8 +304,6 @@ namespace XRTK.Oculus.Controllers
                 {
                     interactionMapping.BoolData = true;
                 }
-
-                interactionMapping.UpdateInteractionMappingBool(InputSource, ControllerHandedness);
             }
         }
 
@@ -323,8 +325,6 @@ namespace XRTK.Oculus.Controllers
                 {
                     interactionMapping.BoolData = true;
                 }
-
-                interactionMapping.UpdateInteractionMappingBool(InputSource, ControllerHandedness);
             }
         }
 
@@ -346,8 +346,6 @@ namespace XRTK.Oculus.Controllers
                 {
                     interactionMapping.BoolData = true;
                 }
-
-                interactionMapping.UpdateInteractionMappingBool(InputSource, ControllerHandedness);
             }
         }
 
@@ -387,10 +385,7 @@ namespace XRTK.Oculus.Controllers
 
             // Update the interaction data source
             interactionMapping.FloatData = singleAxisValue;
-
-            interactionMapping.UpdateInteractionMappingFloat(InputSource, ControllerHandedness);
         }
-
 
         private void UpdateDualAxisData(MixedRealityInteractionMapping interactionMapping)
         {
@@ -431,8 +426,6 @@ namespace XRTK.Oculus.Controllers
 
             // Update the interaction data source
             interactionMapping.Vector2Data = dualAxisPosition;
-
-            interactionMapping.UpdateInteractionMappingVector2(InputSource, ControllerHandedness);
         }
 
         private void UpdatePoseData(MixedRealityInteractionMapping interactionMapping)
@@ -449,8 +442,6 @@ namespace XRTK.Oculus.Controllers
 
             // Update the interaction data source
             interactionMapping.PoseData = currentPointerPose;
-
-            interactionMapping.UpdateInteractionMappingPose(InputSource, ControllerHandedness);
         }
     }
 }
