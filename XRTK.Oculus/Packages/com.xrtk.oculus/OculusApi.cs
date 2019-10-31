@@ -95,88 +95,158 @@ namespace XRTK.Oculus
         internal static Controller activeControllerType = Controller.None;
         internal static Controller connectedControllerTypes = Controller.None;
 
+        public static bool Initialized
+        {
+            get
+            {
+                return ovrp_GetInitialized() == Bool.True;
+            }
+        }
+
+        public static float EyeDepth
+        {
+            get
+            {
+                if (!Initialized)
+                    return 0.0f;
+
+                return ovrp_GetUserEyeDepth();
+            }
+            set
+            {
+                ovrp_SetUserEyeDepth(value);
+            }
+        }
+
+        public static float EyeHeight
+        {
+            get
+            {
+                return ovrp_GetUserEyeHeight();
+            }
+            set
+            {
+                ovrp_SetUserEyeHeight(value);
+            }
+        }
+
+        public static bool UserPresent
+        {
+            get
+            {
+                return Initialized && ovrp_GetUserPresent() == Bool.True;
+            }
+        }
+
         #endregion Oculus API Properties
 
         #region Oculus API import
 
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetInitialized();
+
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ovrp_GetVersion")]
         private static extern IntPtr _ovrp_GetVersion();
-        public static string ovrp_GetVersion() { return Marshal.PtrToStringAnsi(_ovrp_GetVersion()); }
+        private static string ovrp_GetVersion() { return Marshal.PtrToStringAnsi(_ovrp_GetVersion()); }
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern TrackingOrigin ovrp_GetTrackingOriginType();
+        private static extern TrackingOrigin ovrp_GetTrackingOriginType();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_SetTrackingOriginType(TrackingOrigin originType);
+        private static extern Bool ovrp_SetTrackingOriginType(TrackingOrigin originType);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Posef ovrp_GetTrackingCalibratedOrigin();
+        private static extern Posef ovrp_GetTrackingCalibratedOrigin();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrpi_SetTrackingCalibratedOrigin();        
+        private static extern Bool ovrpi_SetTrackingCalibratedOrigin();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Result ovrp_GetControllerState4(uint controllerMask, ref ControllerState4 controllerState);
+        private static extern Bool ovrp_GetUserPresent();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern PoseStatef ovrp_GetNodePoseState(Step stepId, Node nodeId);
+        private static extern float ovrp_GetUserEyeDepth();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Result ovrp_GetDominantHand(out Handedness dominantHand);
+        private static extern Bool ovrp_SetUserEyeDepth(float value);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_GetNodePresent(Node nodeId);
+        private static extern float ovrp_GetUserEyeHeight();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_GetNodeOrientationTracked(Node nodeId);
+        private static extern Bool ovrp_SetUserEyeHeight(float value);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_GetNodePositionTracked(Node nodeId);
+        private static extern Result ovrp_GetControllerState4(uint controllerMask, ref ControllerState4 controllerState);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Result ovrp_GetNodeOrientationValid(Node nodeId, ref Bool nodeOrientationValid);
+        private static extern PoseStatef ovrp_GetNodePoseState(Step stepId, Node nodeId);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Result ovrp_GetNodePositionValid(Node nodeId, ref Bool nodePositionValid);
+        private static extern Result ovrp_GetDominantHand(out Handedness dominantHand);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_GetBoundaryGeometry2(BoundaryType boundaryType, IntPtr points, ref int pointsCount);
+        private static extern Bool ovrp_GetNodePresent(Node nodeId);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Vector3f ovrp_GetBoundaryDimensions(BoundaryType boundaryType);
+        private static extern Bool ovrp_GetNodeOrientationTracked(Node nodeId);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_GetBoundaryVisible();
+        private static extern Bool ovrp_GetNodePositionTracked(Node nodeId);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_SetBoundaryVisible(bool value);
+        private static extern Result ovrp_GetNodeOrientationValid(Node nodeId, ref Bool nodeOrientationValid);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SystemHeadset ovrp_GetSystemHeadsetType();
+        private static extern Result ovrp_GetNodePositionValid(Node nodeId, ref Bool nodePositionValid);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Controller ovrp_GetActiveController();
+        private static extern Bool ovrp_GetBoundaryConfigured();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Controller ovrp_GetConnectedControllers();
+        private static extern BoundaryTestResult ovrp_TestBoundaryNode(Node nodeId, BoundaryType boundaryType);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_Update2(int stateId, int frameIndex, double predictionSeconds);
+        private static extern BoundaryTestResult ovrp_TestBoundaryPoint(Vector3f point, BoundaryType boundaryType);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern HapticsDesc ovrp_GetControllerHapticsDesc(uint controllerMask);
+        private static extern Bool ovrp_GetBoundaryGeometry2(BoundaryType boundaryType, IntPtr points, ref int pointsCount);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern HapticsState ovrp_GetControllerHapticsState(uint controllerMask);
+        private static extern Vector3f ovrp_GetBoundaryDimensions(BoundaryType boundaryType);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer);
+        private static extern Bool ovrp_GetBoundaryVisible();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_RecenterTrackingOrigin(uint flags);
+        private static extern Bool ovrp_SetBoundaryVisible(bool value);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Bool ovrp_SetControllerVibration(uint controllerMask, float frequency, float amplitude);
+        private static extern SystemHeadset ovrp_GetSystemHeadsetType();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Controller ovrp_GetActiveController();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Controller ovrp_GetConnectedControllers();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_Update2(int stateId, int frameIndex, double predictionSeconds);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern HapticsDesc ovrp_GetControllerHapticsDesc(uint controllerMask);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern HapticsState ovrp_GetControllerHapticsState(uint controllerMask);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetControllerHaptics(uint controllerMask, HapticsBuffer hapticsBuffer);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_RecenterTrackingOrigin(uint flags);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetControllerVibration(uint controllerMask, float frequency, float amplitude);
 
         #endregion Oculus API import
 
@@ -1028,6 +1098,7 @@ namespace XRTK.Oculus
                 return currentState.RBatteryPercentRemaining;
             }
         }
+
         #endregion Oculus Controller Definition
 
         #region Oculus Positional Tracking
@@ -1200,16 +1271,47 @@ namespace XRTK.Oculus
         public static bool RecenterTrackingOrigin(RecenterFlags flags)
         {
             return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
-        }        
+        }
 
         #endregion Oculus Positional Tracking
 
-        #region Oculus Controller Interactions
+        #region Oculus Boundary Functions
+
+        /// <summary>
+        /// Oculus native api translation, for determining if the Boundary has been configured
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetBoundaryConfigured()
+        {
+            return ovrp_GetBoundaryConfigured() == Bool.True;
+        }
+
+        /// <summary>
+        /// Oculus native api translation, to test whether a controller is within with the boundary
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <param name="boundaryType">Oculus native type of boundary</param>
+        /// <returns></returns>
+        public static BoundaryTestResult TestBoundaryNode(Node nodeId, BoundaryType boundaryType)
+        {
+            return ovrp_TestBoundaryNode(nodeId, boundaryType);
+        }
+
+        /// <summary>
+        /// Oculus native api translation, to test whether a point is within with the boundary
+        /// </summary>
+        /// <param name="point">Vector3 location to test</param>
+        /// <param name="boundaryType">Oculus native type of boundary</param>
+        /// <returns></returns>
+        public static BoundaryTestResult TestBoundaryPoint(Vector3f point, BoundaryType boundaryType)
+        {
+            return ovrp_TestBoundaryPoint(point, boundaryType);
+        }
 
         /// <summary>
         /// Oculus native api translation, for returning the points list of boundary elements
         /// </summary>
-        /// <param name="boundaryType">oculus native type of boundary</param>
+        /// <param name="boundaryType">Oculus native type of boundary</param>
         /// <param name="points">Pointer to a points list</param>
         /// <param name="pointsCount">Ref to a Points counter</param>
         /// <returns>Returns true if the boundary geometry was successfully retrieved </returns>
@@ -1237,7 +1339,6 @@ namespace XRTK.Oculus
         /// <remarks>For future use</remarks>
         public static bool GetBoundaryVisible()
         {
-
             return ovrp_GetBoundaryVisible() == Bool.True;
         }
 
@@ -1252,10 +1353,14 @@ namespace XRTK.Oculus
             return ovrp_SetBoundaryVisible(value) == Bool.True;
         }
 
+        #endregion Oculus Boundary Functions
+
+        #region Oculus Controller Interactions
+
         /// <summary>
         /// Oculus native api translation, for getting the connected system headset type
         /// </summary>
-        /// <returns>Native oculus headset type definition</returns>
+        /// <returns>Native Oculus headset type definition</returns>
         /// <remarks>For future use</remarks>
         public static SystemHeadset GetSystemHeadsetType()
         {
@@ -1269,7 +1374,6 @@ namespace XRTK.Oculus
         public static Controller GetActiveController()
         {
             return ovrp_GetActiveController();
-
         }
 
         /// <summary>
