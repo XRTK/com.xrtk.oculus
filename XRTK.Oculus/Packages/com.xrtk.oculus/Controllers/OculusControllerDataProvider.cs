@@ -25,6 +25,14 @@ namespace XRTK.Oculus.Controllers
         {
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var eyeHeight = OculusApi.EyeHeight;
+            MixedRealityToolkit.CameraSystem.CameraRig.InitialHeadPosition = new Vector3(0, eyeHeight, 0);
+        }
+
         private const float DeviceRefreshInterval = 3.0f;
 
         /// <summary>
