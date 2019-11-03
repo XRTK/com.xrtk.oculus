@@ -30,7 +30,10 @@ namespace XRTK.Oculus.Controllers
             base.Initialize();
 
             var eyeHeight = OculusApi.EyeHeight;
-            MixedRealityToolkit.CameraSystem.CameraRig.InitialHeadPosition = new Vector3(0, eyeHeight, 0);
+            if (MixedRealityToolkit.CameraSystem != null)
+            {
+                MixedRealityToolkit.CameraSystem.HeadHeight = eyeHeight;
+            }
         }
 
         private const float DeviceRefreshInterval = 3.0f;
