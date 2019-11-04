@@ -32,10 +32,20 @@ namespace XRTK.Oculus.Controllers
         /// </summary>
         private readonly Dictionary<OculusApi.Controller, BaseOculusController> activeControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
 
+        private int fixedUpdateCount = 0;
         private float deviceRefreshTimer;
         private OculusApi.Controller lastDeviceList;
 
-        private int fixedUpdateCount = 0;
+        /// <inheritdoc />
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (MixedRealityToolkit.CameraSystem != null)
+            {
+                MixedRealityToolkit.CameraSystem.HeadHeight = OculusApi.EyeHeight;
+            }
+        }
 
         /// <inheritdoc />
         public override void Update()
