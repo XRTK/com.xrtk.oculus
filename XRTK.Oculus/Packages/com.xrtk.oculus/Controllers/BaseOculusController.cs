@@ -250,9 +250,7 @@ namespace XRTK.Oculus.Controllers
                 TrackingState = TrackingState.NotApplicable;
             }
 
-            var pose = OculusApi.GetNodePose(NodeType, OculusApi.stepType);
-
-            currentControllerPose = pose.ToMixedRealityPose();
+            currentControllerPose.ToMixedRealityPose(OculusApi.GetNodePose(NodeType, OculusApi.stepType));
 
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)
