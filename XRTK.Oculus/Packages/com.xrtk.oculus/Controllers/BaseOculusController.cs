@@ -265,7 +265,6 @@ namespace XRTK.Oculus.Controllers
                 currentControllerPose = newControllerPose;
             }
 
-
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)
             {
