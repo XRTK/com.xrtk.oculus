@@ -1512,7 +1512,7 @@ namespace XRTK.Oculus
         /// <param name="xrtkPose"></param>
         /// <param name="pose">Extension (this) base Oculus PoseF type</param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this ref MixedRealityPose xrtkPose, Posef pose)
+        public static MixedRealityPose ToMixedRealityPose(this MixedRealityPose xrtkPose, Posef pose)
         {
             var position = xrtkPose.Position;
 
