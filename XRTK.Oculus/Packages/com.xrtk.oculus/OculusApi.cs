@@ -1149,10 +1149,10 @@ namespace XRTK.Oculus
             {
                 case Controller.LTouch:
                 case Controller.LTrackedRemote:
-                    return GetNodePose(Node.HandLeft, stepType).ToMixedRealityPose().Position;
+                    return GetNodePose(Node.HandLeft, stepType).GetPosePosition();
                 case Controller.RTouch:
                 case Controller.RTrackedRemote:
-                    return GetNodePose(Node.HandRight, stepType).ToMixedRealityPose().Position;
+                    return GetNodePose(Node.HandRight, stepType).GetPosePosition();
                 default:
                     return Vector3.zero;
             }
@@ -1509,17 +1509,40 @@ namespace XRTK.Oculus
         /// <summary>
         /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
         /// </summary>
+        /// <param name="xrtkPose"></param>
         /// <param name="pose">Extension (this) base Oculus PoseF type</param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this Posef pose)
+        public static MixedRealityPose ToMixedRealityPose(this MixedRealityPose xrtkPose, Posef pose, bool adjustForEyeHeight = false)
         {
-            return new MixedRealityPose
-            (
-                position: new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z),
-                rotation: new Quaternion(-pose.Orientation.x, -pose.Orientation.y, pose.Orientation.z, pose.Orientation.w)
-            );
+            var position = xrtkPose.Position;
+
+            position.x = pose.Position.x;
+            position.y = adjustForEyeHeight ? pose.Position.y + EyeHeight : pose.Position.y;
+            position.z = -pose.Position.z;
+
+            xrtkPose.Position = position;
+
+            var rotation = xrtkPose.Rotation;
+
+            rotation.x = -pose.Orientation.x;
+            rotation.y = -pose.Orientation.y;
+            rotation.z = pose.Orientation.z;
+            rotation.w = pose.Orientation.w;
+
+            xrtkPose.Rotation = rotation;
+
+            return xrtkPose;
         }
 
-        #endregion
+        /// <summary>
+        /// Gets a <see cref="UnityEngine.Vector3"/> position from the <see cref="Posef"/>.
+        /// </summary>
+        /// <param name="pose"></param>
+        public static Vector3 GetPosePosition(this Posef pose)
+        {
+            return new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z);
+        }
+
+        #endregion XRTKExtensions
     }
 }
