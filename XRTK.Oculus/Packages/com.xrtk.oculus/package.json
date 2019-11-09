@@ -9,7 +9,7 @@
     "reality",
     "oculus"
   ],
-  "version": "0.1.6",
+  "version": "0.1.7",
   "unity": "2019.1",
   "license": "MIT",
   "src": "Assets/XRTK.Oculus",
