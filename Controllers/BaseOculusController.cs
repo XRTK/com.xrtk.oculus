@@ -250,9 +250,20 @@ namespace XRTK.Oculus.Controllers
                 TrackingState = TrackingState.NotApplicable;
             }
 
-            var pose = OculusApi.GetNodePose(NodeType, OculusApi.stepType);
+            var newControllerPose = currentControllerPose.ToMixedRealityPose(OculusApi.GetNodePose(NodeType, OculusApi.stepType), true);
 
-            currentControllerPose = pose.ToMixedRealityPose();
+            var cameraRig = MixedRealityToolkit.CameraSystem?.CameraRig;
+
+            if (cameraRig != null &&
+                cameraRig.PlayspaceTransform != null)
+            {
+                currentControllerPose.Position = cameraRig.PlayspaceTransform.TransformPoint(newControllerPose.Position);
+                currentControllerPose.Rotation = Quaternion.Euler(cameraRig.PlayspaceTransform.TransformDirection(newControllerPose.Rotation.eulerAngles));
+            }
+            else
+            {
+                currentControllerPose = newControllerPose;
+            }
 
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)
