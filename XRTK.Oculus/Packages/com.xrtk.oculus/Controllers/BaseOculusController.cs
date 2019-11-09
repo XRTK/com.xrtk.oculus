@@ -250,7 +250,7 @@ namespace XRTK.Oculus.Controllers
                 TrackingState = TrackingState.NotApplicable;
             }
 
-            var newControllerPose = currentControllerPose.ToMixedRealityPose(OculusApi.GetNodePose(NodeType, OculusApi.stepType));
+            var newControllerPose = currentControllerPose.ToMixedRealityPose(OculusApi.GetNodePose(NodeType, OculusApi.stepType), true);
 
             var cameraRig = MixedRealityToolkit.CameraSystem?.CameraRig;
 
