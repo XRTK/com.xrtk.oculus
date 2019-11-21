@@ -14,6 +14,7 @@ namespace XRTK.Oculus
 
         private static Version _versionZero = new Version(0, 0, 0);
         private static readonly Version OVRP_1_38_0_version = new Version(1, 38, 0);
+        private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -247,6 +248,9 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Bool ovrp_SetControllerVibration(uint controllerMask, float frequency, float amplitude);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetAdaptiveGpuPerformanceScale2(ref float adaptiveGpuPerformanceScale);
 
         #endregion Oculus API import
 
@@ -1500,6 +1504,23 @@ namespace XRTK.Oculus
             if ((a * a) > 1.0f)
                 return (a >= 0) ? 1.0f : -1.0f;
             return a;
+        }
+
+        public static float GetAdaptiveGPUPerformanceScale()
+        {
+            if (Version >= OVRP_1_42_0_version)
+            {
+                float adaptiveScale = 1.0f;
+                if (ovrp_GetAdaptiveGpuPerformanceScale2(ref adaptiveScale) == Result.Success)
+                {
+                    return adaptiveScale;
+                }
+                return 1.0f;
+            }
+            else
+            {
+                return 1.0f;
+            }
         }
 
         #endregion Oculus Input Functions
