@@ -14,6 +14,7 @@ namespace XRTK.Oculus
 
         private static Version _versionZero = new Version(0, 0, 0);
         private static readonly Version OVRP_1_38_0_version = new Version(1, 38, 0);
+        private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -247,6 +248,9 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Bool ovrp_SetControllerVibration(uint controllerMask, float frequency, float amplitude);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetAdaptiveGpuPerformanceScale2(ref float adaptiveGpuPerformanceScale);
 
         #endregion Oculus API import
 
@@ -1502,6 +1506,23 @@ namespace XRTK.Oculus
             return a;
         }
 
+        public static float GetAdaptiveGPUPerformanceScale()
+        {
+            if (Version >= OVRP_1_42_0_version)
+            {
+                float adaptiveScale = 1.0f;
+                if (ovrp_GetAdaptiveGpuPerformanceScale2(ref adaptiveScale) == Result.Success)
+                {
+                    return adaptiveScale;
+                }
+                return 1.0f;
+            }
+            else
+            {
+                return 1.0f;
+            }
+        }
+
         #endregion Oculus Input Functions
 
         #region XRTKExtensions
@@ -1512,26 +1533,19 @@ namespace XRTK.Oculus
         /// <param name="xrtkPose"></param>
         /// <param name="pose">Extension (this) base Oculus PoseF type</param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this MixedRealityPose xrtkPose, Posef pose, bool adjustForEyeHeight = false)
+        public static MixedRealityPose ToMixedRealityPose(this Posef pose, bool adjustForEyeHeight = false)
         {
-            var position = xrtkPose.Position;
+            return new MixedRealityPose
+            (
+                position: new Vector3(pose.Position.x,
+                                      adjustForEyeHeight ? pose.Position.y + EyeHeight : pose.Position.y, 
+                                      -pose.Position.z),
 
-            position.x = pose.Position.x;
-            position.y = adjustForEyeHeight ? pose.Position.y + EyeHeight : pose.Position.y;
-            position.z = -pose.Position.z;
-
-            xrtkPose.Position = position;
-
-            var rotation = xrtkPose.Rotation;
-
-            rotation.x = -pose.Orientation.x;
-            rotation.y = -pose.Orientation.y;
-            rotation.z = pose.Orientation.z;
-            rotation.w = pose.Orientation.w;
-
-            xrtkPose.Rotation = rotation;
-
-            return xrtkPose;
+                rotation: new Quaternion(-pose.Orientation.x, 
+                                         -pose.Orientation.y, 
+                                         pose.Orientation.z, 
+                                         pose.Orientation.w)
+            );
         }
 
         /// <summary>
