@@ -1530,8 +1530,8 @@ namespace XRTK.Oculus
         /// <summary>
         /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
         /// </summary>
-        /// <param name="adjustForEyeHeight"></param>
         /// <param name="pose">Extension (this) base Oculus PoseF type</param>
+        /// <param name="adjustForEyeHeight"></param>
         /// <returns>Returns an XRTK MixedRealityPose</returns>
         public static MixedRealityPose ToMixedRealityPose(this Posef pose, bool adjustForEyeHeight = false)
         {
