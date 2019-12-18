@@ -15,6 +15,6 @@
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
-    "com.xrtk.core": "0.1.26"
+    "com.xrtk.core": "0.1.27"
   }
 }
