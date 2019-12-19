@@ -25,8 +25,9 @@ PluginImporter:
         Exclude OSXUniversal: 0
         Exclude WebGL: 0
         Exclude Win: 0
-        Exclude Win64: 0
+        Exclude Win64: 1
         Exclude WindowsStoreApps: 0
+        Exclude iOS: 0
   - first:
       Android: Android
     second:
@@ -57,7 +58,7 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       Lumin: Lumin
     second:
@@ -96,9 +97,9 @@ PluginImporter:
   - first:
       Standalone: Win64
     second:
-      enabled: 1
+      enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       WebGL: WebGL
     second:
@@ -114,6 +115,14 @@ PluginImporter:
         PlaceholderPath: 
         SDK: AnySDK
         ScriptingBackend: AnyScriptingBackend
+  - first:
+      iPhone: iOS
+    second:
+      enabled: 1
+      settings:
+        AddToEmbeddedBinaries: false
+        CompileFlags: 
+        FrameworkDependencies: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 
