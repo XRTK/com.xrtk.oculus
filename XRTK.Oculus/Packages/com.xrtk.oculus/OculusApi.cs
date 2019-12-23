@@ -2404,12 +2404,42 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Gets a <see cref="UnityEngine.Vector3"/> position from the <see cref="Posef"/>.
+        /// Gets a <see cref="Vector3"/> position from the <see cref="Posef"/>.
         /// </summary>
         /// <param name="pose"></param>
         public static Vector3 GetPosePosition(this Posef pose)
         {
             return new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="Vector3"/> from a Oculus <see cref="Vector3f"/>.
+        /// </summary>
+        /// <param name="v">Input vector to convert.</param>
+        /// <returns>Unity vector.</returns>
+        public static Vector3 ToUnityVector3(this Vector3f v)
+        {
+            return new Vector3(v.x, v.y, v.z);
+        }
+
+        /// <summary>
+        /// Flips the z-axis of the vector.
+        /// </summary>
+        /// <param name="v">Input vector.</param>
+        /// <returns>Vector with flipped z axis.</returns>
+        public static Vector3f FromFlippedZVector3f(this Vector3f v)
+        {
+            return new Vector3f() { x = v.x, y = v.y, z = -v.z };
+        }
+
+        /// <summary>
+        /// Gets a Unity quaternion from a flipped Z oculus orientation.
+        /// </summary>
+        /// <param name="q">Input orientation.</param>
+        /// <returns>Unity orientation.</returns>
+        public static Quaternion FromFlippedZQuatf(this Quatf q)
+        {
+            return new Quaternion() { x = -q.x, y = -q.y, z = q.z, w = q.w };
         }
 
         #endregion XRTKExtensions
