@@ -14,12 +14,14 @@ namespace XRTK.Oculus.Inspectors
     public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
     {
         private SerializedProperty handTrackingEnabled;
+        private SerializedProperty minConfidenceRequired;
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
-            handTrackingEnabled = serializedObject.FindProperty("handTrackingEnabled");
+            handTrackingEnabled = serializedObject.FindProperty(nameof(handTrackingEnabled));
+            minConfidenceRequired = serializedObject.FindProperty(nameof(minConfidenceRequired));
         }
 
         public override void OnInspectorGUI()
@@ -41,6 +43,10 @@ namespace XRTK.Oculus.Inspectors
 
                 EditorGUILayout.BeginVertical("Label");
                 EditorGUILayout.PropertyField(handTrackingEnabled);
+
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Quality Settings", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(minConfidenceRequired);
 
                 EditorGUILayout.EndVertical();
 

@@ -19,5 +19,14 @@ namespace XRTK.Oculus.Profiles
         /// Is hand tracking enabled?
         /// </summary>
         public bool HandTrackingEnabled => handTrackingEnabled;
+
+        [SerializeField]
+        [Tooltip("The minimum hand tracking confidence expected.")]
+        private OculusApi.TrackingConfidence minConfidenceRequired = OculusApi.TrackingConfidence.High;
+
+        /// <summary>
+        /// The minimum hand tracking confidence expected.
+        /// </summary>
+        public OculusApi.TrackingConfidence MinConfidenceRequired => minConfidenceRequired;
     }
 }
