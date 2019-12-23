@@ -127,7 +127,8 @@ namespace XRTK.Oculus.Controllers
         private MixedRealityPose ConvertBonePoseToJointPose(OculusApi.Bone bone, OculusApi.HandState handState)
         {
             MixedRealityPose pose = bone.Pose.ToMixedRealityPose(true);
-            pose.Position += handState.RootPose.Position.FlipZVector3f().ToUnityVector3();
+            pose.Position += handState.RootPose.Position.FromFlippedZVector3f().ToUnityVector3();
+            pose.Rotation = bone.Pose.Orientation.FromFlippedZQuatf();
 
             return pose;
         }
