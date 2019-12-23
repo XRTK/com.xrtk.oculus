@@ -15,10 +15,14 @@ namespace XRTK.Oculus
         private static Version _versionZero = new Version(0, 0, 0);
         private static readonly Version OVRP_1_38_0_version = new Version(1, 38, 0);
         private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
+        private static readonly Version OVRP_1_44_0_version = new Version(1, 44, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
 
+        /// <summary>
+        /// Current version of the Oculus API library in use
+        /// </summary>
         public static Version Version
         {
             get
@@ -96,6 +100,9 @@ namespace XRTK.Oculus
         internal static Controller activeControllerType = Controller.None;
         internal static Controller connectedControllerTypes = Controller.None;
 
+        /// <summary>
+        /// Oculus API Initialised check
+        /// </summary>
         public static bool Initialized
         {
             get
@@ -104,6 +111,9 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Reported Eye Depth from the Oculus API
+        /// </summary>
         public static float EyeDepth
         {
             get
@@ -119,6 +129,9 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Reported Eye Height from the Oculus API
+        /// </summary>
         public static float EyeHeight
         {
             get
@@ -131,6 +144,9 @@ namespace XRTK.Oculus
             }
         }
 
+        /// <summary>
+        /// Returns whether the user is wearing the headset or not from the Oculus API
+        /// </summary>
         public static bool UserPresent
         {
             get
@@ -173,6 +189,12 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern float ovrp_GetUserEyeHeight();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetExternalCameraIntrinsics(int cameraId, out CameraIntrinsics cameraIntrinsics);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetExternalCameraExtrinsics(int cameraId, out CameraExtrinsics cameraExtrinsics);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Bool ovrp_SetUserEyeHeight(float value);
@@ -252,6 +274,39 @@ namespace XRTK.Oculus
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetAdaptiveGpuPerformanceScale2(ref float adaptiveGpuPerformanceScale);
 
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetExternalCameraCalibrationRawPose(int cameraId, out Posef rawPose);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetHandTrackingEnabled(ref Bool handTrackingEnabled);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetHandState(Step stepId, Hand hand, out HandStateInternal handState);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetSkeleton(SkeletonType skeletonType, out Skeleton skeleton);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetMesh(MeshType meshType, out Mesh mesh);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_OverrideExternalCameraFov(int cameraId, Bool useOverriddenFov, ref Fovf fov);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetUseOverriddenExternalCameraFov(int cameraId, out Bool useOverriddenFov);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_OverrideExternalCameraStaticPose(int cameraId, Bool useOverriddenPose, ref Posef pose);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetUseOverriddenExternalCameraStaticPose(int cameraId, out Bool useOverriddenStaticPose);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_ResetDefaultExternalCamera();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        private static extern Result ovrp_SetDefaultExternalCamera(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics);
+
         #endregion Oculus API import
 
         #region Oculus Data Types
@@ -285,6 +340,96 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
+        /// Oculus Camera Status type
+        /// </summary>
+        public enum CameraStatus
+        {
+            CameraStatus_None,
+            CameraStatus_Connected,
+            CameraStatus_Calibrating,
+            CameraStatus_CalibrationFailed,
+            CameraStatus_Calibrated,
+            CameraStatus_EnumSize = 0x7fffffff
+        }
+
+        /// <summary>
+        /// Oculus API native Size (integer)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Sizei
+        {
+            public int w;
+            public int h;
+
+            public static readonly Sizei zero = new Sizei { w = 0, h = 0 };
+        }
+
+        /// <summary>
+        /// Oculus API native Size (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Sizef
+        {
+            public float w;
+            public float h;
+
+            public static readonly Sizef zero = new Sizef { w = 0, h = 0 };
+        }
+
+        /// <summary>
+        /// Oculus API native Vector2 (integer)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vector2i
+        {
+            public int x;
+            public int y;
+        }
+
+        /// <summary>
+        /// Oculus API native Rect (integer)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Recti
+        {
+            Vector2i Pos;
+            Sizei Size;
+        }
+
+        /// <summary>
+        /// Oculus API native Rect (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Rectf
+        {
+            Vector2f Pos;
+            Sizef Size;
+        }
+
+        /// <summary>
+        /// Oculus API native Frustrum (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Frustumf
+        {
+            public float zNear;
+            public float zFar;
+            public float fovX;
+            public float fovY;
+        }
+
+        /// <summary>
+        /// Oculus API native Frustrum (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Frustumf2
+        {
+            public float zNear;
+            public float zFar;
+            public Fovf Fov;
+        }
+
+        /// <summary>
         /// Oculus API native Vector2
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
@@ -311,7 +456,41 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Oculus API native Quaternion
+        /// Oculus API native Vector4 (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vector4f
+        {
+            public float x;
+            public float y;
+            public float z;
+            public float w;
+            public static readonly Vector4f zero = new Vector4f { x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f };
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+            }
+        }
+
+        /// <summary>
+        /// Oculus API native Vector4 (string)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vector4s
+        {
+            public short x;
+            public short y;
+            public short z;
+            public short w;
+            public static readonly Vector4s zero = new Vector4s { x = 0, y = 0, z = 0, w = 0 };
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+            }
+        }
+
+        /// <summary>
+        /// Oculus API native Quaternion (float)
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Quatf
@@ -328,7 +507,7 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Oculus API native Pose (Position + Rotation)
+        /// Oculus API native Pose (Position + Rotation) (float)
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Posef
@@ -886,6 +1065,57 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
+        /// Oculus API native Color (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Colorf
+        {
+            public float r;
+            public float g;
+            public float b;
+            public float a;
+        }
+
+        /// <summary>
+        /// Oculus API native Fov (float)
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Fovf
+        {
+            public float UpTan;
+            public float DownTan;
+            public float LeftTan;
+            public float RightTan;
+        }
+
+        /// <summary>
+        /// CameraIntrinsics definition for the Oculus API 
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CameraIntrinsics
+        {
+            public Bool IsValid;
+            public double LastChangedTimeSeconds;
+            public Fovf FOVPort;
+            public float VirtualNearPlaneDistanceMeters;
+            public float VirtualFarPlaneDistanceMeters;
+            public Sizei ImageSensorPixelResolution;
+        }
+
+        /// <summary>
+        /// CameraExtrinsics definition for the Oculus API 
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CameraExtrinsics
+        {
+            public Bool IsValid;
+            public double LastChangedTimeSeconds;
+            public CameraStatus CameraStatusData;
+            public Node AttachedToNode;
+            public Posef RelativePose;
+        }
+
+        /// <summary>
         /// Type of headset detected by the Oculus API
         /// </summary>
         public enum SystemHeadset
@@ -906,6 +1136,278 @@ namespace XRTK.Oculus
             Rift_CB,
             Rift_S
         }
+
+        #region Hands Implementation
+
+        /// <summary>
+        /// Oculus API definition for tracking confidence for Hands / Controllers
+        /// </summary>
+        public enum TrackingConfidence
+        {
+            Low = 0,
+            High = 0x3f800000,
+        }
+
+        /// <summary>
+        /// Hand definition for the Oculus API
+        /// </summary>
+        public enum Hand
+        {
+            None = -1,
+            HandLeft = 0,
+            HandRight = 1,
+        }
+
+        /// <summary>
+        /// Hand Status definition for the Oculus API
+        /// </summary>
+        [Flags]
+        public enum HandStatus
+        {
+            HandTracked = (1 << 0), // if this is set the hand pose and bone rotations data is usable
+            InputStateValid = (1 << 1), // if this is set the pointer pose and pinch data is usable
+            SystemGestureInProgress = (1 << 6), // if this is set the hand is currently processing a system gesture
+        }
+
+        /// <summary>
+        /// Bone definition for the Oculus API
+        /// </summary>
+        public enum BoneId
+        {
+            Invalid = -1,
+
+            Hand_Start = 0,
+            Hand_WristRoot = Hand_Start + 0, // root frame of the hand, where the wrist is located
+            Hand_ForearmStub = Hand_Start + 1, // frame for user's forearm
+            Hand_Thumb0 = Hand_Start + 2, // thumb trapezium bone
+            Hand_Thumb1 = Hand_Start + 3, // thumb metacarpal bone
+            Hand_Thumb2 = Hand_Start + 4, // thumb proximal phalange bone
+            Hand_Thumb3 = Hand_Start + 5, // thumb distal phalange bone
+            Hand_Index1 = Hand_Start + 6, // index proximal phalange bone
+            Hand_Index2 = Hand_Start + 7, // index intermediate phalange bone
+            Hand_Index3 = Hand_Start + 8, // index distal phalange bone
+            Hand_Middle1 = Hand_Start + 9, // middle proximal phalange bone
+            Hand_Middle2 = Hand_Start + 10, // middle intermediate phalange bone
+            Hand_Middle3 = Hand_Start + 11, // middle distal phalange bone
+            Hand_Ring1 = Hand_Start + 12, // ring proximal phalange bone
+            Hand_Ring2 = Hand_Start + 13, // ring intermediate phalange bone
+            Hand_Ring3 = Hand_Start + 14, // ring distal phalange bone
+            Hand_Pinky0 = Hand_Start + 15, // pinky metacarpal bone
+            Hand_Pinky1 = Hand_Start + 16, // pinky proximal phalange bone
+            Hand_Pinky2 = Hand_Start + 17, // pinky intermediate phalange bone
+            Hand_Pinky3 = Hand_Start + 18, // pinky distal phalange bone
+            Hand_MaxSkinnable = Hand_Start + 19,
+            // Bone tips are position only. They are not used for skinning but are useful for hit-testing.
+            // NOTE: Hand_ThumbTip == Hand_MaxSkinnable since the extended tips need to be contiguous
+            Hand_ThumbTip = Hand_Start + Hand_MaxSkinnable + 0, // tip of the thumb
+            Hand_IndexTip = Hand_Start + Hand_MaxSkinnable + 1, // tip of the index finger
+            Hand_MiddleTip = Hand_Start + Hand_MaxSkinnable + 2, // tip of the middle finger
+            Hand_RingTip = Hand_Start + Hand_MaxSkinnable + 3, // tip of the ring finger
+            Hand_PinkyTip = Hand_Start + Hand_MaxSkinnable + 4, // tip of the pinky
+            Hand_End = Hand_Start + Hand_MaxSkinnable + 5,
+
+            // add new bones here
+
+            Max = Hand_End + 0,
+        }
+
+        /// <summary>
+        /// Finger definition for the Oculus API
+        /// </summary>
+        public enum HandFinger
+        {
+            Thumb = 0,
+            Index = 1,
+            Middle = 2,
+            Ring = 3,
+            Pinky = 4,
+            Max = 5,
+        }
+
+        /// <summary>
+        /// Pinch gesture definition for the Oculus API
+        /// </summary>
+        [Flags]
+        public enum HandFingerPinch
+        {
+            Thumb = (1 << HandFinger.Thumb),
+            Index = (1 << HandFinger.Index),
+            Middle = (1 << HandFinger.Middle),
+            Ring = (1 << HandFinger.Ring),
+            Pinky = (1 << HandFinger.Pinky),
+        }
+
+        /// <summary>
+        /// Hand State definition for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HandState
+        {
+            public HandStatus Status;
+            public Posef RootPose;
+            public Quatf[] BoneRotations;
+            public HandFingerPinch Pinches;
+            public float[] PinchStrength;
+            public Posef PointerPose;
+            public float HandScale;
+            public TrackingConfidence HandConfidence;
+            public TrackingConfidence[] FingerConfidences;
+            public double RequestedTimeStamp;
+            public double SampleTimeStamp;
+        }
+
+        /// <summary>
+        /// Hand / Finger pose internal definition for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        private struct HandStateInternal
+        {
+            public HandStatus Status;
+            public Posef RootPose;
+            public Quatf BoneRotations_0;
+            public Quatf BoneRotations_1;
+            public Quatf BoneRotations_2;
+            public Quatf BoneRotations_3;
+            public Quatf BoneRotations_4;
+            public Quatf BoneRotations_5;
+            public Quatf BoneRotations_6;
+            public Quatf BoneRotations_7;
+            public Quatf BoneRotations_8;
+            public Quatf BoneRotations_9;
+            public Quatf BoneRotations_10;
+            public Quatf BoneRotations_11;
+            public Quatf BoneRotations_12;
+            public Quatf BoneRotations_13;
+            public Quatf BoneRotations_14;
+            public Quatf BoneRotations_15;
+            public Quatf BoneRotations_16;
+            public Quatf BoneRotations_17;
+            public Quatf BoneRotations_18;
+            public Quatf BoneRotations_19;
+            public Quatf BoneRotations_20;
+            public Quatf BoneRotations_21;
+            public Quatf BoneRotations_22;
+            public Quatf BoneRotations_23;
+            public HandFingerPinch Pinches;
+            public float PinchStrength_0;
+            public float PinchStrength_1;
+            public float PinchStrength_2;
+            public float PinchStrength_3;
+            public float PinchStrength_4;
+            public Posef PointerPose;
+            public float HandScale;
+            public TrackingConfidence HandConfidence;
+            public TrackingConfidence FingerConfidences_0;
+            public TrackingConfidence FingerConfidences_1;
+            public TrackingConfidence FingerConfidences_2;
+            public TrackingConfidence FingerConfidences_3;
+            public TrackingConfidence FingerConfidences_4;
+            public double RequestedTimeStamp;
+            public double SampleTimeStamp;
+        }
+
+        /// <summary>
+        /// Bone collison definition for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct BoneCapsule
+        {
+            public short BoneIndex;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public Vector3f[] Points;
+            public float Radius;
+        }
+
+        /// <summary>
+        /// Bone structure for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Bone
+        {
+            public BoneId Id;
+            public short ParentBoneIndex;
+            public Posef Pose;
+        }
+
+        /// <summary>
+        /// Skeletal constants for the Oculus API
+        /// </summary>
+        public enum SkeletonConstants
+        {
+            MaxBones = BoneId.Max,
+            MaxBoneCapsules = 19,
+        }
+
+        /// <summary>
+        /// Skeleton type definition for the Oculus API
+        /// </summary>
+        public enum SkeletonType
+        {
+            None = -1,
+            HandLeft = 0,
+            HandRight = 1,
+        }
+
+        /// <summary>
+        /// Skeletal definition for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Skeleton
+        {
+            public SkeletonType Type;
+            public uint NumBones;
+            public uint NumBoneCapsules;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)SkeletonConstants.MaxBones)]
+            public Bone[] Bones;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)SkeletonConstants.MaxBoneCapsules)]
+            public BoneCapsule[] BoneCapsules;
+        }
+
+        /// <summary>
+        /// Raw Mesh constants for the Oculus API
+        /// </summary>
+        public enum MeshConstants
+        {
+            MaxVertices = 3000,
+            MaxIndices = MaxVertices * 6,
+        }
+
+        /// <summary>
+        /// Raw Mesh type definition for the Oculus API
+        /// </summary>
+        public enum MeshType
+        {
+            None = -1,
+            HandLeft = 0,
+            HandRight = 1,
+        }
+
+        /// <summary>
+        /// Raw mesh definition for the Oculus API
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Mesh
+        {
+            public MeshType Type;
+            public uint NumVertices;
+            public uint NumIndices;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxVertices)]
+            public Vector3f[] VertexPositions;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxIndices)]
+            public short[] Indices;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxVertices)]
+            public Vector3f[] VertexNormals;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxVertices)]
+            public Vector2f[] VertexUV0;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxVertices)]
+            public Vector4s[] BlendIndices;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MeshConstants.MaxVertices)]
+            public Vector4f[] BlendWeights;
+        }
+
+
+        #endregion Hands Implementation
 
         #endregion Oculus Data Types
 
@@ -1524,6 +2026,359 @@ namespace XRTK.Oculus
         }
 
         #endregion Oculus Input Functions
+
+        #region Oculus Hands Interaction
+
+        /// <summary>
+        /// Verify the user has Hands Tracking enabled
+        /// </summary>
+        /// <returns>True if the user has enabled hands tracking in the headset </returns>
+        /// <remarks>Only supported on headsets with V12 firmware+</remarks>
+        public static bool GetHandTrackingEnabled()
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                Bool val = Bool.False;
+                Result res = ovrp_GetHandTrackingEnabled(ref val);
+                if (res == Result.Success)
+                {
+                    return val == Bool.True;
+                }
+
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static HandStateInternal cachedHandState = new HandStateInternal();
+
+        /// <summary>
+        /// Updates a HandState reference with the currently reported hand data from the API
+        /// </summary>
+        /// <param name="stepId">Oculus API Step - Update/Physics</param>
+        /// <param name="hand">Hand Node</param>
+        /// <param name="handState">Current State reference for the hand data</param>
+        /// <returns></returns>
+        /// <remarks>Only supported on headsets with V12 firmware+</remarks>
+        public static bool GetHandState(Step stepId, Hand hand, ref HandState handState)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                Result res = ovrp_GetHandState(stepId, hand, out cachedHandState);
+                if (res == Result.Success)
+                {
+                    // attempt to avoid allocations if client provides appropriately pre-initialized HandState
+                    if (handState.BoneRotations == null || handState.BoneRotations.Length != ((int)BoneId.Hand_End - (int)BoneId.Hand_Start))
+                    {
+                        handState.BoneRotations = new Quatf[(int)BoneId.Hand_End - (int)BoneId.Hand_Start];
+                    }
+                    if (handState.PinchStrength == null || handState.PinchStrength.Length != (int)HandFinger.Max)
+                    {
+                        handState.PinchStrength = new float[(int)HandFinger.Max];
+                    }
+                    if (handState.FingerConfidences == null || handState.FingerConfidences.Length != (int)HandFinger.Max)
+                    {
+                        handState.FingerConfidences = new TrackingConfidence[(int)HandFinger.Max];
+                    }
+
+                    // unrolling the arrays is necessary to avoid per-frame allocations during marshaling
+                    handState.Status = cachedHandState.Status;
+                    handState.RootPose = cachedHandState.RootPose;
+                    handState.BoneRotations[0] = cachedHandState.BoneRotations_0;
+                    handState.BoneRotations[1] = cachedHandState.BoneRotations_1;
+                    handState.BoneRotations[2] = cachedHandState.BoneRotations_2;
+                    handState.BoneRotations[3] = cachedHandState.BoneRotations_3;
+                    handState.BoneRotations[4] = cachedHandState.BoneRotations_4;
+                    handState.BoneRotations[5] = cachedHandState.BoneRotations_5;
+                    handState.BoneRotations[6] = cachedHandState.BoneRotations_6;
+                    handState.BoneRotations[7] = cachedHandState.BoneRotations_7;
+                    handState.BoneRotations[8] = cachedHandState.BoneRotations_8;
+                    handState.BoneRotations[9] = cachedHandState.BoneRotations_9;
+                    handState.BoneRotations[10] = cachedHandState.BoneRotations_10;
+                    handState.BoneRotations[11] = cachedHandState.BoneRotations_11;
+                    handState.BoneRotations[12] = cachedHandState.BoneRotations_12;
+                    handState.BoneRotations[13] = cachedHandState.BoneRotations_13;
+                    handState.BoneRotations[14] = cachedHandState.BoneRotations_14;
+                    handState.BoneRotations[15] = cachedHandState.BoneRotations_15;
+                    handState.BoneRotations[16] = cachedHandState.BoneRotations_16;
+                    handState.BoneRotations[17] = cachedHandState.BoneRotations_17;
+                    handState.BoneRotations[18] = cachedHandState.BoneRotations_18;
+                    handState.BoneRotations[19] = cachedHandState.BoneRotations_19;
+                    handState.BoneRotations[20] = cachedHandState.BoneRotations_20;
+                    handState.BoneRotations[21] = cachedHandState.BoneRotations_21;
+                    handState.BoneRotations[22] = cachedHandState.BoneRotations_22;
+                    handState.BoneRotations[23] = cachedHandState.BoneRotations_23;
+                    handState.Pinches = cachedHandState.Pinches;
+                    handState.PinchStrength[0] = cachedHandState.PinchStrength_0;
+                    handState.PinchStrength[1] = cachedHandState.PinchStrength_1;
+                    handState.PinchStrength[2] = cachedHandState.PinchStrength_2;
+                    handState.PinchStrength[3] = cachedHandState.PinchStrength_3;
+                    handState.PinchStrength[4] = cachedHandState.PinchStrength_4;
+                    handState.PointerPose = cachedHandState.PointerPose;
+                    handState.HandScale = cachedHandState.HandScale;
+                    handState.HandConfidence = cachedHandState.HandConfidence;
+                    handState.FingerConfidences[0] = cachedHandState.FingerConfidences_0;
+                    handState.FingerConfidences[1] = cachedHandState.FingerConfidences_1;
+                    handState.FingerConfidences[2] = cachedHandState.FingerConfidences_2;
+                    handState.FingerConfidences[3] = cachedHandState.FingerConfidences_3;
+                    handState.FingerConfidences[4] = cachedHandState.FingerConfidences_4;
+                    handState.RequestedTimeStamp = cachedHandState.RequestedTimeStamp;
+                    handState.SampleTimeStamp = cachedHandState.SampleTimeStamp;
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current skeletal definition for a specific hand
+        /// </summary>
+        /// <param name="skeletonType">Type of skeleton to query for</param>
+        /// <param name="skeleton">(Out) Skeletal definition</param>
+        /// <returns>True of the API was successful in retriving the hand data</returns>
+        public static bool GetSkeleton(SkeletonType skeletonType, out Skeleton skeleton)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                return ovrp_GetSkeleton(skeletonType, out skeleton) == Result.Success;
+            }
+            else
+            {
+                skeleton = default(Skeleton);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the mesh for the detected hand
+        /// </summary>
+        /// <param name="meshType">Type of mesh to query for</param>
+        /// <param name="mesh">(Out) Mesh instance to return</param>
+        /// <returns></returns>
+        public static bool GetMesh(MeshType meshType, out Mesh mesh)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                return ovrp_GetMesh(meshType, out mesh) == Result.Success;
+            }
+            else
+            {
+                mesh = default(Mesh);
+                return false;
+            }
+        }
+
+        #endregion Oculus Hands Interaction
+
+        #region Oculus Camera
+
+        /// <summary>
+        /// Get the current camera properties from the headset via the Oculus API
+        /// </summary>
+        /// <param name="cameraId">Camera ID to query</param>
+        /// <param name="cameraExtrinsics">(Out) Extrinsics defintion for the sepected camera</param>
+        /// <param name="cameraIntrinsics">(Out) Intrinsics defintion for the sepected camera</param>
+        /// <param name="calibrationRawPose">(Out) calibration raw pose defintion for the sepected camera</param>
+        /// <returns>True if the selected camera returned data</returns>
+        public static bool GetMixedRealityCameraInfo(int cameraId, out CameraExtrinsics cameraExtrinsics, out CameraIntrinsics cameraIntrinsics, out Posef calibrationRawPose)
+        {
+            cameraExtrinsics = default(CameraExtrinsics);
+            cameraIntrinsics = default(CameraIntrinsics);
+            calibrationRawPose = Posef.identity;
+
+            if (Version >= OVRP_1_38_0_version)
+            {
+                bool retValue = true;
+
+                Result result = ovrp_GetExternalCameraExtrinsics(cameraId, out cameraExtrinsics);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+
+                result = ovrp_GetExternalCameraIntrinsics(cameraId, out cameraIntrinsics);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+
+                result = ovrp_GetExternalCameraCalibrationRawPose(cameraId, out calibrationRawPose);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+
+                return retValue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Overrides the selected camera's FOV
+        /// </summary>
+        /// <param name="cameraId">Camera ID to query</param>
+        /// <param name="useOverriddenFov">Force the specific fov to the camera</param>
+        /// <param name="fov">Fov definiton to override with</param>
+        /// <returns>True if the override was successful</returns>
+        public static bool OverrideExternalCameraFov(int cameraId, bool useOverriddenFov, Fovf fov)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                bool retValue = true;
+                Result result = ovrp_OverrideExternalCameraFov(cameraId, useOverriddenFov ? Bool.True : Bool.False, ref fov);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+                return retValue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Is the current FOV for the selected camera overridden
+        /// </summary>
+        /// <param name="cameraId">Camera ID to query</param>
+        /// <returns>True of the camera FOV is overridden</returns>
+        public static bool GetUseOverriddenExternalCameraFov(int cameraId)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                bool retValue = true;
+                Bool useOverriddenFov = Bool.False;
+                Result result = ovrp_GetUseOverriddenExternalCameraFov(cameraId, out useOverriddenFov);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+                if (useOverriddenFov == Bool.False)
+                {
+                    retValue = false;
+                }
+                return retValue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Override the pose of the selected camera
+        /// </summary>
+        /// <param name="cameraId">Camera ID to query</param>
+        /// <param name="useOverriddenPose">Force the specific pose on the camera</param>
+        /// <param name="pose">Pose definition to override the camera with</param>
+        /// <returns>True if the override was successful</returns>
+        public static bool OverrideExternalCameraStaticPose(int cameraId, bool useOverriddenPose, Posef pose)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                bool retValue = true;
+                Result result = ovrp_OverrideExternalCameraStaticPose(cameraId, useOverriddenPose ? Bool.True : Bool.False, ref pose);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+                return retValue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Is the current Pose for the selected camera overridden
+        /// </summary>
+        /// <param name="cameraId">Camera ID to query</param>
+        /// <returns>True of the camera Pose is overridden</returns>
+        public static bool GetUseOverriddenExternalCameraStaticPose(int cameraId)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                bool retValue = true;
+                Bool useOverriddenStaticPose = Bool.False;
+                Result result = ovrp_GetUseOverriddenExternalCameraStaticPose(cameraId, out useOverriddenStaticPose);
+                if (result != Result.Success)
+                {
+                    retValue = false;
+                }
+                if (useOverriddenStaticPose == Bool.False)
+                {
+                    retValue = false;
+                }
+                return retValue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Reset any overrides placed on the default camera
+        /// </summary>
+        /// <returns>True of the camera was reset</returns>
+        public static bool ResetDefaultExternalCamera()
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                Result result = ovrp_ResetDefaultExternalCamera();
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Set the default camera
+        /// </summary>
+        /// <param name="cameraName">name to apply to the default camera</param>
+        /// <param name="cameraIntrinsics">(Out) Intrinsics defintion for the sepected camera</param>
+        /// <param name="cameraExtrinsics">(Out) Extrinsics defintion for the sepected camera</param>
+        /// <returns>True if the camera was set as default</returns>
+        public static bool SetDefaultExternalCamera(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics)
+        {
+            if (Version >= OVRP_1_44_0_version)
+            {
+                Result result = ovrp_SetDefaultExternalCamera(cameraName, ref cameraIntrinsics, ref cameraExtrinsics);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
 
         #region XRTKExtensions
 
