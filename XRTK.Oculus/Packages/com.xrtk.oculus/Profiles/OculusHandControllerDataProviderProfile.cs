@@ -10,6 +10,14 @@ namespace XRTK.Oculus.Profiles
     [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Hands/Oculus Hand Controller Data Provider Profile", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
     public class OculusHandControllerDataProviderProfile : BaseMixedRealityControllerDataProviderProfile
     {
+        [Header("Hand Tracking")]
+        [SerializeField]
+        [Tooltip("Enable hand tracking")]
+        private bool handTrackingEnabled = true;
 
+        /// <summary>
+        /// Is hand tracking enabled?
+        /// </summary>
+        public bool HandTrackingEnabled => handTrackingEnabled;
     }
 }

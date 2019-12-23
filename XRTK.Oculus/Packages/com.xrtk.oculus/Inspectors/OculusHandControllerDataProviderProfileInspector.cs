@@ -13,6 +13,15 @@ namespace XRTK.Oculus.Inspectors
     [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
     public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
     {
+        private SerializedProperty handTrackingEnabled;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            handTrackingEnabled = serializedObject.FindProperty("handTrackingEnabled");
+        }
+
         public override void OnInspectorGUI()
         {
             MixedRealityInspectorUtility.RenderMixedRealityToolkitLogo();
@@ -29,6 +38,11 @@ namespace XRTK.Oculus.Inspectors
             if (MixedRealityInspectorUtility.CheckProfilePlatform(SupportedPlatforms.Android | SupportedPlatforms.Editor))
             {
                 serializedObject.Update();
+
+                EditorGUILayout.BeginVertical("Label");
+                EditorGUILayout.PropertyField(handTrackingEnabled);
+
+                EditorGUILayout.EndVertical();
 
                 serializedObject.ApplyModifiedProperties();
             }
