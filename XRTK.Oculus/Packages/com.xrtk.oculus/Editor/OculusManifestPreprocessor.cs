@@ -70,6 +70,27 @@ namespace XRTK.Oculus
 				Debug.LogWarning("Manifest error: unable to locate headset DoF mode");
 			}
 
+			int handTrackingTextIndex = manifestText.IndexOf("<!-- Request the headset handtracking mode -->");
+			if (handTrackingTextIndex != -1)
+			{
+
+					bool handTrackingEntryNeeded = true; // (targetHandTrackingSupport != OVRProjectConfig.HandTrackingSupport.ControllersOnly);
+					bool handTrackingRequired = false; // (targetHandTrackingSupport == OVRProjectConfig.HandTrackingSupport.HandsOnly);
+					if (handTrackingEntryNeeded)
+					{
+						string handTrackingFeatureText = string.Format("<uses-feature android:name=\"oculus.software.handtracking\" android:required=\"{0}\" />",
+								handTrackingRequired ? "true" : "false");
+						string handTrackingPermissionText = string.Format("<uses-permission android:name=\"oculus.permission.handtracking\" />");
+
+						manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingPermissionText);
+						manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingFeatureText);
+					}
+			}
+			else
+			{
+				Debug.LogWarning("Manifest error: unable to locate headset handtracking mode");
+			}
+
 			System.IO.File.WriteAllText(dstFile, manifestText);
 			AssetDatabase.Refresh();
 		}
