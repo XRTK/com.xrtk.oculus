@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using UnityEngine;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers.Hands;
 
 namespace XRTK.Oculus.Controllers
 {
-    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
+    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider<OculusHandController>
     {
         private readonly OculusHandControllerDataProviderProfile profile;
         private OculusApi.Skeleton leftHandSkeleton = new OculusApi.Skeleton();

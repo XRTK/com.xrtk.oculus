@@ -116,7 +116,7 @@ namespace XRTK.Oculus.Controllers
 
             if (Interactions == null)
             {
-                Debug.LogError($"No interaction configuration for Windows Mixed Reality Motion Controller {ControllerHandedness}");
+                Debug.LogError($"No interaction configuration for Oculus Controller {ControllerHandedness}");
                 Enabled = false;
             }
 
