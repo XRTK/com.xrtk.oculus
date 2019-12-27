@@ -10,6 +10,8 @@ namespace XRTK.Oculus.Controllers
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider<OculusHandController>
     {
         private readonly OculusHandControllerDataProviderProfile profile;
+        private OculusApi.HandState handStateLeft = new OculusApi.HandState();
+        private OculusApi.HandState handStateRight = new OculusApi.HandState();
 
         /// <summary>
         /// Creates a new instance of the data provider.
@@ -26,7 +28,6 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         protected override void RefreshActiveControllers()
         {
-            OculusApi.HandState handStateLeft = new OculusApi.HandState();
             bool isLeftHandTracked = OculusApi.GetHandState(OculusApi.Step.Render, OculusApi.Hand.HandLeft, ref handStateLeft)
                 && (handStateLeft.Status & OculusApi.HandStatus.HandTracked) != 0
             && handStateLeft.HandConfidence == profile.MinConfidenceRequired;
@@ -40,7 +41,6 @@ namespace XRTK.Oculus.Controllers
                 RemoveController(Handedness.Left);
             }
 
-            OculusApi.HandState handStateRight = new OculusApi.HandState();
             bool isRightHandTracked = OculusApi.GetHandState(OculusApi.Step.Render, OculusApi.Hand.HandRight, ref handStateRight)
                 && (handStateRight.Status & OculusApi.HandStatus.HandTracked) != 0
             && handStateRight.HandConfidence == profile.MinConfidenceRequired;

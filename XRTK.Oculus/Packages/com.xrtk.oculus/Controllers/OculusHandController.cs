@@ -97,7 +97,6 @@ namespace XRTK.Oculus.Controllers
                 }
             }
 
-            // Update provider base implementation
             UpdateBase(updatedHandData);
         }
 
