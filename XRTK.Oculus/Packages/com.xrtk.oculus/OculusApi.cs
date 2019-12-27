@@ -2383,6 +2383,24 @@ namespace XRTK.Oculus
         #region XRTKExtensions
 
         /// <summary>
+        /// Get a oculus native hand value from handedness.
+        /// </summary>
+        /// <param name="handedness">XRTK handedness.</param>
+        /// <returns>Oculus hand.</returns>
+        public static Hand HandFromHandedness(Definitions.Utilities.Handedness handedness)
+        {
+            switch (handedness)
+            {
+                case Definitions.Utilities.Handedness.Left:
+                    return Hand.HandLeft;
+                case Definitions.Utilities.Handedness.Right:
+                    return Hand.HandRight;
+                default:
+                    return Hand.None;
+            }
+        }
+
+        /// <summary>
         /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
         /// </summary>
         /// <param name="pose">Extension (this) base Oculus PoseF type</param>
