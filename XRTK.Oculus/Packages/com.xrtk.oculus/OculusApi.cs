@@ -2382,12 +2382,13 @@ namespace XRTK.Oculus
 
         #region XRTKExtensions
 
+
         /// <summary>
-        /// Get a oculus native hand value from handedness.
+        /// Gets a <see cref="OculusApi.Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
-        /// <param name="handedness">XRTK handedness.</param>
-        /// <returns>Oculus hand.</returns>
-        public static Hand HandFromHandedness(Definitions.Utilities.Handedness handedness)
+        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
+        /// <returns><see cref="OculusApi.Hand"/></returns>
+        public static Hand ToHand(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
             {
@@ -2397,6 +2398,24 @@ namespace XRTK.Oculus
                     return Hand.HandRight;
                 default:
                     return Hand.None;
+            }
+        }
+
+        /// <summary>
+        /// Gets an <see cref="OculusApi.SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// </summary>
+        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
+        /// <returns><see cref="OculusApi.SkeletonType"/></returns>
+        public static SkeletonType ToSkeletonType(this Definitions.Utilities.Handedness handedness)
+        {
+            switch (handedness)
+            {
+                case Definitions.Utilities.Handedness.Left:
+                    return SkeletonType.HandLeft;
+                case Definitions.Utilities.Handedness.Right:
+                    return SkeletonType.HandRight;
+                default:
+                    return SkeletonType.None;
             }
         }
 
@@ -2445,9 +2464,14 @@ namespace XRTK.Oculus
         /// </summary>
         /// <param name="v">Input vector.</param>
         /// <returns>Vector with flipped z axis.</returns>
-        public static Vector3f FromFlippedZVector3f(this Vector3f v)
+        public static Vector3 FromFlippedZVector3f(this Vector3f v)
         {
-            return new Vector3f() { x = v.x, y = v.y, z = -v.z };
+            return new Vector3() { x = v.x, y = v.y, z = -v.z };
+        }
+
+        public static Quaternion ToUntiyQuaternion(this Quatf q)
+        {
+            return new Quaternion() { x = q.x, y = q.y, z = q.z, w = q.w };
         }
 
         /// <summary>
