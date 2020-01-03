@@ -2382,7 +2382,6 @@ namespace XRTK.Oculus
 
         #region XRTKExtensions
 
-
         /// <summary>
         /// Gets a <see cref="OculusApi.Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
@@ -2398,6 +2397,24 @@ namespace XRTK.Oculus
                     return Hand.HandRight;
                 default:
                     return Hand.None;
+            }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="OculusApi.MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// </summary>
+        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
+        /// <returns><see cref="OculusApi.MeshType"/></returns>
+        public static MeshType ToMeshType(this Definitions.Utilities.Handedness handedness)
+        {
+            switch (handedness)
+            {
+                case Definitions.Utilities.Handedness.Left:
+                    return MeshType.HandLeft;
+                case Definitions.Utilities.Handedness.Right:
+                    return MeshType.HandRight;
+                default:
+                    return MeshType.None;
             }
         }
 
