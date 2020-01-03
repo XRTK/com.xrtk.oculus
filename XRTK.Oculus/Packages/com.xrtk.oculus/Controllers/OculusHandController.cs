@@ -143,24 +143,7 @@ namespace XRTK.Oculus.Controllers
             Vector3 palmPosition = Vector3.Lerp(wristRootPosition, middleDistalPosition, .5f);
             Quaternion palmRotation = state.BoneRotations[(int)wristRoot.Id].FromFlippedZQuatf();
 
-            // WARNING:
-            // THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK.
-            // This fix is a hack to fix broken rotations for palms.
-            if (ControllerHandedness == Handedness.Left)
-            {
-                // Rotate palm 180 degrees on X to flip up.
-                palmRotation *= Quaternion.Euler(180f, 0f, 0f);
-
-                // Rotate palm 90 degrees on Y to align X with right.
-                palmRotation *= Quaternion.Euler(0f, 90f, 0f);
-            }
-            else
-            {
-                // Rotate palm 90 degrees on Y to align X with left.
-                palmRotation *= Quaternion.Euler(0f, -90f, 0f);
-            }
-
-            return new MixedRealityPose(palmPosition, palmRotation);
+            return FixRotation(new MixedRealityPose(palmPosition, palmRotation));
         }
 
         private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
@@ -168,9 +151,13 @@ namespace XRTK.Oculus.Controllers
             Vector3 jointPosition;
             if (bone.ParentBoneIndex != (int)OculusApi.BoneId.Invalid)
             {
+                MixedRealityPose parentJointPose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
+                Vector3 jointDirection = parentJointPose.Rotation * parentJointPose.Position.normalized;
+                jointDirection.Scale(bone.Pose.Position.FromFlippedZVector3f());
+
                 jointPosition =
-                    ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]).Position +
-                    bone.Pose.Position.FromFlippedZVector3f();
+                    parentJointPose.Position +
+                    jointDirection;
             }
             else
             {
@@ -181,7 +168,28 @@ namespace XRTK.Oculus.Controllers
 
             Quaternion jointRotation = state.BoneRotations[(int)bone.Id].FromFlippedZQuatf();
 
-            return new MixedRealityPose(jointPosition, jointRotation);
+            return FixRotation(new MixedRealityPose(jointPosition, jointRotation));
+        }
+
+        private MixedRealityPose FixRotation(MixedRealityPose bonePose)
+        {
+            // WARNING THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK
+            // - This fix is a hack to fix broken and inconsistent rotations for hands.
+            if (ControllerHandedness == Handedness.Left)
+            {
+                // Rotate bone 180 degrees on X to flip up.
+                bonePose.Rotation *= Quaternion.Euler(180f, 0f, 0f);
+
+                // Rotate bone 90 degrees on Y to align X with right.
+                bonePose.Rotation *= Quaternion.Euler(0f, 90f, 0f);
+            }
+            else
+            {
+                // Rotate bone 90 degrees on Y to align X with left.
+                bonePose.Rotation *= Quaternion.Euler(0f, -90f, 0f);
+            }
+
+            return bonePose;
         }
     }
 }
