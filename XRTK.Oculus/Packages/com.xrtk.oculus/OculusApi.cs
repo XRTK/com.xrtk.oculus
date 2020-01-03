@@ -2383,10 +2383,10 @@ namespace XRTK.Oculus
         #region XRTKExtensions
 
         /// <summary>
-        /// Gets a <see cref="OculusApi.Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// Gets a <see cref="Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="OculusApi.Hand"/></returns>
+        /// <returns><see cref="Hand"/></returns>
         public static Hand ToHand(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
@@ -2401,10 +2401,10 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Gets a <see cref="OculusApi.MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// Gets a <see cref="MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="OculusApi.MeshType"/></returns>
+        /// <returns><see cref="MeshType"/></returns>
         public static MeshType ToMeshType(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
@@ -2419,10 +2419,10 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Gets an <see cref="OculusApi.SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// Gets an <see cref="SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="OculusApi.SkeletonType"/></returns>
+        /// <returns><see cref="SkeletonType"/></returns>
         public static SkeletonType ToSkeletonType(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
@@ -2467,16 +2467,6 @@ namespace XRTK.Oculus
         }
 
         /// <summary>
-        /// Gets a <see cref="Vector3"/> from a Oculus <see cref="Vector3f"/>.
-        /// </summary>
-        /// <param name="v">Input vector to convert.</param>
-        /// <returns>Unity vector.</returns>
-        public static Vector3 ToUnityVector3(this Vector3f v)
-        {
-            return new Vector3(v.x, v.y, v.z);
-        }
-
-        /// <summary>
         /// Flips the z-axis of the vector.
         /// </summary>
         /// <param name="v">Input vector.</param>
@@ -2484,11 +2474,6 @@ namespace XRTK.Oculus
         public static Vector3 FromFlippedZVector3f(this Vector3f v)
         {
             return new Vector3() { x = v.x, y = v.y, z = -v.z };
-        }
-
-        public static Quaternion ToUntiyQuaternion(this Quatf q)
-        {
-            return new Quaternion() { x = q.x, y = q.y, z = q.z, w = q.w };
         }
 
         /// <summary>
