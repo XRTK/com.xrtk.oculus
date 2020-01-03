@@ -18,6 +18,7 @@ namespace XRTK.Oculus.Controllers
         private bool isInitialized = false;
         private OculusApi.Skeleton skeleton = new OculusApi.Skeleton();
         private OculusApi.HandState state = new OculusApi.HandState();
+        private OculusApi.Mesh mesh = new OculusApi.Mesh();
 
         /// <summary>
         /// Controller constructor.
@@ -144,7 +145,40 @@ namespace XRTK.Oculus.Controllers
 
         private void UpdateHandMesh(HandMeshData handMeshData)
         {
-            // TODO: Update hand mesh data.
+            if (OculusApi.GetMesh(ControllerHandedness.ToMeshType(), out mesh))
+            {
+                Vector3[] vertices = new Vector3[mesh.NumVertices];
+                for (int i = 0; i < mesh.NumVertices; ++i)
+                {
+                    vertices[i] = mesh.VertexPositions[i].FromFlippedZVector3f();
+                }
+                handMeshData.Vertices = vertices;
+
+                Vector2[] uvs = new Vector2[mesh.NumVertices];
+                for (int i = 0; i < mesh.NumVertices; ++i)
+                {
+                    uvs[i] = new Vector2(mesh.VertexUV0[i].x, -mesh.VertexUV0[i].y);
+                }
+                handMeshData.Uvs = uvs;
+
+                int[] triangles = new int[mesh.NumIndices];
+                for (int i = 0; i < mesh.NumIndices; ++i)
+                {
+                    triangles[i] = mesh.Indices[mesh.NumIndices - i - 1];
+                }
+                handMeshData.Triangles = triangles;
+
+                Vector3[] normals = new Vector3[mesh.NumVertices];
+                for (int i = 0; i < mesh.NumVertices; ++i)
+                {
+                    normals[i] = mesh.VertexNormals[i].FromFlippedZVector3f();
+                }
+                handMeshData.Normals = normals;
+
+                handMeshData.Handedness = ControllerHandedness;
+                handMeshData.Position = state.RootPose.Position.FromFlippedZVector3f();
+                handMeshData.Rotation = state.RootPose.Orientation.FromFlippedZQuatf();
+            }
         }
 
         private MixedRealityPose ComputePalmPose(OculusApi.Bone wristRoot, OculusApi.Bone middleDistal)
