@@ -1,6 +1,9 @@
 {
     "name": "XRTK.Oculus.Editor",
-    "references": [],
+    "references": [
+        "GUID:f3241d040533491e8a1e2714b27c3111",
+        "GUID:10f718f332ddfed40ad8c1e04f8b75aa"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
