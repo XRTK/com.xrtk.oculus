@@ -47,6 +47,35 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
+        //protected override void RefreshActiveControllers()
+        //{
+        //    bool isLeftHandTracked = OculusApi.GetHandState(OculusApi.Step.Render, OculusApi.Hand.HandLeft, ref handStateLeft)
+        //        && (handStateLeft.Status & OculusApi.HandStatus.HandTracked) != 0
+        //    && handStateLeft.HandConfidence == profile.MinConfidenceRequired;
+
+        //    if (isLeftHandTracked)
+        //    {
+        //        GetOrAddController(Handedness.Left);
+        //    }
+        //    else
+        //    {
+        //        RemoveController(Handedness.Left);
+        //    }
+
+        //    bool isRightHandTracked = OculusApi.GetHandState(OculusApi.Step.Render, OculusApi.Hand.HandRight, ref handStateRight)
+        //        && (handStateRight.Status & OculusApi.HandStatus.HandTracked) != 0
+        //    && handStateRight.HandConfidence == profile.MinConfidenceRequired;
+
+        //    if (isRightHandTracked)
+        //    {
+        //        GetOrAddController(Handedness.Right);
+        //    }
+        //    else
+        //    {
+        //        RemoveController(Handedness.Right);
+        //    }
+        //}
+
         /// <inheritdoc />
         public override void Update()
         {
