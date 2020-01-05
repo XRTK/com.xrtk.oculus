@@ -81,6 +81,9 @@ namespace XRTK.Oculus
                         new OVRControllerLTouch(),
                         new OVRControllerRTouch(),
                         new OVRControllerTouch(),
+                        new OVRControllerHands(),
+			            new OVRControllerLHand(),
+			            new OVRControllerRHand(),
 #elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
                         new OVRControllerGamepadMac(),
 #else
@@ -965,6 +968,9 @@ namespace XRTK.Oculus
             Touch = LTouch | RTouch,
             Remote = 0x00000004,
             Gamepad = 0x00000010,
+            LHand = 0x00000020,
+            RHand = 0x00000040,
+            Hands = LHand | RHand,
             Touchpad = 0x08000000,
             LTrackedRemote = 0x01000000,
             RTrackedRemote = 0x02000000,
@@ -1470,6 +1476,79 @@ namespace XRTK.Oculus
                 byte minBattery = (leftBattery <= rightBattery) ? leftBattery : rightBattery;
 
                 return minBattery;
+            }
+        }
+
+        private class OVRControllerHands : OVRControllerBase
+        {
+            public OVRControllerHands()
+            {
+                controllerType = Controller.Hands;
+            }
+
+            public override bool WasRecentered()
+            {
+                return ((currentState.LRecenterCount + currentState.RRecenterCount) != (previousState.LRecenterCount + previousState.RRecenterCount));
+            }
+
+            public override byte GetRecenterCount()
+            {
+                return (byte)(currentState.LRecenterCount + currentState.RRecenterCount);
+            }
+
+            public override byte GetBatteryPercentRemaining()
+            {
+                byte leftBattery = currentState.LBatteryPercentRemaining;
+                byte rightBattery = currentState.RBatteryPercentRemaining;
+                byte minBattery = (leftBattery <= rightBattery) ? leftBattery : rightBattery;
+
+                return minBattery;
+            }
+        }
+
+        private class OVRControllerLHand : OVRControllerBase
+        {
+            public OVRControllerLHand()
+            {
+                controllerType = Controller.LHand;
+            }
+
+            public override bool WasRecentered()
+            {
+                return (currentState.LRecenterCount != previousState.LRecenterCount);
+            }
+
+            public override byte GetRecenterCount()
+            {
+                return currentState.LRecenterCount;
+            }
+
+            public override byte GetBatteryPercentRemaining()
+            {
+                return currentState.LBatteryPercentRemaining;
+            }
+        }
+
+        private class OVRControllerRHand : OVRControllerBase
+        {
+            public OVRControllerRHand()
+            {
+                controllerType = Controller.RHand;
+            }
+
+            public override bool WasRecentered()
+            {
+                return (currentState.RRecenterCount != previousState.RRecenterCount);
+            }
+
+            public override byte GetRecenterCount()
+            {
+                return currentState.RRecenterCount;
+            }
+
+            public override byte GetBatteryPercentRemaining()
+            {
+                return currentState.RBatteryPercentRemaining;
             }
         }
 

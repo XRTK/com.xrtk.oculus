@@ -193,27 +193,26 @@ namespace XRTK.Oculus.Controllers
 
         private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
         {
-            MixedRealityPose bonePose = FixRotation(new MixedRealityPose(bone.Pose.Position.FromFlippedZVector3f(), state.BoneRotations[(int)bone.Id].FromFlippedZQuatf()));
+            MixedRealityPose bonePose = new MixedRealityPose(bone.Pose.Position.FromFlippedZVector3f(), state.BoneRotations[(int)bone.Id].FromFlippedZQuatf());
 
             if (bone.ParentBoneIndex == (int)OculusApi.BoneId.Invalid)
             {
                 // This bone does not have a parent bone, so its pose is relative to the
                 // hand's root pose.
-                Vector3 rootPosition = state.RootPose.Position.FromFlippedZVector3f();
-                Quaternion rootRotation = state.RootPose.Orientation.FromFlippedZQuatf();
-                bonePose.Position = rootPosition + rootRotation * bonePose.Position;
-                bonePose.Rotation = rootRotation * bonePose.Rotation;
-            }
-            else
-            {
-                // In case the bone has a parent the provided pose position is actually an offset
-                // to the parent bone in the parent bone's forward direction.
-                MixedRealityPose parentBonePose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
-                bonePose.Position = parentBonePose.Position + parentBonePose.Rotation * bonePose.Position;
-                bonePose.Rotation = parentBonePose.Rotation * bonePose.Rotation;
+                MixedRealityPose rootPose = new MixedRealityPose(
+                    state.RootPose.Position.FromFlippedZVector3f(),
+                    state.RootPose.Orientation.FromFlippedZQuatf());
+
+                bonePose.Position = rootPose.Rotation * bonePose.Position;
+                return FixRotation(rootPose + bonePose);
             }
 
-            return bonePose;
+            // In case the bone has a parent the provided pose position is actually an offset
+            // to the parent bone pose. Recursively compute the parent bone's pose first.
+            MixedRealityPose parentBonePose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
+
+            bonePose.Position = parentBonePose.Rotation * bonePose.Position;
+            return FixRotation(parentBonePose + bonePose);
         }
 
         private MixedRealityPose FixRotation(MixedRealityPose bonePose)

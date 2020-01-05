@@ -10,8 +10,11 @@ using XRTK.Oculus.Profiles;
 
 namespace XRTK.Oculus.Inspectors
 {
-    [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
-    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
+    /// <summary>
+    /// Default inspector for <see cref="OculusControllerDataProviderProfile"/>.
+    /// </summary>
+    [CustomEditor(typeof(OculusControllerDataProviderProfile))]
+    public class OculusControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
     {
         private SerializedProperty handTrackingEnabled;
         private SerializedProperty minConfidenceRequired;
@@ -45,7 +48,6 @@ namespace XRTK.Oculus.Inspectors
                 EditorGUILayout.PropertyField(handTrackingEnabled);
 
                 EditorGUILayout.Space();
-                EditorGUILayout.LabelField("Quality Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(minConfidenceRequired);
 
                 EditorGUILayout.EndVertical();

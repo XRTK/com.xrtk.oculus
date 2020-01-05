@@ -9,7 +9,7 @@ namespace XRTK.Oculus.Controllers
 {
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider<OculusHandController>
     {
-        private readonly OculusHandControllerDataProviderProfile profile;
+        private readonly OculusControllerDataProviderProfile profile;
         private OculusApi.HandState handStateLeft = new OculusApi.HandState();
         private OculusApi.HandState handStateRight = new OculusApi.HandState();
 
@@ -19,7 +19,7 @@ namespace XRTK.Oculus.Controllers
         /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>
         /// <param name="profile">Hand controller data provider profile assigned to the provider instance in the configuration inspector.</param>
-        public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
+        public OculusHandControllerDataProvider(string name, uint priority, OculusControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
             this.profile = profile;
