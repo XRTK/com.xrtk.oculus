@@ -15,11 +15,6 @@ namespace XRTK.Oculus.Controllers
     /// </summary>
     public class OculusHandController : BaseHandController
     {
-        private bool isInitialized = false;
-        private OculusApi.Skeleton skeleton = new OculusApi.Skeleton();
-        private OculusApi.HandState state = new OculusApi.HandState();
-        private OculusApi.Mesh mesh = new OculusApi.Mesh();
-
         /// <summary>
         /// Controller constructor.
         /// </summary>
@@ -29,6 +24,11 @@ namespace XRTK.Oculus.Controllers
         /// <param name="interactions">Optional controller interactions mappings.</param>
         public OculusHandController(TrackingState trackingState, Handedness controllerHandedness, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
             : base(trackingState, controllerHandedness, inputSource, interactions) { }
+
+        private bool isInitialized = false;
+        private OculusApi.Skeleton skeleton = new OculusApi.Skeleton();
+        private OculusApi.HandState state = new OculusApi.HandState();
+        private OculusApi.Mesh mesh = new OculusApi.Mesh();
 
         /// <inheritdoc />
         public override void UpdateController()
@@ -54,7 +54,11 @@ namespace XRTK.Oculus.Controllers
             if (updatedHandData.IsTracked)
             {
                 UpdateHandJoints(updatedHandData.Joints);
-                UpdateHandMesh(updatedHandData.Mesh);
+
+                if (TryGetUpdatedHandMeshData(out HandMeshData data))
+                {
+                    updatedHandData.Mesh = data;
+                }
             }
 
             UpdateBase(updatedHandData);
@@ -143,7 +147,7 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
-        private void UpdateHandMesh(HandMeshData handMeshData)
+        private bool TryGetUpdatedHandMeshData(out HandMeshData data)
         {
             if (OculusApi.GetMesh(ControllerHandedness.ToMeshType(), out mesh))
             {
@@ -152,33 +156,33 @@ namespace XRTK.Oculus.Controllers
                 {
                     vertices[i] = mesh.VertexPositions[i].FromFlippedZVector3f();
                 }
-                handMeshData.Vertices = vertices;
 
                 Vector2[] uvs = new Vector2[mesh.NumVertices];
                 for (int i = 0; i < mesh.NumVertices; ++i)
                 {
                     uvs[i] = new Vector2(mesh.VertexUV0[i].x, -mesh.VertexUV0[i].y);
                 }
-                handMeshData.Uvs = uvs;
 
                 int[] triangles = new int[mesh.NumIndices];
                 for (int i = 0; i < mesh.NumIndices; ++i)
                 {
                     triangles[i] = mesh.Indices[mesh.NumIndices - i - 1];
                 }
-                handMeshData.Triangles = triangles;
 
                 Vector3[] normals = new Vector3[mesh.NumVertices];
                 for (int i = 0; i < mesh.NumVertices; ++i)
                 {
                     normals[i] = mesh.VertexNormals[i].FromFlippedZVector3f();
                 }
-                handMeshData.Normals = normals;
 
-                handMeshData.Handedness = ControllerHandedness;
-                handMeshData.Position = state.RootPose.Position.FromFlippedZVector3f();
-                handMeshData.Rotation = state.RootPose.Orientation.FromFlippedZQuatf();
+                data = new HandMeshData(
+                    vertices, triangles, normals, uvs, state.RootPose.Position.FromFlippedZVector3f(), state.RootPose.Orientation.FromFlippedZQuatf());
+
+                return true;
             }
+
+            data = null;
+            return false;
         }
 
         private MixedRealityPose ComputePalmPose(OculusApi.Bone wristRoot, OculusApi.Bone middleDistal)
