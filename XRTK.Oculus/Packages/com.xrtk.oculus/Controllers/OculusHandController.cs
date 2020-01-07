@@ -193,6 +193,7 @@ namespace XRTK.Oculus.Controllers
 
         private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
         {
+            // First simply convert the bone pose to MixedRealityPose as it is.
             MixedRealityPose bonePose = new MixedRealityPose(bone.Pose.Position.FromFlippedZVector3f(), state.BoneRotations[(int)bone.Id].FromFlippedZQuatf());
 
             if (bone.ParentBoneIndex == (int)OculusApi.BoneId.Invalid)
@@ -203,7 +204,7 @@ namespace XRTK.Oculus.Controllers
                     state.RootPose.Position.FromFlippedZVector3f(),
                     state.RootPose.Orientation.FromFlippedZQuatf());
 
-                bonePose.Position = rootPose.Rotation * bonePose.Position;
+                bonePose.Position = rootPose.Rotation * rootPose.Forward * (bonePose.Position - rootPose.Position).magnitude;
                 return FixRotation(rootPose + bonePose);
             }
 
@@ -211,7 +212,7 @@ namespace XRTK.Oculus.Controllers
             // to the parent bone pose. Recursively compute the parent bone's pose first.
             MixedRealityPose parentBonePose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
 
-            bonePose.Position = parentBonePose.Rotation * bonePose.Position;
+            bonePose.Position = parentBonePose.Rotation * parentBonePose.Forward * (bonePose.Position - parentBonePose.Position).magnitude;
             return FixRotation(parentBonePose + bonePose);
         }
 
