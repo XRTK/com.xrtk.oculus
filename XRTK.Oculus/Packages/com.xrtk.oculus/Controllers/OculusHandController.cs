@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
@@ -15,6 +16,7 @@ namespace XRTK.Oculus.Controllers
     /// </summary>
     public class OculusHandController : BaseHandController
     {
+
         /// <summary>
         /// Controller constructor.
         /// </summary>
@@ -26,6 +28,7 @@ namespace XRTK.Oculus.Controllers
             : base(trackingState, controllerHandedness, inputSource, interactions) { }
 
         private bool isInitialized = false;
+        private readonly Dictionary<int, Transform> boneProxyTransforms = new Dictionary<int, Transform>();
         private OculusApi.Skeleton skeleton = new OculusApi.Skeleton();
         private OculusApi.HandState state = new OculusApi.HandState();
         private OculusApi.Mesh mesh = new OculusApi.Mesh();
@@ -195,29 +198,70 @@ namespace XRTK.Oculus.Controllers
             return new MixedRealityPose(palmPosition, palmRotation);
         }
 
+        //private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
+        //{
+        //    // The provided bone pose is given in its parent bone local coordinate space.
+        //    // So we gotta first find the parent bone pose.
+        //    MixedRealityPose parentBonePose;
+        //    if (bone.ParentBoneIndex == (int)OculusApi.BoneId.Invalid)
+        //    {
+        //        // This bone does not have a parent bone, so its pose is relative to the hand's root pose.
+        //        parentBonePose = FixRotation(new MixedRealityPose(state.RootPose.Position.FromFlippedZVector3f(),
+        //            state.RootPose.Orientation.FromFlippedZQuatf()));
+        //    }
+        //    else
+        //    {
+        //        // Recursively compute the parent bone's pose first.
+        //        parentBonePose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
+        //    }
+
+        //    // Compute final bone pose.
+        //    MixedRealityPose bonePose = FixRotation(new MixedRealityPose(bone.Pose.Position.FromFlippedZVector3f(),
+        //        state.BoneRotations[(int)bone.Id].FromFlippedZQuatf()));
+        //    bonePose.Position = parentBonePose.Rotation * parentBonePose.Forward * (bonePose.Position - parentBonePose.Position).magnitude;
+
+        //    if (ControllerHandedness == Handedness.Right)
+        //    {
+        //        Debug.Log($"Hand {ControllerHandedness} {bone.Id} pose: {bonePose.Position}, {bonePose.Rotation}");
+        //    }
+
+        //    return bonePose;
+        //}
+
         private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
         {
-            // First simply convert the bone pose to MixedRealityPose as it is.
-            MixedRealityPose bonePose = new MixedRealityPose(bone.Pose.Position.FromFlippedZVector3f(), state.BoneRotations[(int)bone.Id].FromFlippedZQuatf());
-
-            if (bone.ParentBoneIndex == (int)OculusApi.BoneId.Invalid)
+            // HACK: The Pinky and Thumb 1+ bones depend on the Pinky/Thumb 0 bone
+            // to be availble, which the XRTK hand tracking does not use. We still gotta update them to
+            // be able to resolve pose dependencies.
+            if (bone.Id == OculusApi.BoneId.Hand_Thumb1)
             {
-                // This bone does not have a parent bone, so its pose is relative to the
-                // hand's root pose.
-                MixedRealityPose rootPose = new MixedRealityPose(
-                    state.RootPose.Position.FromFlippedZVector3f(),
-                    state.RootPose.Orientation.FromFlippedZQuatf());
-
-                bonePose.Position = rootPose.Rotation * rootPose.Forward * (bonePose.Position - rootPose.Position).magnitude;
-                return FixRotation(rootPose + bonePose);
+                ComputeJointPose(skeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb0]);
             }
 
-            // In case the bone has a parent the provided pose position is actually an offset
-            // to the parent bone pose. Recursively compute the parent bone's pose first.
-            MixedRealityPose parentBonePose = ComputeJointPose(skeleton.Bones[bone.ParentBoneIndex]);
+            if (bone.Id == OculusApi.BoneId.Hand_Pinky1)
+            {
+                ComputeJointPose(skeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+            }
 
-            bonePose.Position = parentBonePose.Rotation * parentBonePose.Forward * (bonePose.Position - parentBonePose.Position).magnitude;
-            return FixRotation(parentBonePose + bonePose);
+            Transform proxyTransform = GetProxyTransform(bone.Id);
+            Transform parentProxyTransform = GetProxyTransform((OculusApi.BoneId)bone.ParentBoneIndex);
+
+            if (parentProxyTransform == null)
+            {
+                Vector3 rootPosition = state.RootPose.Position.FromFlippedZVector3f();
+                rootPosition.y += OculusApi.EyeHeight;
+                proxyTransform.position = rootPosition;
+                proxyTransform.rotation = state.RootPose.Orientation.FromFlippedZQuatf();
+            }
+            else
+            {
+                proxyTransform.parent = parentProxyTransform;
+                proxyTransform.localPosition = bone.Pose.Position.FromFlippedZVector3f();
+                proxyTransform.localRotation = state.BoneRotations[(int)bone.Id].FromFlippedZQuatf();
+            }
+
+            // Compute final bone pose.
+            return FixRotation(new MixedRealityPose(proxyTransform.position, proxyTransform.rotation));
         }
 
         private MixedRealityPose FixRotation(MixedRealityPose bonePose)
@@ -239,6 +283,24 @@ namespace XRTK.Oculus.Controllers
             }
 
             return bonePose;
+        }
+
+        private Transform GetProxyTransform(OculusApi.BoneId boneId)
+        {
+            if (boneId == OculusApi.BoneId.Invalid)
+            {
+                return null;
+            }
+
+            if (boneProxyTransforms.ContainsKey((int)boneId))
+            {
+                return boneProxyTransforms[(int)boneId];
+            }
+
+            var transform = new GameObject($"Oculus Hand {ControllerHandedness} {boneId} Proxy").transform;
+            boneProxyTransforms.Add((int)boneId, transform);
+
+            return transform;
         }
     }
 }
