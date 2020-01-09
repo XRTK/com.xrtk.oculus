@@ -26,7 +26,7 @@ namespace XRTK.Oculus.Profiles
                 ControllerMappings = new[]
                 {
                     new MixedRealityControllerMapping("Oculus Hand Controller Left", typeof(OculusHandController), Handedness.Left),
-                    new MixedRealityControllerMapping("Oculus Hand Controller Left", typeof(OculusHandController), Handedness.Right)
+                    new MixedRealityControllerMapping("Oculus Hand Controller Right", typeof(OculusHandController), Handedness.Right)
                 };
             }
 

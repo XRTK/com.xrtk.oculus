@@ -178,6 +178,9 @@ namespace XRTK.Oculus.Controllers
                 case OculusApi.Controller.RHand:
                     controllingHand = Handedness.Right;
                     break;
+                case OculusApi.Controller.Hands:
+                    controllingHand = Handedness.Both;
+                    break;
             }
 
             OculusApi.Node nodeType = OculusApi.Node.None;
@@ -286,6 +289,18 @@ namespace XRTK.Oculus.Controllers
                         if (!activeControllers.ContainsKey(OculusApi.Controller.RTouch))
                         {
                             RaiseSourceDetected(OculusApi.Controller.RTouch);
+                        }
+                    }
+                    else if (OculusApi.Controllers[i].controllerType == OculusApi.Controller.Hands)
+                    {
+                        if (!activeControllers.ContainsKey(OculusApi.Controller.LHand))
+                        {
+                            RaiseSourceDetected(OculusApi.Controller.LHand);
+                        }
+
+                        if (!activeControllers.ContainsKey(OculusApi.Controller.RHand))
+                        {
+                            RaiseSourceDetected(OculusApi.Controller.RHand);
                         }
                     }
                     else if (!activeControllers.ContainsKey(OculusApi.Controllers[i].controllerType))

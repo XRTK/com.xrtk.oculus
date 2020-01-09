@@ -2038,6 +2038,14 @@ namespace XRTK.Oculus
                 isValid = false;
             }
 
+            // If the mask requests both hand controllers, reject the individual hand controllers.
+            if (((controllerMask & Controller.Hands) == Controller.Hands)
+                && ((controllerType & Controller.Hands) != 0)
+                && ((controllerType & Controller.Hands) != Controller.Hands))
+            {
+                isValid = false;
+            }
+
             return isValid;
         }
 
