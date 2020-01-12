@@ -16,8 +16,6 @@ namespace XRTK.Oculus.Controllers
 {
     public class OculusControllerDataProvider : BaseControllerDataProvider
     {
-        private const float DeviceRefreshInterval = 3.0f;
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -26,6 +24,8 @@ namespace XRTK.Oculus.Controllers
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
         public OculusControllerDataProvider(string name, uint priority, BaseMixedRealityControllerDataProviderProfile profile)
             : base(name, priority, profile) { }
+
+        private const float DeviceRefreshInterval = 3.0f;
 
         /// <summary>
         /// Dictionary to capture all active controllers detected
