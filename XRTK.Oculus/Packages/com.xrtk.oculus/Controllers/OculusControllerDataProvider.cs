@@ -30,7 +30,7 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// Dictionary to capture all active controllers detected
         /// </summary>
-        private readonly Dictionary<OculusApi.Controller, IMixedRealityController> activeControllers = new Dictionary<OculusApi.Controller, IMixedRealityController>();
+        private readonly Dictionary<OculusApi.Controller, BaseController> activeControllers = new Dictionary<OculusApi.Controller, BaseController>();
 
         private int fixedUpdateCount = 0;
         private float deviceRefreshTimer;
@@ -196,7 +196,7 @@ namespace XRTK.Oculus.Controllers
 
             IMixedRealityPointer[] pointers;
             IMixedRealityInputSource inputSource;
-            IMixedRealityController detectedController;
+            BaseController detectedController;
             if (typeof(OculusHandController) == controllerType)
             {
                 pointers = RequestPointers(controllerType, controllingHand);
