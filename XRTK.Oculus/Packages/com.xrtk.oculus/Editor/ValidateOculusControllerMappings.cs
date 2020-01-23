@@ -13,8 +13,6 @@ namespace XRTK.Oculus
     public class ValidateOculusControllerMappings
     {
         private static Type[] controllerTypes = new[] { typeof(OculusTouchController) };
-        [SerializeField]
-        private static string[] controllerMappings = new[] { ("OculusTouchControllerMappingProfile")};
 
         /// <summary>
         /// Constructor.
