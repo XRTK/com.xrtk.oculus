@@ -5,8 +5,6 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using XRTK.Oculus.Controllers;
-using XRTK.Oculus.Profiles;
-using XRTK.Providers.Controllers;
 using XRTK.Utilities.Editor;
 
 namespace XRTK.Oculus
