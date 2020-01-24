@@ -7,6 +7,7 @@ using UnityEngine;
 using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
@@ -120,28 +121,10 @@ namespace XRTK.Oculus.Controllers
                     break;
             }
 
-            var controllingHand = Handedness.Any;
-
-            //Determine Handedness of the current controller
-            switch (controllerMask)
-            {
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.LTouch:
-                    controllingHand = Handedness.Left;
-                    break;
-                case OculusApi.Controller.RTrackedRemote:
-                case OculusApi.Controller.RTouch:
-                    controllingHand = Handedness.Right;
-                    break;
-                case OculusApi.Controller.Touchpad:
-                case OculusApi.Controller.Gamepad:
-                case OculusApi.Controller.Remote:
-                    controllingHand = Handedness.Both;
-                    break;
-            }
+            // Determine Handedness of the current controller
+            var controllingHand = controllerMask.ToHandedness();
 
             var nodeType = OculusApi.Node.None;
-
             switch (controllingHand)
             {
                 case Handedness.Left:

@@ -9,10 +9,12 @@ using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Interfaces.Providers.Controllers;
+using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
+using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Controllers.Hands
 {
     public class OculusHandControllerDataProvider : BaseControllerDataProvider
     {
@@ -27,10 +29,9 @@ namespace XRTK.Oculus.Controllers
 
         private const float DeviceRefreshInterval = 3.0f;
 
-        /// <summary>
-        /// Dictionary to capture all active controllers detected
-        /// </summary>
-        private readonly Dictionary<OculusApi.Controller, BaseController> activeControllers = new Dictionary<OculusApi.Controller, BaseController>();
+        private readonly Dictionary<OculusApi.Controller, MixedRealityHandController> activeControllers = new Dictionary<OculusApi.Controller, MixedRealityHandController>();
+        private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
+        private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
 
         private int fixedUpdateCount = 0;
         private float deviceRefreshTimer;
@@ -137,78 +138,21 @@ namespace XRTK.Oculus.Controllers
             }
 
             // Determine type of the current controller.
-            SupportedControllerType currentControllerType = GetCurrentControllerType(controllerMask);
-            Type controllerType = null;
-            switch (currentControllerType)
+            SupportedControllerType currentControllerType = controllerMask.ToControllerType();
+            if (currentControllerType != SupportedControllerType.Hand)
             {
-                case SupportedControllerType.OculusTouch:
-                    controllerType = typeof(OculusTouchController);
-                    break;
-                case SupportedControllerType.OculusGo:
-                    controllerType = typeof(OculusGoController);
-                    break;
-                case SupportedControllerType.OculusRemote:
-                    controllerType = typeof(OculusRemoteController);
-                    break;
-                case SupportedControllerType.Hand:
-                    controllerType = typeof(OculusHandController);
-                    break;
+                // This data provider is only for hands.
+                return null;
             }
+
+            Type controllerType = typeof(MixedRealityHandController);
 
             // Determine Handedness of the current controller.
-            Handedness controllingHand = Handedness.Any;
-            switch (controllerMask)
-            {
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.LTouch:
-                    controllingHand = Handedness.Left;
-                    break;
-                case OculusApi.Controller.RTrackedRemote:
-                case OculusApi.Controller.RTouch:
-                    controllingHand = Handedness.Right;
-                    break;
-                case OculusApi.Controller.Touchpad:
-                case OculusApi.Controller.Gamepad:
-                case OculusApi.Controller.Remote:
-                    controllingHand = Handedness.Both;
-                    break;
-                case OculusApi.Controller.LHand:
-                    controllingHand = Handedness.Left;
-                    break;
-                case OculusApi.Controller.RHand:
-                    controllingHand = Handedness.Right;
-                    break;
-                case OculusApi.Controller.Hands:
-                    controllingHand = Handedness.Both;
-                    break;
-            }
+            Handedness controllingHand = controllerMask.ToHandedness();
 
-            OculusApi.Node nodeType = OculusApi.Node.None;
-            switch (controllingHand)
-            {
-                case Handedness.Left:
-                    nodeType = OculusApi.Node.HandLeft;
-                    break;
-                case Handedness.Right:
-                    nodeType = OculusApi.Node.HandRight;
-                    break;
-            }
-
-            IMixedRealityPointer[] pointers;
-            IMixedRealityInputSource inputSource;
-            BaseController detectedController;
-            if (typeof(OculusHandController) == controllerType)
-            {
-                pointers = RequestPointers(controllerType, controllingHand);
-                inputSource = MixedRealityToolkit.InputSystem.RequestNewGenericInputSource($"Oculus {controllingHand} Hand Controller", pointers);
-                detectedController = new OculusHandController(TrackingState.Tracked, controllingHand, inputSource, null);
-            }
-            else
-            {
-                pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
-                inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-                detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
-            }
+            IMixedRealityPointer[] pointers = RequestPointers(controllerType, controllingHand, true);
+            IMixedRealityInputSource inputSource = MixedRealityToolkit.InputSystem.RequestNewGenericInputSource($"Oculus {controllingHand} Hand Controller", pointers);
+            MixedRealityHandController detectedController = new MixedRealityHandController(TrackingState.Tracked, controllingHand, inputSource, null);
 
             if (!detectedController.SetupConfiguration(controllerType))
             {
@@ -337,30 +281,6 @@ namespace XRTK.Oculus.Controllers
             {
                 activeControllers.Remove(activeController);
             }
-        }
-
-        private SupportedControllerType GetCurrentControllerType(OculusApi.Controller controllerMask)
-        {
-            switch (controllerMask)
-            {
-                case OculusApi.Controller.LTouch:
-                case OculusApi.Controller.RTouch:
-                case OculusApi.Controller.Touch:
-                    return SupportedControllerType.OculusTouch;
-                case OculusApi.Controller.Remote:
-                    return SupportedControllerType.OculusRemote;
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.RTrackedRemote:
-                    return SupportedControllerType.OculusGo;
-                case OculusApi.Controller.LHand:
-                case OculusApi.Controller.RHand:
-                case OculusApi.Controller.Hands:
-                    return SupportedControllerType.Hand;
-            }
-
-            Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to generic controller type");
-
-            return SupportedControllerType.GenericOpenVR;
         }
     }
 }
