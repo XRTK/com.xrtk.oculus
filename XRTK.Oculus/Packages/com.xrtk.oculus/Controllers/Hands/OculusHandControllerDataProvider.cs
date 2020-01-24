@@ -95,7 +95,8 @@ namespace XRTK.Oculus.Controllers.Hands
 
             foreach (var controller in activeControllers)
             {
-                controller.Value?.UpdateController();
+                OculusHandDataConverter converter = controller.Value.ControllerHandedness == Handedness.Left ? leftHandConverter : rightHandConverter;
+                controller.Value?.UpdateController(converter.GetHandData());
             }
         }
 
