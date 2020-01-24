@@ -11,10 +11,10 @@ using XRTK.Oculus.Profiles;
 namespace XRTK.Oculus.Inspectors
 {
     /// <summary>
-    /// Default inspector for <see cref="OculusControllerDataProviderProfile"/>.
+    /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.
     /// </summary>
-    [CustomEditor(typeof(OculusControllerDataProviderProfile))]
-    public class OculusControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
+    [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
+    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
     {
         private SerializedProperty handTrackingEnabled;
         private SerializedProperty minConfidenceRequired;
