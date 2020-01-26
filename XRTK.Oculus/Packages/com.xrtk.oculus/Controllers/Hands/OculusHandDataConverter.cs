@@ -61,6 +61,10 @@ namespace XRTK.Oculus.Controllers.Hands
                 {
                     updatedHandData.Mesh = data;
                 }
+                else
+                {
+                    updatedHandData.Mesh = new HandMeshData();
+                }
             }
 
             return updatedHandData;
@@ -78,7 +82,7 @@ namespace XRTK.Oculus.Controllers.Hands
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_WristRoot]);
                         break;
                     case TrackedHandJoint.Palm:
-                        jointPoses[i] = ComputePalmPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_WristRoot], handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle3]);
+                        jointPoses[i] = EstimatePalmPose();
                         break;
                     // Finger: Thumb
                     case TrackedHandJoint.ThumbMetacarpalJoint:
@@ -94,6 +98,9 @@ namespace XRTK.Oculus.Controllers.Hands
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_ThumbTip]);
                         break;
                     // Finger: Index
+                    case TrackedHandJoint.IndexMetacarpal:
+                        jointPoses[i] = EstimateIndexMetacarpal();
+                        break;
                     case TrackedHandJoint.IndexKnuckle:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index1]);
                         break;
@@ -107,6 +114,9 @@ namespace XRTK.Oculus.Controllers.Hands
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_IndexTip]);
                         break;
                     // Finger: Middle
+                    case TrackedHandJoint.MiddleMetacarpal:
+                        jointPoses[i] = EstimateMiddleMetacarpal();
+                        break;
                     case TrackedHandJoint.MiddleKnuckle:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
                         break;
@@ -120,6 +130,9 @@ namespace XRTK.Oculus.Controllers.Hands
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_MiddleTip]);
                         break;
                     // Finger: Ring
+                    case TrackedHandJoint.RingMetacarpal:
+                        jointPoses[i] = EstimateRingMetacarpal();
+                        break;
                     case TrackedHandJoint.RingKnuckle:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring1]);
                         break;
@@ -133,6 +146,9 @@ namespace XRTK.Oculus.Controllers.Hands
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_RingTip]);
                         break;
                     // Finger: Pinky
+                    case TrackedHandJoint.PinkyMetacarpal:
+                        jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+                        break;
                     case TrackedHandJoint.PinkyKnuckle:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky1]);
                         break;
@@ -187,12 +203,45 @@ namespace XRTK.Oculus.Controllers.Hands
             return false;
         }
 
-        private MixedRealityPose ComputePalmPose(OculusApi.Bone wristRoot, OculusApi.Bone middleDistal)
+        private MixedRealityPose EstimateIndexMetacarpal()
         {
-            MixedRealityPose wristRootPose = ComputeJointPose(wristRoot);
-            MixedRealityPose middleDistalPose = ComputeJointPose(middleDistal);
-            Vector3 palmPosition = Vector3.Lerp(wristRootPose.Position, middleDistalPose.Position, .5f);
-            Quaternion palmRotation = wristRootPose.Rotation;
+            MixedRealityPose thumbMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
+            MixedRealityPose pinkyMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+            MixedRealityPose indexKnucklePose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index1]);
+            Vector3 indexMetacarpalPosition = Vector3.Lerp(thumbMetacarpalPose.Position, pinkyMetacarpalPose.Position, .2f);
+            Quaternion indexMetacarpalRotation = indexKnucklePose.Rotation;
+
+            return new MixedRealityPose(indexMetacarpalPosition, indexMetacarpalRotation);
+        }
+
+        private MixedRealityPose EstimateRingMetacarpal()
+        {
+            MixedRealityPose thumbMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
+            MixedRealityPose pinkyMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+            MixedRealityPose pinkyKnucklePose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky1]);
+            Vector3 ringMetacarpalPosition = Vector3.Lerp(thumbMetacarpalPose.Position, pinkyMetacarpalPose.Position, .8f);
+            Quaternion ringMetacarpalRotation = pinkyKnucklePose.Rotation;
+
+            return new MixedRealityPose(ringMetacarpalPosition, ringMetacarpalRotation);
+        }
+
+        private MixedRealityPose EstimateMiddleMetacarpal()
+        {
+            MixedRealityPose thumbMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
+            MixedRealityPose pinkyMetacarpalPose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+            MixedRealityPose middleKnucklePose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
+            Vector3 middleMetacarpalPosition = Vector3.Lerp(thumbMetacarpalPose.Position, pinkyMetacarpalPose.Position, .5f);
+            Quaternion middleMetacarpalRotation = middleKnucklePose.Rotation;
+
+            return new MixedRealityPose(middleMetacarpalPosition, middleMetacarpalRotation);
+        }
+
+        private MixedRealityPose EstimatePalmPose()
+        {
+            MixedRealityPose middleMetacarpalPose = EstimateMiddleMetacarpal();
+            MixedRealityPose middleKnucklePose = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
+            Vector3 palmPosition = Vector3.Lerp(middleMetacarpalPose.Position, middleKnucklePose.Position, .5f);
+            Quaternion palmRotation = middleMetacarpalPose.Rotation;
 
             return new MixedRealityPose(palmPosition, palmRotation);
         }
