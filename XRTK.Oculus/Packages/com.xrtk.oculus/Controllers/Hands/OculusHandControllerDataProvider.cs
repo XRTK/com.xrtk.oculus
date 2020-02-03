@@ -93,7 +93,7 @@ namespace XRTK.Oculus.Controllers.Hands
         {
             foreach (var activeController in activeControllers)
             {
-                RemoveController(activeController.Value.ControllerHandedness, false);
+                RemoveController(activeController.Key, false);
             }
 
             activeControllers.Clear();
@@ -113,17 +113,12 @@ namespace XRTK.Oculus.Controllers.Hands
             return false;
         }
 
-        private MixedRealityHandController GetOrAddController(Handedness handedness, bool addController = true)
+        private MixedRealityHandController GetOrAddController(Handedness handedness)
         {
             // If a device is already registered with the handedness, just return it.
             if (TryGetController(handedness, out MixedRealityHandController existingController))
             {
                 return existingController;
-            }
-
-            if (!addController)
-            {
-                return null;
             }
 
             Type controllerType = typeof(MixedRealityHandController);
