@@ -26,6 +26,7 @@ namespace XRTK.Oculus.Inspectors
 
         protected override void OnPlatformInspectorGUI()
         {
+            EditorGUILayout.LabelField("Oculus Specific Hand Settings", EditorStyles.boldLabel);
             SupportedPlatforms supportedPlatforms = SupportedPlatforms.Android | SupportedPlatforms.Editor;
             if (MixedRealityInspectorUtility.CheckProfilePlatform(supportedPlatforms,
                 $"You can't edit platform specific hand configuration with the current build target. Please switch to {supportedPlatforms}."))
