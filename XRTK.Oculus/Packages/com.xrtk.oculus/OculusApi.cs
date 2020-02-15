@@ -16,6 +16,7 @@ namespace XRTK.Oculus
         private static readonly Version OVRP_1_38_0_version = new Version(1, 38, 0);
         private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
         private static readonly Version OVRP_1_44_0_version = new Version(1, 44, 0);
+        private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -309,6 +310,9 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         private static extern Result ovrp_SetDefaultExternalCamera(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetSystemHmd3DofModeEnabled(ref Bool enabled);
 
         #endregion Oculus API import
 
@@ -1856,6 +1860,25 @@ namespace XRTK.Oculus
         public static bool RecenterTrackingOrigin(RecenterFlags flags)
         {
             return ovrp_RecenterTrackingOrigin((uint)flags) == Bool.True;
+        }
+
+        public static bool GetSystemHmd3DofModeEnabled()
+        {
+            if (Version >= OVRP_1_45_0_version)
+            {
+                Bool val = Bool.False;
+                Result res = ovrp_GetSystemHmd3DofModeEnabled(ref val);
+                if (res == Result.Success)
+                {
+                    return val == Bool.True;
+                }
+
+                return false;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion Oculus Positional Tracking
