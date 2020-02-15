@@ -9,12 +9,12 @@
     "reality",
     "oculus"
   ],
-  "version": "0.1.11",
+  "version": "0.1.12",
   "unity": "2019.1",
   "license": "MIT",
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
-    "com.xrtk.core": "0.1.27"
+    "com.xrtk.core": "0.1.30"
   }
 }
