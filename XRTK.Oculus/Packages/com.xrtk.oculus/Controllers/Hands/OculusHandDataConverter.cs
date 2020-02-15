@@ -32,6 +32,11 @@ namespace XRTK.Oculus.Controllers.Hands
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
 
         /// <summary>
+        /// Gets or sets whether hand mesh data should be read and converted.
+        /// </summary>
+        public static bool HandMeshingEnabled { get; set; }
+
+        /// <summary>
         /// Reads hand data for the current frame and converts it to agnostic hand data.
         /// </summary>
         /// <returns>Updated hand data.</returns>
@@ -57,7 +62,7 @@ namespace XRTK.Oculus.Controllers.Hands
             {
                 UpdateHandJoints(updatedHandData.Joints);
 
-                if (TryGetUpdatedHandMeshData(out HandMeshData data))
+                if (HandMeshingEnabled && TryGetUpdatedHandMeshData(out HandMeshData data))
                 {
                     updatedHandData.Mesh = data;
                 }
