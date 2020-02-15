@@ -8,13 +8,12 @@ using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Profiles;
-using XRTK.Providers.Controllers;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers.Hands
 {
-    public class OculusHandControllerDataProvider : BaseControllerDataProvider
+    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider<OculusHandControllerDataProviderProfile>
     {
         /// <summary>
         /// Constructor.
@@ -23,12 +22,8 @@ namespace XRTK.Oculus.Controllers.Hands
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
         public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
-            : base(name, priority, profile)
-        {
-            this.profile = profile;
-        }
+            : base(name, priority, profile) { }
 
-        private readonly OculusHandControllerDataProviderProfile profile;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
         private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
         private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
@@ -54,7 +49,7 @@ namespace XRTK.Oculus.Controllers.Hands
             OculusApi.HandState leftHandState = default;
             bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState)
                 && (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0
-            && leftHandState.HandConfidence == profile.MinConfidenceRequired;
+            && leftHandState.HandConfidence == Profile.MinConfidenceRequired;
 
             if (isLeftHandTracked)
             {
@@ -72,7 +67,7 @@ namespace XRTK.Oculus.Controllers.Hands
             OculusApi.HandState rightHandState = default;
             bool isRightHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState)
                 && (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0
-            && rightHandState.HandConfidence == profile.MinConfidenceRequired;
+            && rightHandState.HandConfidence == Profile.MinConfidenceRequired;
 
             if (isRightHandTracked)
             {
