@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using UnityEngine;
-using XRTK.Definitions.Controllers.Hands;
+using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus.Profiles
@@ -11,7 +11,7 @@ namespace XRTK.Oculus.Profiles
     /// Configuration profile for Oculus hand controllers.
     /// </summary>
     [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand Controller Data Provider Profile", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
-    public class OculusHandControllerDataProviderProfile : MixedRealityHandControllerDataProviderProfile
+    public class OculusHandControllerDataProviderProfile : BaseMixedRealityControllerDataProviderProfile
     {
         [SerializeField]
         [Tooltip("The minimum hand tracking confidence expected.")]
