@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Extensions;
 
 namespace XRTK.Oculus
 {
@@ -986,6 +986,9 @@ namespace XRTK.Oculus
             Touch = LTouch | RTouch,
             Remote = 0x00000004,
             Gamepad = 0x00000010,
+            LHand = 0x00000020,
+            RHand = 0x00000040,
+            Hands = LHand | RHand,
             Touchpad = 0x08000000,
             LTrackedRemote = 0x01000000,
             RTrackedRemote = 0x02000000,
@@ -2495,39 +2498,5 @@ namespace XRTK.Oculus
         }
 
         #endregion
-
-        #region XRTKExtensions
-
-        /// <summary>
-        /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
-        /// </summary>
-        /// <param name="pose">Extension (this) base Oculus PoseF type</param>
-        /// <param name="adjustForEyeHeight"></param>
-        /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this Posef pose, bool adjustForEyeHeight = false)
-        {
-            return new MixedRealityPose
-            (
-                position: new Vector3(pose.Position.x,
-                                      adjustForEyeHeight ? pose.Position.y + EyeHeight : pose.Position.y,
-                                      -pose.Position.z),
-
-                rotation: new Quaternion(-pose.Orientation.x,
-                                         -pose.Orientation.y,
-                                         pose.Orientation.z,
-                                         pose.Orientation.w)
-            );
-        }
-
-        /// <summary>
-        /// Gets a <see cref="UnityEngine.Vector3"/> position from the <see cref="Posef"/>.
-        /// </summary>
-        /// <param name="pose"></param>
-        public static Vector3 GetPosePosition(this Posef pose)
-        {
-            return new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z);
-        }
-
-        #endregion XRTKExtensions
     }
 }
