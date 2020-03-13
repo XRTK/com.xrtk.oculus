@@ -17,6 +17,7 @@ namespace XRTK.Oculus
         private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
         private static readonly Version OVRP_1_44_0_version = new Version(1, 44, 0);
         private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
+        private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -310,6 +311,22 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetSystemHmd3DofModeEnabled(ref Bool enabled);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResSupported(out Bool foveationSupported);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResLevel(out FixedFoveatedRenderingLevel level);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetTiledMultiResLevel(FixedFoveatedRenderingLevel level);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResDynamic(out Bool isDynamic);
+
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetTiledMultiResDynamic(Bool isDynamic);
 
         #endregion Oculus API import
 
@@ -1139,6 +1156,17 @@ namespace XRTK.Oculus
             Rift_CV1,
             Rift_CB,
             Rift_S
+        }
+
+        public enum FixedFoveatedRenderingLevel
+        {
+            Off = 0,
+            Low = 1,
+            Medium = 2,
+            High = 3,
+            // High foveation setting with more detail toward the bottom of the view and more foveation near the top (Same as High on Oculus Go)
+            HighTop = 4,
+            EnumSize = 0x7FFFFFFF
         }
 
         #region Hands Implementation
@@ -2398,6 +2426,71 @@ namespace XRTK.Oculus
             else
             {
                 return false;
+            }
+        }
+
+        public static bool fixedFoveatedRenderingSupported
+        {
+            get
+            {
+                Bool supported;
+                Result result = ovrp_GetTiledMultiResSupported(out supported);
+                if (result == Result.Success)
+                {
+                    return supported == Bool.True;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static FixedFoveatedRenderingLevel fixedFoveatedRenderingLevel
+        {
+            get
+            {
+                if (fixedFoveatedRenderingSupported)
+                {
+                    FixedFoveatedRenderingLevel level;
+                    Result result = ovrp_GetTiledMultiResLevel(out level);
+                    return level;
+                }
+                else
+                {
+                    return FixedFoveatedRenderingLevel.Off;
+                }
+            }
+            set
+            {
+                if (fixedFoveatedRenderingSupported)
+                {
+                    Result result = ovrp_SetTiledMultiResLevel(value);
+                }
+            }
+        }
+
+        public static bool useDynamicFixedFoveatedRendering
+        {
+            get
+            {
+                if (Version >= OVRP_1_46_0_version && fixedFoveatedRenderingSupported)
+                {
+                    Bool isDynamic = Bool.False;
+                    Result result = ovrp_GetTiledMultiResDynamic(out isDynamic);
+                    return isDynamic != Bool.False;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                if (Version >= OVRP_1_46_0_version && fixedFoveatedRenderingSupported)
+                {
+                    Result result = ovrp_SetTiledMultiResDynamic(value ? Bool.True : Bool.False);
+                }
             }
         }
 
