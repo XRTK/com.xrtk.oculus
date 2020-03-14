@@ -7,6 +7,7 @@ using UnityEngine;
 using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
@@ -17,9 +18,9 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="priority"></param>
-        /// <param name="profile"></param>
+        /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>
+        /// <param name="priority">Data provider priority controls the order in the service registry.</param>
+        /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
         public OculusControllerDataProvider(string name, uint priority, BaseMixedRealityControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
@@ -120,25 +121,8 @@ namespace XRTK.Oculus.Controllers
                     break;
             }
 
-            var controllingHand = Handedness.Any;
-
-            //Determine Handedness of the current controller
-            switch (controllerMask)
-            {
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.LTouch:
-                    controllingHand = Handedness.Left;
-                    break;
-                case OculusApi.Controller.RTrackedRemote:
-                case OculusApi.Controller.RTouch:
-                    controllingHand = Handedness.Right;
-                    break;
-                case OculusApi.Controller.Touchpad:
-                case OculusApi.Controller.Gamepad:
-                case OculusApi.Controller.Remote:
-                    controllingHand = Handedness.Both;
-                    break;
-            }
+            // Determine Handedness of the current controller
+            var controllingHand = controllerMask.ToHandedness();
 
             var nodeType = OculusApi.Node.None;
 
