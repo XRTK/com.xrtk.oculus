@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers.Hands;
 
 namespace XRTK.Oculus.Controllers.Hands
