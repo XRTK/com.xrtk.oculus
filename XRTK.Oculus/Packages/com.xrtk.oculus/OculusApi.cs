@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Extensions;
 
 namespace XRTK.Oculus
 {
@@ -17,6 +17,7 @@ namespace XRTK.Oculus
         private static readonly Version OVRP_1_42_0_version = new Version(1, 42, 0);
         private static readonly Version OVRP_1_44_0_version = new Version(1, 44, 0);
         private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
+        private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -82,9 +83,6 @@ namespace XRTK.Oculus
                         new OVRControllerLTouch(),
                         new OVRControllerRTouch(),
                         new OVRControllerTouch(),
-                        new OVRControllerHands(),
-			            new OVRControllerLHand(),
-			            new OVRControllerRHand(),
 #elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
                         new OVRControllerGamepadMac(),
 #else
@@ -313,6 +311,22 @@ namespace XRTK.Oculus
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetSystemHmd3DofModeEnabled(ref Bool enabled);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResSupported(out Bool foveationSupported);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResLevel(out FixedFoveatedRenderingLevel level);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetTiledMultiResLevel(FixedFoveatedRenderingLevel level);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetTiledMultiResDynamic(out Bool isDynamic);
+
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetTiledMultiResDynamic(Bool isDynamic);
 
         #endregion Oculus API import
 
@@ -1147,6 +1161,17 @@ namespace XRTK.Oculus
             Rift_S
         }
 
+        public enum FixedFoveatedRenderingLevel
+        {
+            Off = 0,
+            Low = 1,
+            Medium = 2,
+            High = 3,
+            // High foveation setting with more detail toward the bottom of the view and more foveation near the top (Same as High on Oculus Go)
+            HighTop = 4,
+            EnumSize = 0x7FFFFFFF
+        }
+
         #region Hands Implementation
 
         /// <summary>
@@ -1480,79 +1505,6 @@ namespace XRTK.Oculus
                 byte minBattery = (leftBattery <= rightBattery) ? leftBattery : rightBattery;
 
                 return minBattery;
-            }
-        }
-
-        private class OVRControllerHands : OVRControllerBase
-        {
-            public OVRControllerHands()
-            {
-                controllerType = Controller.Hands;
-            }
-
-            public override bool WasRecentered()
-            {
-                return ((currentState.LRecenterCount + currentState.RRecenterCount) != (previousState.LRecenterCount + previousState.RRecenterCount));
-            }
-
-            public override byte GetRecenterCount()
-            {
-                return (byte)(currentState.LRecenterCount + currentState.RRecenterCount);
-            }
-
-            public override byte GetBatteryPercentRemaining()
-            {
-                byte leftBattery = currentState.LBatteryPercentRemaining;
-                byte rightBattery = currentState.RBatteryPercentRemaining;
-                byte minBattery = (leftBattery <= rightBattery) ? leftBattery : rightBattery;
-
-                return minBattery;
-            }
-        }
-
-        private class OVRControllerLHand : OVRControllerBase
-        {
-            public OVRControllerLHand()
-            {
-                controllerType = Controller.LHand;
-            }
-
-            public override bool WasRecentered()
-            {
-                return (currentState.LRecenterCount != previousState.LRecenterCount);
-            }
-
-            public override byte GetRecenterCount()
-            {
-                return currentState.LRecenterCount;
-            }
-
-            public override byte GetBatteryPercentRemaining()
-            {
-                return currentState.LBatteryPercentRemaining;
-            }
-        }
-
-        private class OVRControllerRHand : OVRControllerBase
-        {
-            public OVRControllerRHand()
-            {
-                controllerType = Controller.RHand;
-            }
-
-            public override bool WasRecentered()
-            {
-                return (currentState.RRecenterCount != previousState.RRecenterCount);
-            }
-
-            public override byte GetRecenterCount()
-            {
-                return currentState.RRecenterCount;
-            }
-
-            public override byte GetBatteryPercentRemaining()
-            {
-                return currentState.RBatteryPercentRemaining;
             }
         }
 
@@ -2061,14 +2013,6 @@ namespace XRTK.Oculus
                 isValid = false;
             }
 
-            // If the mask requests both hand controllers, reject the individual hand controllers.
-            if (((controllerMask & Controller.Hands) == Controller.Hands)
-                && ((controllerType & Controller.Hands) != 0)
-                && ((controllerType & Controller.Hands) != Controller.Hands))
-            {
-                isValid = false;
-            }
-
             return isValid;
         }
 
@@ -2488,114 +2432,71 @@ namespace XRTK.Oculus
             }
         }
 
+        public static bool fixedFoveatedRenderingSupported
+        {
+            get
+            {
+                Bool supported;
+                Result result = ovrp_GetTiledMultiResSupported(out supported);
+                if (result == Result.Success)
+                {
+                    return supported == Bool.True;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static FixedFoveatedRenderingLevel fixedFoveatedRenderingLevel
+        {
+            get
+            {
+                if (fixedFoveatedRenderingSupported)
+                {
+                    FixedFoveatedRenderingLevel level;
+                    Result result = ovrp_GetTiledMultiResLevel(out level);
+                    return level;
+                }
+                else
+                {
+                    return FixedFoveatedRenderingLevel.Off;
+                }
+            }
+            set
+            {
+                if (fixedFoveatedRenderingSupported)
+                {
+                    Result result = ovrp_SetTiledMultiResLevel(value);
+                }
+            }
+        }
+
+        public static bool useDynamicFixedFoveatedRendering
+        {
+            get
+            {
+                if (Version >= OVRP_1_46_0_version && fixedFoveatedRenderingSupported)
+                {
+                    Bool isDynamic = Bool.False;
+                    Result result = ovrp_GetTiledMultiResDynamic(out isDynamic);
+                    return isDynamic != Bool.False;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                if (Version >= OVRP_1_46_0_version && fixedFoveatedRenderingSupported)
+                {
+                    Result result = ovrp_SetTiledMultiResDynamic(value ? Bool.True : Bool.False);
+                }
+            }
+        }
+
         #endregion
-
-        #region XRTKExtensions
-
-        /// <summary>
-        /// Gets a <see cref="Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
-        /// </summary>
-        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="Hand"/></returns>
-        public static Hand ToHand(this Definitions.Utilities.Handedness handedness)
-        {
-            switch (handedness)
-            {
-                case Definitions.Utilities.Handedness.Left:
-                    return Hand.HandLeft;
-                case Definitions.Utilities.Handedness.Right:
-                    return Hand.HandRight;
-                default:
-                    return Hand.None;
-            }
-        }
-
-        /// <summary>
-        /// Gets a <see cref="MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
-        /// </summary>
-        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="MeshType"/></returns>
-        public static MeshType ToMeshType(this Definitions.Utilities.Handedness handedness)
-        {
-            switch (handedness)
-            {
-                case Definitions.Utilities.Handedness.Left:
-                    return MeshType.HandLeft;
-                case Definitions.Utilities.Handedness.Right:
-                    return MeshType.HandRight;
-                default:
-                    return MeshType.None;
-            }
-        }
-
-        /// <summary>
-        /// Gets an <see cref="SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.
-        /// </summary>
-        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="SkeletonType"/></returns>
-        public static SkeletonType ToSkeletonType(this Definitions.Utilities.Handedness handedness)
-        {
-            switch (handedness)
-            {
-                case Definitions.Utilities.Handedness.Left:
-                    return SkeletonType.HandLeft;
-                case Definitions.Utilities.Handedness.Right:
-                    return SkeletonType.HandRight;
-                default:
-                    return SkeletonType.None;
-            }
-        }
-
-        /// <summary>
-        /// Extension method to convert a Oculus Pose to an XRTK MixedRealityPose
-        /// </summary>
-        /// <param name="pose">Extension (this) base Oculus PoseF type</param>
-        /// <param name="adjustForEyeHeight"></param>
-        /// <returns>Returns an XRTK MixedRealityPose</returns>
-        public static MixedRealityPose ToMixedRealityPose(this Posef pose, bool adjustForEyeHeight = false)
-        {
-            return new MixedRealityPose
-            (
-                position: new Vector3(pose.Position.x,
-                                      adjustForEyeHeight ? pose.Position.y + EyeHeight : pose.Position.y,
-                                      -pose.Position.z),
-
-                rotation: new Quaternion(-pose.Orientation.x,
-                                         -pose.Orientation.y,
-                                         pose.Orientation.z,
-                                         pose.Orientation.w)
-            );
-        }
-
-        /// <summary>
-        /// Gets a <see cref="Vector3"/> position from the <see cref="Posef"/>.
-        /// </summary>
-        /// <param name="pose"></param>
-        public static Vector3 GetPosePosition(this Posef pose)
-        {
-            return new Vector3(pose.Position.x, pose.Position.y, -pose.Position.z);
-        }
-
-        /// <summary>
-        /// Flips the z-axis of the vector.
-        /// </summary>
-        /// <param name="v">Input vector.</param>
-        /// <returns>Vector with flipped z axis.</returns>
-        public static Vector3 FromFlippedZVector3f(this Vector3f v)
-        {
-            return new Vector3() { x = v.x, y = v.y, z = -v.z };
-        }
-
-        /// <summary>
-        /// Gets a Unity quaternion from a flipped Z oculus orientation.
-        /// </summary>
-        /// <param name="q">Input orientation.</param>
-        /// <returns>Unity orientation.</returns>
-        public static Quaternion FromFlippedZQuatf(this Quatf q)
-        {
-            return new Quaternion() { x = -q.x, y = -q.y, z = q.z, w = q.w };
-        }
-
-        #endregion XRTKExtensions
     }
 }

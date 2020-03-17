@@ -8,6 +8,7 @@ using XRTK.Definitions.InputSystem;
 using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
 using XRTK.Interfaces.InputSystem;
+using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
