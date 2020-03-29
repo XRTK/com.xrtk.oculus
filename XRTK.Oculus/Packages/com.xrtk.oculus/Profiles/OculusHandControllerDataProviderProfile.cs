@@ -11,7 +11,7 @@ namespace XRTK.Oculus.Profiles
     /// Configuration profile for Oculus hand controllers.
     /// </summary>
     [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand Controller Data Provider Profile", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
-    public class OculusHandControllerDataProviderProfile : BaseMixedRealityControllerDataProviderProfile
+    public class OculusHandControllerDataProviderProfile : BaseMixedRealityHandDataProviderProfile
     {
         [SerializeField]
         [Tooltip("The minimum hand tracking confidence expected.")]

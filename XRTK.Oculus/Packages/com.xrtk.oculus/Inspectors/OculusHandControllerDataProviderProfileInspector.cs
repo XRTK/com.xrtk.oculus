@@ -4,7 +4,7 @@
 using UnityEditor;
 using UnityEngine;
 using XRTK.Definitions.Utilities;
-using XRTK.Inspectors.Profiles;
+using XRTK.Inspectors.Profiles.InputSystem;
 using XRTK.Inspectors.Utilities;
 using XRTK.Oculus.Profiles;
 
@@ -14,7 +14,7 @@ namespace XRTK.Oculus.Inspectors
     /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.
     /// </summary>
     [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
-    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
+    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityHandDataProviderProfileInspector
     {
         private SerializedProperty minConfidenceRequired;
 
@@ -29,13 +29,16 @@ namespace XRTK.Oculus.Inspectors
         {
             MixedRealityInspectorUtility.RenderMixedRealityToolkitLogo();
 
-            if (thisProfile.ParentProfile != null &&
+            if (ThisProfile.ParentProfile != null &&
                 GUILayout.Button("Back To Configuration Profile"))
             {
-                Selection.activeObject = thisProfile.ParentProfile;
+                Selection.activeObject = ThisProfile.ParentProfile;
             }
 
-            thisProfile.CheckProfileLock();
+            ThisProfile.CheckProfileLock();
+
+            base.OnInspectorGUI();
+
             serializedObject.Update();
 
             EditorGUILayout.BeginVertical();
