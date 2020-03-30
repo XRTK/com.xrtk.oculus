@@ -1,19 +1,17 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
-using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers.Hands
 {
-    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider<OculusHandControllerDataProviderProfile>
+    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {
         /// <summary>
         /// Constructor.
@@ -22,11 +20,15 @@ namespace XRTK.Oculus.Controllers.Hands
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
         public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
-            : base(name, priority, profile) { }
+            : base(name, priority, profile)
+        {
+            minConfidenceRequired = profile.MinConfidenceRequired;
+        }
 
-        private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
+        private readonly OculusApi.TrackingConfidence minConfidenceRequired;
         private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
         private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
+        private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
 
         /// <inheritdoc />
         public override void Initialize()
@@ -46,20 +48,17 @@ namespace XRTK.Oculus.Controllers.Hands
         {
             base.Update();
 
-            OculusApi.Step step = OculusApi.Step.Render;
+            var step = OculusApi.Step.Render;
 
             OculusApi.HandState leftHandState = default;
-            bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState)
-                && (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0
-            && leftHandState.HandConfidence == Profile.MinConfidenceRequired;
+            bool isLeftHandTracked = leftHandState.HandConfidence == minConfidenceRequired &&
+                                     (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
+                                     OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState);
 
             if (isLeftHandTracked)
             {
-                MixedRealityHandController controller = GetOrAddController(Handedness.Left);
-                if (controller != null)
-                {
-                    controller.UpdateController(leftHandConverter.GetHandData());
-                }
+                var controller = GetOrAddController(Handedness.Left);
+                controller?.UpdateController(leftHandConverter.GetHandData());
             }
             else
             {
@@ -67,17 +66,14 @@ namespace XRTK.Oculus.Controllers.Hands
             }
 
             OculusApi.HandState rightHandState = default;
-            bool isRightHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState)
-                && (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0
-            && rightHandState.HandConfidence == Profile.MinConfidenceRequired;
+            bool isRightHandTracked = rightHandState.HandConfidence == minConfidenceRequired &&
+                                      (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
+                                      OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState);
 
             if (isRightHandTracked)
             {
-                MixedRealityHandController controller = GetOrAddController(Handedness.Right);
-                if (controller != null)
-                {
-                    controller.UpdateController(rightHandConverter.GetHandData());
-                }
+                var controller = GetOrAddController(Handedness.Right);
+                controller?.UpdateController(rightHandConverter.GetHandData());
             }
             else
             {
@@ -100,7 +96,7 @@ namespace XRTK.Oculus.Controllers.Hands
         {
             if (activeControllers.ContainsKey(handedness))
             {
-                MixedRealityHandController existingController = activeControllers[handedness];
+                var existingController = activeControllers[handedness];
                 Debug.Assert(existingController != null, $"Hand Controller {handedness} has been destroyed but remains in the active controller registry.");
                 controller = existingController;
                 return true;
@@ -118,10 +114,10 @@ namespace XRTK.Oculus.Controllers.Hands
                 return existingController;
             }
 
-            Type controllerType = typeof(MixedRealityHandController);
-            IMixedRealityPointer[] pointers = RequestPointers(controllerType, handedness, true);
-            IMixedRealityInputSource inputSource = MixedRealityToolkit.InputSystem.RequestNewGenericInputSource($"{handedness} Hand Controller", pointers);
-            MixedRealityHandController detectedController = new MixedRealityHandController(TrackingState.Tracked, handedness, inputSource, null);
+            var controllerType = typeof(MixedRealityHandController);
+            var pointers = RequestPointers(controllerType, handedness, true);
+            var inputSource = MixedRealityToolkit.InputSystem.RequestNewGenericInputSource($"{handedness} Hand Controller", pointers);
+            var detectedController = new MixedRealityHandController(TrackingState.Tracked, handedness, inputSource, null);
 
             if (!detectedController.SetupConfiguration(controllerType))
             {
@@ -145,7 +141,7 @@ namespace XRTK.Oculus.Controllers.Hands
 
         private void RemoveController(Handedness handedness, bool removeFromRegistry = true)
         {
-            if (TryGetController(handedness, out MixedRealityHandController controller))
+            if (TryGetController(handedness, out var controller))
             {
                 MixedRealityToolkit.InputSystem?.RaiseSourceLost(controller.InputSource, controller);
 
