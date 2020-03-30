@@ -76,7 +76,6 @@ namespace XRTK.Oculus.Inspector.Build
 
             if (handTrackingTextIndex != -1)
             {
-
                 bool handTrackingEntryNeeded = true; // (targetHandTrackingSupport != OVRProjectConfig.HandTrackingSupport.ControllersOnly);
                 bool handTrackingRequired = false; // (targetHandTrackingSupport == OVRProjectConfig.HandTrackingSupport.HandsOnly);
 
