@@ -8,7 +8,7 @@ namespace XRTK.Oculus.Extensions
     public static class Vector3Extensions
     {
         /// <summary>
-        /// Gets a <see cref="UnityEngine.Vector3"/> position from the <see cref="Posef"/>.
+        /// Gets a <see cref="UnityEngine.Vector3"/> position from the <see cref="OculusApi.Posef"/>.
         /// </summary>
         /// <param name="pose"></param>
         public static Vector3 GetPosePosition(this OculusApi.Posef pose)
