@@ -35,7 +35,7 @@ namespace XRTK.Oculus.Inspector.Build
             var script = MonoScript.FromScriptableObject(so);
             var assetPath = AssetDatabase.GetAssetPath(script);
             var editorDir = Directory.GetParent(assetPath).FullName;
-            var srcFile = $"{editorDir}/Build/AndroidManifest.OVRSubmission.xml";
+            var srcFile = $"{editorDir}/BuildTools/AndroidManifest.OVRSubmission.xml";
 
             if (!File.Exists(srcFile))
             {
