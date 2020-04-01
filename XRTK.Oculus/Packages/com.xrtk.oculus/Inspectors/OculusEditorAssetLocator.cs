@@ -21,11 +21,11 @@ limitations under the License.
 
 using UnityEngine;
 
-namespace XRTK.Oculus
+namespace XRTK.Oculus.Inspector
 {
-	internal class OculusUpdaterStub : ScriptableObject
-	{
-		// Stub helper class to locate Utilities Path through Unity Editor API.
-		// Required to be a standalone class in a separate file or else MonoScript.FromScriptableObject() returns an empty string path.
-	}
+    internal class OculusEditorAssetLocator : ScriptableObject
+    {
+        // Stub helper class to locate the root editor path through Unity Editor API.
+        // Required to be a standalone class in a separate file or else MonoScript.FromScriptableObject() returns an empty string path.
+    }
 }
