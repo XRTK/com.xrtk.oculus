@@ -19,50 +19,52 @@ limitations under the License.
 
 ************************************************************************************/
 
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace XRTK.Oculus
+namespace XRTK.Oculus.Inspector.Build
 {
     public class OculusManifestPreprocessor
     {
         [MenuItem("Mixed Reality Toolkit/Tools/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
         public static void GenerateManifestForSubmission()
         {
-            var so = ScriptableObject.CreateInstance(typeof(OculusUpdaterStub));
+            var so = ScriptableObject.CreateInstance(typeof(OculusEditorAssetLocator));
             var script = MonoScript.FromScriptableObject(so);
-            string assetPath = AssetDatabase.GetAssetPath(script);
-            string editorDir = Directory.GetParent(assetPath).FullName;
-            string srcFile = editorDir + "/AndroidManifest.OVRSubmission.xml";
+            var assetPath = AssetDatabase.GetAssetPath(script);
+            var editorDir = Directory.GetParent(assetPath).FullName;
+            var srcFile = $"{editorDir}/BuildTools/AndroidManifest.OVRSubmission.xml";
 
             if (!File.Exists(srcFile))
             {
-                Debug.LogError("Cannot find Android manifest template for submission." +
-                    " Please delete the OVR folder and reimport the Oculus Utilities.");
+                Debug.LogError("Cannot find Android manifest template for submission. Please delete the OVR folder and reimport the Oculus Utilities.");
                 return;
             }
 
-            string manifestFolder = Application.dataPath + "/Plugins/Android";
+            var manifestFolder = $"{Application.dataPath}/Plugins/Android";
 
             if (!Directory.Exists(manifestFolder))
+            {
                 Directory.CreateDirectory(manifestFolder);
+            }
 
-            string dstFile = manifestFolder + "/AndroidManifest.xml";
+            var dstFile = $"{manifestFolder}/AndroidManifest.xml";
 
             if (File.Exists(dstFile))
             {
-                Debug.LogWarning("Cannot create Oculus store-compatible manifest due to conflicting file: \""
-                    + dstFile + "\". Please remove it and try again.");
+                Debug.LogWarning($"Cannot create Oculus store-compatible manifest due to conflicting file: \"{dstFile}\". Please remove it and try again.");
                 return;
             }
 
-            string manifestText = File.ReadAllText(srcFile);
-            int dofTextIndex = manifestText.IndexOf("<!-- Request the headset DoF mode -->");
+            var manifestText = File.ReadAllText(srcFile);
+            var dofTextIndex = manifestText.IndexOf("<!-- Request the headset DoF mode -->", StringComparison.Ordinal);
+
             if (dofTextIndex != -1)
             {
                 //Forces Quest configuration.  Needs flip for Go/Gear viewer
-                string headTrackingFeatureText = "<uses-feature android:name=\"android.hardware.vr.headtracking\" android:version=\"1\" android:required=\"true\" />";
+                const string headTrackingFeatureText = "<uses-feature android:name=\"android.hardware.vr.headtracking\" android:version=\"1\" android:required=\"true\" />";
                 manifestText = manifestText.Insert(dofTextIndex, headTrackingFeatureText);
             }
             else
@@ -70,25 +72,25 @@ namespace XRTK.Oculus
                 Debug.LogWarning("Manifest error: unable to locate headset DoF mode");
             }
 
-            int handTrackingTextIndex = manifestText.IndexOf("<!-- Request the headset handtracking mode -->");
+            var handTrackingTextIndex = manifestText.IndexOf("<!-- Request the headset handtracking mode -->", StringComparison.Ordinal);
+
             if (handTrackingTextIndex != -1)
             {
+                bool handTrackingEntryNeeded = true; // (targetHandTrackingSupport != OVRProjectConfig.HandTrackingSupport.ControllersOnly);
+                bool handTrackingRequired = false; // (targetHandTrackingSupport == OVRProjectConfig.HandTrackingSupport.HandsOnly);
 
-                    bool handTrackingEntryNeeded = true; // (targetHandTrackingSupport != OVRProjectConfig.HandTrackingSupport.ControllersOnly);
-                    bool handTrackingRequired = false; // (targetHandTrackingSupport == OVRProjectConfig.HandTrackingSupport.HandsOnly);
-                    if (handTrackingEntryNeeded)
-                    {
-                        string handTrackingFeatureText = string.Format("<uses-feature android:name=\"oculus.software.handtracking\" android:required=\"{0}\" />",
-                                handTrackingRequired ? "true" : "false");
-                        string handTrackingPermissionText = string.Format("<uses-permission android:name=\"oculus.permission.handtracking\" />");
+                if (handTrackingEntryNeeded)
+                {
+                    string handTrackingFeatureText = $"<uses-feature android:name=\"oculus.software.handtracking\" android:required=\"{(handTrackingRequired ? "true" : "false")}\" />";
+                    const string handTrackingPermissionText = "<uses-permission android:name=\"oculus.permission.handtracking\" />";
 
-                        manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingPermissionText);
-                        manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingFeatureText);
-                    }
+                    manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingPermissionText);
+                    manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingFeatureText);
+                }
             }
             else
             {
-                Debug.LogWarning("Manifest error: unable to locate headset handtracking mode");
+                Debug.LogWarning("Manifest error: unable to locate headset hand tracking mode");
             }
 
             System.IO.File.WriteAllText(dstFile, manifestText);
