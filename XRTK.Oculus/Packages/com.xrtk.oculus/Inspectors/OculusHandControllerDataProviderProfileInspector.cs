@@ -1,12 +1,14 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using XRTK.Definitions.Utilities;
+using XRTK.Definitions.Platforms;
 using XRTK.Inspectors.Profiles.InputSystem;
 using XRTK.Inspectors.Utilities;
 using XRTK.Oculus.Profiles;
+using XRTK.Services;
 
 namespace XRTK.Oculus.Inspectors
 {
@@ -44,9 +46,8 @@ namespace XRTK.Oculus.Inspectors
             EditorGUILayout.BeginVertical();
 
             EditorGUILayout.Space();
-            SupportedPlatforms supportedPlatforms = SupportedPlatforms.Android | SupportedPlatforms.Editor;
-            if (MixedRealityInspectorUtility.CheckProfilePlatform(supportedPlatforms,
-                $"You can't edit platform specific hand configuration with the current build target. Please switch to {supportedPlatforms}."))
+
+            if (MixedRealityToolkit.AvailablePlatforms.Any(platform => platform is EditorPlatform || platform is AndroidPlatform))
             {
                 EditorGUILayout.PropertyField(minConfidenceRequired);
             }
