@@ -26,6 +26,24 @@ namespace XRTK.Oculus.Extensions
         }
 
         /// <summary>
+        /// Gets a <see cref="Node"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// </summary>
+        /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
+        /// <returns><see cref="Node"/></returns>
+        public static Node ToNode(this Definitions.Utilities.Handedness handedness)
+        {
+            switch (handedness)
+            {
+                case Definitions.Utilities.Handedness.Left:
+                    return Node.HandLeft;
+                case Definitions.Utilities.Handedness.Right:
+                    return Node.HandRight;
+                default:
+                    return Node.None;
+            }
+        }
+
+        /// <summary>
         /// Gets a <see cref="MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.	
         /// </summary>	
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>	

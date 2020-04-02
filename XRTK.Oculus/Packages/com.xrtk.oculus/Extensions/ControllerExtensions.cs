@@ -33,8 +33,9 @@ namespace XRTK.Oculus.Extensions
                     return SupportedControllerType.Hand;
             }
 
-            Debug.LogWarning($"{controller} does not have a defined controller type, falling back to generic controller type");
-            return SupportedControllerType.GenericOpenVR;
+            // If we couldn't map it then the provided controller type is not supported
+            // and we ignore it.
+            return SupportedControllerType.None;
         }
 
         /// <summary>
