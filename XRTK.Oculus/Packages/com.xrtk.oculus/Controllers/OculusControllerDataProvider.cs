@@ -181,41 +181,55 @@ namespace XRTK.Oculus.Controllers
             return detectedController;
         }
 
-        private void RefreshHands()
+        private bool RefreshHands()
         {
             OculusApi.HandState leftHandState = default;
-            bool isLeftHandTracked = leftHandState.HandConfidence == minConfidenceRequired &&
+            bool isLeftHandTracked = leftHandState.HandConfidence == MinConfidenceRequired &&
                                      (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
-                                     OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState);
+                                     OculusApi.GetHandState(OculusApi.stepType, OculusApi.Hand.HandLeft, ref leftHandState);
 
             if (isLeftHandTracked)
             {
-                var controller = GetOrAddController(Handedness.Left);
-                controller?.UpdateController(leftHandConverter.GetHandData());
+                if (!activeControllers.ContainsKey(OculusApi.Controller.LHand))
+                {
+                    RaiseSourceDetected(OculusApi.Controller.LHand);
+                }
             }
             else
             {
-                RemoveController(Handedness.Left);
+                RaiseSourceLost(OculusApi.Controller.LHand);
             }
 
             OculusApi.HandState rightHandState = default;
-            bool isRightHandTracked = rightHandState.HandConfidence == minConfidenceRequired &&
+            bool isRightHandTracked = rightHandState.HandConfidence == MinConfidenceRequired &&
                                       (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
-                                      OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState);
+                                      OculusApi.GetHandState(OculusApi.stepType, OculusApi.Hand.HandRight, ref rightHandState);
 
             if (isRightHandTracked)
             {
-                var controller = GetOrAddController(Handedness.Right);
-                controller?.UpdateController(rightHandConverter.GetHandData());
+                if (!activeControllers.ContainsKey(OculusApi.Controller.RHand))
+                {
+                    RaiseSourceDetected(OculusApi.Controller.RHand);
+                }
             }
             else
             {
-                RemoveController(Handedness.Right);
+                RaiseSourceLost(OculusApi.Controller.RHand);
             }
+
+            return isLeftHandTracked || isRightHandTracked;
         }
-        
+
         private void RefreshDevices()
         {
+            if (RefreshHands())
+            {
+                // TODO: Revisit this for proper integration where hands and other controller types are
+                // treated the same. For simplicity we skip any other controller monitoring while the Oculus API
+                // reports hands to be active.
+                return;
+            }
+
             // override locally derived active and connected controllers if plugin provides more accurate data
             OculusApi.connectedControllerTypes = OculusApi.GetConnectedControllers();
             OculusApi.activeControllerType = OculusApi.GetActiveController();
