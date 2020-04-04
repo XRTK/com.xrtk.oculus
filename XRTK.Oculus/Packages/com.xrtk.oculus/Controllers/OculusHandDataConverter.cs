@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers.Hands;
@@ -176,36 +177,39 @@ namespace XRTK.Oculus.Controllers
             if (OculusApi.GetMesh(handedness.ToMeshType(), out handMesh))
             {
                 Vector3[] vertices = new Vector3[handMesh.NumVertices];
+
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
                     vertices[i] = handMesh.VertexPositions[i].FromFlippedZVector3f();
                 }
 
                 Vector2[] uvs = new Vector2[handMesh.NumVertices];
+
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
                     uvs[i] = new Vector2(handMesh.VertexUV0[i].x, -handMesh.VertexUV0[i].y);
                 }
 
                 int[] triangles = new int[handMesh.NumIndices];
+
                 for (int i = 0; i < handMesh.NumIndices; ++i)
                 {
                     triangles[i] = handMesh.Indices[handMesh.NumIndices - i - 1];
                 }
 
                 Vector3[] normals = new Vector3[handMesh.NumVertices];
+
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
                     normals[i] = handMesh.VertexNormals[i].FromFlippedZVector3f();
                 }
 
-                data = new HandMeshData(
-                    vertices, triangles, normals, uvs, handState.RootPose.Position.FromFlippedZVector3f(), handState.RootPose.Orientation.FromFlippedZQuatf());
+                data = new HandMeshData(vertices, triangles, normals, uvs, handState.RootPose.Position.FromFlippedZVector3f(), handState.RootPose.Orientation.FromFlippedZQuatf());
 
                 return true;
             }
 
-            data = null;
+            data = default;
             return false;
         }
 
