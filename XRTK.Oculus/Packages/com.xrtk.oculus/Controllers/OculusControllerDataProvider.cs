@@ -3,18 +3,15 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
-using XRTK.Definitions.Utilities;
-using XRTK.Interfaces.InputSystem.Controllers.Hands;
 using XRTK.Oculus.Extensions;
-using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
-using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
 {
-    public class OculusControllerDataProvider : BaseControllerDataProvider, IMixedRealityHandControllerDataProvider
+    public class OculusControllerDataProvider : BaseControllerDataProvider
     {
         /// <summary>
         /// Constructor.
@@ -22,42 +19,21 @@ namespace XRTK.Oculus.Controllers
         /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
-        public OculusControllerDataProvider(string name, uint priority, OculusControllerDataProviderProfile profile)
+        public OculusControllerDataProvider(string name, uint priority, BaseMixedRealityControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
-            HandPhysicsEnabled = profile.HandPhysicsEnabled;
-            UseTriggers = profile.UseTriggers;
-            BoundsMode = profile.BoundsMode;
-            HandMeshingEnabled = profile.HandMeshingEnabled;
-            MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
         }
 
         private const float DeviceRefreshInterval = 3.0f;
 
-        private readonly Dictionary<OculusApi.Controller, BaseController> activeControllers = new Dictionary<OculusApi.Controller, BaseController>();
-        private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
-        private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
+        /// <summary>
+        /// Dictionary to capture all active controllers detected
+        /// </summary>
+        private readonly Dictionary<OculusApi.Controller, BaseOculusController> activeControllers = new Dictionary<OculusApi.Controller, BaseOculusController>();
 
         private int fixedUpdateCount = 0;
         private float deviceRefreshTimer;
         private OculusApi.Controller lastDeviceList;
-
-        /// <inheritdoc />
-        public bool HandPhysicsEnabled { get; }
-
-        /// <inheritdoc />
-        public bool UseTriggers { get; }
-
-        /// <inheritdoc />
-        public HandBoundsMode BoundsMode { get; }
-
-        /// <inheritdoc />
-        public bool HandMeshingEnabled { get; }
-
-        /// <summary>
-        /// The minimum required tracking confidence for hands to be registered.
-        /// </summary>
-        public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
 
         /// <inheritdoc />
         public override void Initialize()
@@ -68,8 +44,6 @@ namespace XRTK.Oculus.Controllers
             {
                 MixedRealityToolkit.CameraSystem.HeadHeight = OculusApi.EyeHeight;
             }
-
-            OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
         }
 
         /// <inheritdoc />
@@ -90,16 +64,7 @@ namespace XRTK.Oculus.Controllers
 
             foreach (var controller in activeControllers)
             {
-                if (controller.Value is MixedRealityHandController handController)
-                {
-                    handController.UpdateController(handController.ControllerHandedness == Handedness.Left
-                        ? leftHandConverter.GetHandData()
-                        : rightHandConverter.GetHandData());
-                }
-                else
-                {
-                    controller.Value?.UpdateController();
-                }
+                controller.Value?.UpdateController();
             }
         }
 
@@ -126,7 +91,7 @@ namespace XRTK.Oculus.Controllers
             activeControllers.Clear();
         }
 
-        private BaseController GetOrAddController(OculusApi.Controller controllerMask, bool addController = true)
+        private BaseOculusController GetOrAddController(OculusApi.Controller controllerMask, bool addController = true)
         {
             //If a device is already registered with the ID provided, just return it.
             if (activeControllers.ContainsKey(controllerMask))
@@ -148,18 +113,10 @@ namespace XRTK.Oculus.Controllers
 
             var controllingHand = controllerMask.ToHandedness();
             var nodeType = controllingHand.ToNode();
+
             var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-
-            BaseController detectedController;
-            if (Equals(controllerType, typeof(MixedRealityHandController)))
-            {
-                detectedController = new MixedRealityHandController(TrackingState.Tracked, controllingHand, inputSource, null);
-            }
-            else
-            {
-                detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
-            }
+            var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
 
             if (!detectedController.SetupConfiguration(controllerType))
             {
@@ -180,55 +137,11 @@ namespace XRTK.Oculus.Controllers
             return detectedController;
         }
 
-        private bool RefreshHands()
-        {
-            OculusApi.HandState leftHandState = default;
-            bool isLeftHandTracked = leftHandState.HandConfidence == MinConfidenceRequired &&
-                                     (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
-                                     OculusApi.GetHandState(OculusApi.stepType, OculusApi.Hand.HandLeft, ref leftHandState);
-
-            if (isLeftHandTracked)
-            {
-                if (!activeControllers.ContainsKey(OculusApi.Controller.LHand))
-                {
-                    RaiseSourceDetected(OculusApi.Controller.LHand);
-                }
-            }
-            else
-            {
-                RaiseSourceLost(OculusApi.Controller.LHand);
-            }
-
-            OculusApi.HandState rightHandState = default;
-            bool isRightHandTracked = rightHandState.HandConfidence == MinConfidenceRequired &&
-                                      (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0 &&
-                                      OculusApi.GetHandState(OculusApi.stepType, OculusApi.Hand.HandRight, ref rightHandState);
-
-            if (isRightHandTracked)
-            {
-                if (!activeControllers.ContainsKey(OculusApi.Controller.RHand))
-                {
-                    RaiseSourceDetected(OculusApi.Controller.RHand);
-                }
-            }
-            else
-            {
-                RaiseSourceLost(OculusApi.Controller.RHand);
-            }
-
-            return isLeftHandTracked || isRightHandTracked;
-        }
-
+        /// <remarks>
+        /// Noticed that the "active" controllers also mark the Tracked state.
+        /// </remarks>
         private void RefreshDevices()
         {
-            if (RefreshHands())
-            {
-                // TODO: Revisit this for proper integration where hands and other controller types are
-                // treated the same. For simplicity we skip any other controller monitoring while the Oculus API
-                // reports hands to be active.
-                return;
-            }
-
             // override locally derived active and connected controllers if plugin provides more accurate data
             OculusApi.connectedControllerTypes = OculusApi.GetConnectedControllers();
             OculusApi.activeControllerType = OculusApi.GetActiveController();
@@ -242,7 +155,7 @@ namespace XRTK.Oculus.Controllers
 
                 if (lastDeviceList != OculusApi.Controller.None && OculusApi.connectedControllerTypes != lastDeviceList)
                 {
-                    for (int i = 0; i < controllers.Length; i++)
+                    for (var i = 0; i < controllers.Length; i++)
                     {
                         var activeController = controllers[i];
 
@@ -268,7 +181,7 @@ namespace XRTK.Oculus.Controllers
                 }
             }
 
-            for (int i = 0; i < OculusApi.Controllers.Length; i++)
+            for (var i = 0; i < OculusApi.Controllers.Length; i++)
             {
                 if (OculusApi.ShouldResolveController(OculusApi.Controllers[i].controllerType, OculusApi.connectedControllerTypes))
                 {
