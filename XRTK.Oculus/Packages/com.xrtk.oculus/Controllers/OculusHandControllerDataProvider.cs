@@ -6,13 +6,12 @@ using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Profiles;
-using XRTK.Providers.Controllers;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
 {
-    public class OculusHandControllerDataProvider : BaseControllerDataProvider
+    public class OculusHandControllerDataProvider : BaseHandDataProvider
     {
         /// <summary>
         /// Constructor.
