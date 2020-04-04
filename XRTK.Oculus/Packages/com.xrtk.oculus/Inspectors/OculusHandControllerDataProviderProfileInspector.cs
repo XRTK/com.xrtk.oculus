@@ -3,16 +3,15 @@
 
 using UnityEditor;
 using XRTK.Inspectors.Profiles;
-using XRTK.Inspectors.Utilities;
 using XRTK.Oculus.Profiles;
 
 namespace XRTK.Oculus.Inspectors
 {
     /// <summary>
-    /// Default inspector for <see cref="OculusControllerDataProviderProfile"/>.
+    /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.
     /// </summary>
-    [CustomEditor(typeof(OculusControllerDataProviderProfile))]
-    public class OculusControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
+    [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
+    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
     {
         // Global settings overrides
         private SerializedProperty handMeshingEnabled;

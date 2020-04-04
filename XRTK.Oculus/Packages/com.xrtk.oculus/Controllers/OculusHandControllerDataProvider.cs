@@ -10,7 +10,7 @@ using XRTK.Providers.Controllers;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
-namespace XRTK.Oculus.Controllers.Hands
+namespace XRTK.Oculus.Controllers
 {
     public class OculusHandControllerDataProvider : BaseControllerDataProvider
     {
@@ -20,7 +20,7 @@ namespace XRTK.Oculus.Controllers.Hands
         /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>	
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>	
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>	
-        public OculusHandControllerDataProvider(string name, uint priority, OculusControllerDataProviderProfile profile)
+        public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;

@@ -13,8 +13,8 @@ namespace XRTK.Oculus.Profiles
     /// <summary>
     /// Configuration profile for Oculus hand controllers.
     /// </summary>
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Controller Data Provider Profile", fileName = "OculusControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
-    public class OculusControllerDataProviderProfile : BaseMixedRealityControllerDataProviderProfile
+    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand Controller Data Provider Profile", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
+    public class OculusHandControllerDataProviderProfile : BaseMixedRealityControllerDataProviderProfile
     {
         #region Global Settings Overrides
 
