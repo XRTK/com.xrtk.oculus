@@ -3,8 +3,8 @@
 
 using UnityEngine;
 using XRTK.Definitions.Controllers;
+using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
-using XRTK.Providers.Controllers.Hands;
 
 namespace XRTK.Oculus.Profiles
 {
