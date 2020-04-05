@@ -35,6 +35,9 @@ namespace XRTK.Oculus.Controllers
         /// </summary>
         public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
 
+        /// <summary>
+        /// Enable / disable hand meshing.
+        /// </summary>
         public bool HandMeshingEnabled
         {
             get => OculusHandDataConverter.HandMeshingEnabled;
