@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using UnityEditor;
-using XRTK.Inspectors.Profiles;
+using XRTK.Inspectors.Profiles.InputSystem.Controllers;
 using XRTK.Oculus.Profiles;
 
 namespace XRTK.Oculus.Inspectors
@@ -11,25 +11,13 @@ namespace XRTK.Oculus.Inspectors
     /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.
     /// </summary>
     [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
-    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityProfileInspector
+    public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityHandControllerDataProviderProfileInspector
     {
-        // Global settings overrides
-        private SerializedProperty handMeshingEnabled;
-        private SerializedProperty handPhysicsEnabled;
-        private SerializedProperty useTriggers;
-        private SerializedProperty boundsMode;
-
-        // Oculus specific settings
         private SerializedProperty minConfidenceRequired;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-
-            handMeshingEnabled = serializedObject.FindProperty(nameof(handMeshingEnabled));
-            handPhysicsEnabled = serializedObject.FindProperty(nameof(handPhysicsEnabled));
-            useTriggers = serializedObject.FindProperty(nameof(useTriggers));
-            boundsMode = serializedObject.FindProperty(nameof(boundsMode));
 
             minConfidenceRequired = serializedObject.FindProperty(nameof(minConfidenceRequired));
         }
@@ -38,14 +26,13 @@ namespace XRTK.Oculus.Inspectors
         {
             RenderHeader();
 
+            EditorGUILayout.LabelField("Oculus Hand Controller Data Provider Settings", EditorStyles.boldLabel);
+
+            base.OnInspectorGUI();
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(handMeshingEnabled);
-            EditorGUILayout.PropertyField(handPhysicsEnabled);
-            EditorGUILayout.PropertyField(useTriggers);
-            EditorGUILayout.PropertyField(boundsMode);
             EditorGUILayout.Space();
-
+            EditorGUILayout.LabelField("Oculus Hand Settings");
             EditorGUILayout.PropertyField(minConfidenceRequired);
 
             serializedObject.ApplyModifiedProperties();
