@@ -10,16 +10,16 @@ namespace XRTK.Oculus.Profiles
     /// <summary>
     /// Configuration profile for Oculus hand controllers.
     /// </summary>
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand Controller Data Provider Profile", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
+    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
     public class OculusHandControllerDataProviderProfile : BaseHandControllerDataProviderProfile
     {
         [SerializeField]
         [Tooltip("The minimum hand tracking confidence expected.")]
-        private int minConfidenceRequired = 1;
+        private OculusApi.TrackingConfidence minConfidenceRequired = OculusApi.TrackingConfidence.Low;
 
         /// <summary>
         /// The minimum hand tracking confidence expected.
         /// </summary>
-        public int MinConfidenceRequired => minConfidenceRequired;
+        public OculusApi.TrackingConfidence MinConfidenceRequired => minConfidenceRequired;
     }
 }

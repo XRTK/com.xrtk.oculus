@@ -32,7 +32,7 @@ namespace XRTK.Oculus.Inspectors
             serializedObject.Update();
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Oculus Hand Settings");
+            EditorGUILayout.LabelField("Oculus Hand Settings", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(minConfidenceRequired);
 
             serializedObject.ApplyModifiedProperties();
