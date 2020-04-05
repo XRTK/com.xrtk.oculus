@@ -11,7 +11,7 @@ using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
 {
-    public class OculusHandControllerDataProvider : BaseHandDataProvider
+    public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {
         /// <summary>
         /// Constructor.
@@ -23,7 +23,6 @@ namespace XRTK.Oculus.Controllers
             : base(name, priority, profile)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
-            HandMeshingEnabled = profile.HandMeshingEnabled;
         }
 
         private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
@@ -35,15 +34,6 @@ namespace XRTK.Oculus.Controllers
         /// </summary>
         public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
 
-        /// <summary>
-        /// Enable / disable hand meshing.
-        /// </summary>
-        public bool HandMeshingEnabled
-        {
-            get => OculusHandDataConverter.HandMeshingEnabled;
-            set => OculusHandDataConverter.HandMeshingEnabled = value;
-        }
-
         /// <inheritdoc />
         public override void Initialize()
         {
@@ -53,6 +43,8 @@ namespace XRTK.Oculus.Controllers
             {
                 MixedRealityToolkit.CameraSystem.HeadHeight = OculusApi.EyeHeight;
             }
+
+            OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
         }
 
         /// <inheritdoc />
