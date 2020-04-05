@@ -22,7 +22,7 @@ namespace XRTK.Oculus.Controllers
         public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
-            MinConfidenceRequired = profile.MinConfidenceRequired;
+            MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
         }
 
         private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
