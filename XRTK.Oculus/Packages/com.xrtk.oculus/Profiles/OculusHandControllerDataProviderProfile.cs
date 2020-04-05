@@ -15,11 +15,11 @@ namespace XRTK.Oculus.Profiles
     {
         [SerializeField]
         [Tooltip("The minimum hand tracking confidence expected.")]
-        private OculusApi.TrackingConfidence minConfidenceRequired = OculusApi.TrackingConfidence.Low;
+        private int minConfidenceRequired = 0;
 
         /// <summary>
         /// The minimum hand tracking confidence expected.
         /// </summary>
-        public OculusApi.TrackingConfidence MinConfidenceRequired => minConfidenceRequired;
+        public int MinConfidenceRequired => minConfidenceRequired;
     }
 }
