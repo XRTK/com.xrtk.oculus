@@ -9,6 +9,7 @@ using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
+using XRTK.Providers.Controllers.OpenVR;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
@@ -105,21 +106,7 @@ namespace XRTK.Oculus.Controllers
 
             if (!addController) { return null; }
 
-            var currentControllerType = GetCurrentControllerType(controllerMask);
-            Type controllerType = null;
-
-            switch (currentControllerType)
-            {
-                case SupportedControllerType.OculusTouch:
-                    controllerType = typeof(OculusTouchController);
-                    break;
-                case SupportedControllerType.OculusGo:
-                    controllerType = typeof(OculusGoController);
-                    break;
-                case SupportedControllerType.OculusRemote:
-                    controllerType = typeof(OculusRemoteController);
-                    break;
-            }
+            var controllerType = GetCurrentControllerType(controllerMask);
 
             // Determine Handedness of the current controller
             var controllingHand = controllerMask.ToHandedness();
@@ -255,24 +242,24 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
-        private SupportedControllerType GetCurrentControllerType(OculusApi.Controller controllerMask)
+        private Type GetCurrentControllerType(OculusApi.Controller controllerMask)
         {
             switch (controllerMask)
             {
                 case OculusApi.Controller.LTouch:
                 case OculusApi.Controller.RTouch:
                 case OculusApi.Controller.Touch:
-                    return SupportedControllerType.OculusTouch;
+                    return typeof(OculusTouchController);
                 case OculusApi.Controller.Remote:
-                    return SupportedControllerType.OculusRemote;
+                    return typeof(OculusRemoteController);
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
-                    return SupportedControllerType.OculusGo;
+                    return typeof(OculusGoController);
             }
 
-            Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to generic controller type");
+            Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to {nameof(GenericOpenVRController)}");
 
-            return SupportedControllerType.GenericOpenVR;
+            return typeof(GenericOpenVRController);
         }
     }
 }

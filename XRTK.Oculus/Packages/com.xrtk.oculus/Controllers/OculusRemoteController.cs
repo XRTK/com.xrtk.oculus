@@ -28,14 +28,14 @@ namespace XRTK.Oculus.Controllers
         /// <inheritdoc />
         public override MixedRealityInteractionMapping[] DefaultInteractions => new[]
         {
-            new MixedRealityInteractionMapping(0, "Button.DpadUp", AxisType.Digital, "DpadUp", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(1, "Button.DpadDown", AxisType.Digital, "DpadDown", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(2, "Button.DpadLeft", AxisType.Digital, "DpadLeft", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(3, "Button.DpadRight", AxisType.Digital, "DpadRight", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(4, "Button.One", AxisType.Digital, "One", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(5, "Button.Two", AxisType.Digital, "Two", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(6, "Button.Start", AxisType.Digital, "Start", DeviceInputType.ButtonPress),
-            new MixedRealityInteractionMapping(7, "Button.Back", AxisType.Digital, "Back", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.DpadUp", AxisType.Digital, "DpadUp", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.DpadDown", AxisType.Digital, "DpadDown", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.DpadLeft", AxisType.Digital, "DpadLeft", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.DpadRight", AxisType.Digital, "DpadRight", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.One", AxisType.Digital, "One", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.Two", AxisType.Digital, "Two", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.Start", AxisType.Digital, "Start", DeviceInputType.ButtonPress),
+            new MixedRealityInteractionMapping("Button.Back", AxisType.Digital, "Back", DeviceInputType.ButtonPress),
         };
 
         /// <inheritdoc />
