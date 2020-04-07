@@ -27,10 +27,15 @@ namespace XRTK.Oculus.Extensions
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
                     return SupportedControllerType.OculusGo;
+                case OculusApi.Controller.LHand:
+                case OculusApi.Controller.RHand:
+                case OculusApi.Controller.Hands:
+                    return SupportedControllerType.Hand;
             }
 
-            Debug.LogWarning($"{controller} does not have a defined controller type, falling back to generic controller type");
-            return SupportedControllerType.GenericOpenVR;
+            // If we couldn't map it then the provided controller type is not supported
+            // and we ignore it.
+            return SupportedControllerType.None;
         }
 
         /// <summary>
