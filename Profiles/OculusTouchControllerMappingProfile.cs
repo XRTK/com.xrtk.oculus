@@ -10,7 +10,7 @@ using XRTK.Providers.Controllers;
 
 namespace XRTK.Oculus.Profiles
 {
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Native Oculus Touch Controller Mapping Profile", fileName = "OculusTouchControllerMappingProfile")]
+    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Mappings/Native Oculus Touch Controller", fileName = "OculusTouchControllerMappingProfile")]
     public class OculusTouchControllerMappingProfile : BaseMixedRealityControllerMappingProfile
     {
         /// <inheritdoc />
