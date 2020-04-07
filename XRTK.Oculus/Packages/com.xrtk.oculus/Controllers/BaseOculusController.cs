@@ -18,8 +18,8 @@ namespace XRTK.Oculus.Controllers
     public class BaseOculusController : BaseController
     {
         /// <inheritdoc />
-        public BaseOculusController(IMixedRealityControllerDataProvider dataProvider, TrackingState trackingState, Handedness controllerHandedness, OculusApi.Controller controllerType, OculusApi.Node nodeType, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
-            : base(dataProvider, trackingState, controllerHandedness, inputSource, interactions)
+        public BaseOculusController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, OculusApi.Controller controllerType, OculusApi.Node nodeType, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
+            : base(controllerDataProvider, trackingState, controllerHandedness, inputSource, interactions)
         {
             ControllerType = controllerType;
             NodeType = nodeType;
