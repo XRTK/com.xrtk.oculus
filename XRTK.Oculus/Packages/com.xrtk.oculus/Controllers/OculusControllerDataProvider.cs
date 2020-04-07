@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers;
+using XRTK.Definitions.Controllers.OpenVR;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
-using XRTK.Providers.Controllers.OpenVR;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
