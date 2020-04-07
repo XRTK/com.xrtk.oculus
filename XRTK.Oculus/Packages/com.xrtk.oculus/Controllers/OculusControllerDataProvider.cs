@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Controllers.OpenVR;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
+using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
@@ -22,7 +22,7 @@ namespace XRTK.Oculus.Controllers
         /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>
         /// <param name="priority">Data provider priority controls the order in the service registry.</param>
         /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
-        public OculusControllerDataProvider(string name, uint priority, BaseMixedRealityControllerDataProviderProfile profile)
+        public OculusControllerDataProvider(string name, uint priority, OculusGoControllerDataProviderProfile profile)
             : base(name, priority, profile)
         {
         }
