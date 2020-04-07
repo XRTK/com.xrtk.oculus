@@ -1,12 +1,10 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers.OpenVR;
 using XRTK.Definitions.Devices;
-using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
@@ -108,20 +106,8 @@ namespace XRTK.Oculus.Controllers
 
             var controllerType = GetCurrentControllerType(controllerMask);
 
-            // Determine Handedness of the current controller
             var controllingHand = controllerMask.ToHandedness();
-
-            var nodeType = OculusApi.Node.None;
-
-            switch (controllingHand)
-            {
-                case Handedness.Left:
-                    nodeType = OculusApi.Node.HandLeft;
-                    break;
-                case Handedness.Right:
-                    nodeType = OculusApi.Node.HandRight;
-                    break;
-            }
+            var nodeType = controllingHand.ToNode();
 
             var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"{controllerType.Name} {controllingHand}", pointers);
