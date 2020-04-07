@@ -125,7 +125,7 @@ namespace XRTK.Oculus.Controllers
 
             var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
             var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-            var detectedController = new BaseOculusController(TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
+            var detectedController = new BaseOculusController(this, TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
 
             if (!detectedController.SetupConfiguration(controllerType))
             {

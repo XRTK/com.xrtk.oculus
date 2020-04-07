@@ -8,6 +8,7 @@ using XRTK.Definitions.InputSystem;
 using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
 using XRTK.Interfaces.InputSystem;
+using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Extensions;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
@@ -16,23 +17,9 @@ namespace XRTK.Oculus.Controllers
 {
     public class BaseOculusController : BaseController
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="trackingState"></param>
-        /// <param name="controllerHandedness"></param>
-        /// <param name="controllerType"></param>
-        /// <param name="nodeType"></param>
-        /// <param name="inputSource"></param>
-        /// <param name="interactions"></param>
-        public BaseOculusController(
-            TrackingState trackingState,
-            Handedness controllerHandedness,
-            OculusApi.Controller controllerType,
-            OculusApi.Node nodeType,
-            IMixedRealityInputSource inputSource = null,
-            MixedRealityInteractionMapping[] interactions = null)
-            : base(trackingState, controllerHandedness, inputSource, interactions)
+        /// <inheritdoc />
+        public BaseOculusController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, OculusApi.Controller controllerType, OculusApi.Node nodeType, IMixedRealityInputSource inputSource = null, MixedRealityInteractionMapping[] interactions = null)
+            : base(controllerDataProvider, trackingState, controllerHandedness, inputSource, interactions)
         {
             ControllerType = controllerType;
             NodeType = nodeType;
