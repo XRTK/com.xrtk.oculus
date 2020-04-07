@@ -1,6 +1,7 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers.OpenVR;
@@ -8,6 +9,7 @@ using XRTK.Definitions.Devices;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
+using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
@@ -241,6 +243,10 @@ namespace XRTK.Oculus.Controllers
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
                     return typeof(OculusGoController);
+                case OculusApi.Controller.Hands:
+                case OculusApi.Controller.LHand:
+                case OculusApi.Controller.RHand:
+                    return null;
             }
 
             Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to {nameof(GenericOpenVRController)}");
