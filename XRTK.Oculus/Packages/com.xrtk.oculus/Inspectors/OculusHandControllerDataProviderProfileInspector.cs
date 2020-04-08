@@ -30,8 +30,6 @@ namespace XRTK.Oculus.Inspectors
         {
             RenderHeader();
 
-            EditorGUILayout.LabelField("Oculus Hand Controller Data Provider Settings", EditorStyles.boldLabel);
-
             base.OnInspectorGUI();
             serializedObject.Update();
 
