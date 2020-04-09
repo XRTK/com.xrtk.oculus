@@ -1,6 +1,7 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Devices;
@@ -119,24 +120,18 @@ namespace XRTK.Oculus.Controllers
                 return existingController;
             }
 
-            var controllerType = typeof(MixedRealityHandController);
-            var pointers = RequestPointers(controllerType, handedness, true);
-            var inputSource = MixedRealityToolkit.InputSystem.RequestNewGenericInputSource($"{handedness} Hand Controller", pointers);
-            var detectedController = new MixedRealityHandController(this, TrackingState.Tracked, handedness, inputSource);
-
-            if (!detectedController.SetupConfiguration(controllerType))
+            MixedRealityHandController detectedController;
+            try
             {
-                // Controller failed to be setup correctly.
-                // Return null so we don't raise the source detected.
+                detectedController = new MixedRealityHandController(this, TrackingState.Tracked, handedness, GetControllerMappingProfile(typeof(MixedRealityHandController), handedness));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to create {nameof(MixedRealityHandController)}!\n{e}");
                 return null;
             }
 
-            for (int i = 0; i < detectedController.InputSource?.Pointers?.Length; i++)
-            {
-                detectedController.InputSource.Pointers[i].Controller = detectedController;
-            }
-
-            detectedController.TryRenderControllerModel(controllerType);
+            detectedController.TryRenderControllerModel(typeof(MixedRealityHandController));
             AddController(detectedController);
             activeControllers.Add(handedness, detectedController);
             MixedRealityToolkit.InputSystem?.RaiseSourceDetected(detectedController.InputSource, detectedController);

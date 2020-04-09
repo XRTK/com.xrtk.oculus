@@ -25,7 +25,7 @@ namespace XRTK.Oculus.Controllers
         {
         }
 
-        private const float DeviceRefreshInterval = 3.0f;
+        private const float DEVICE_REFRESH_INTERVAL = 3.0f;
 
         /// <summary>
         /// Dictionary to capture all active controllers detected
@@ -57,7 +57,7 @@ namespace XRTK.Oculus.Controllers
 
             deviceRefreshTimer += Time.unscaledDeltaTime;
 
-            if (deviceRefreshTimer >= DeviceRefreshInterval)
+            if (deviceRefreshTimer >= DEVICE_REFRESH_INTERVAL)
             {
                 deviceRefreshTimer = 0.0f;
                 RefreshDevices();
@@ -106,23 +106,25 @@ namespace XRTK.Oculus.Controllers
 
             var controllerType = GetCurrentControllerType(controllerMask);
 
-            var controllingHand = controllerMask.ToHandedness();
-            var nodeType = controllingHand.ToNode();
+            var handedness = controllerMask.ToHandedness();
+            var nodeType = handedness.ToNode();
 
-            var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
-            var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"{controllerType.Name} {controllingHand}", pointers);
-            var detectedController = new BaseOculusController(this, TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
+            BaseOculusController detectedController;
 
-            if (!detectedController.SetupConfiguration(controllerType))
+            try
             {
-                // Controller failed to be setup correctly.
-                // Return null so we don't raise the source detected.
+                detectedController = Activator.CreateInstance(controllerType, this, TrackingState.NotTracked, handedness, GetControllerMappingProfile(controllerType, handedness), controllerMask, nodeType) as BaseOculusController;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to create {controllerType.Name} controller!\n{e}");
                 return null;
             }
 
-            for (int i = 0; i < detectedController.InputSource?.Pointers?.Length; i++)
+            if (detectedController == null)
             {
-                detectedController.InputSource.Pointers[i].Controller = detectedController;
+                Debug.LogError($"Failed to create {controllerType.Name} controller!");
+                return null;
             }
 
             detectedController.TryRenderControllerModel(controllerType);
