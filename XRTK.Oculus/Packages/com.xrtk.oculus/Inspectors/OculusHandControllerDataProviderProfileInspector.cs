@@ -28,9 +28,8 @@ namespace XRTK.Oculus.Inspectors
 
         public override void OnInspectorGUI()
         {
-            RenderHeader();
-
             base.OnInspectorGUI();
+
             serializedObject.Update();
 
             EditorGUILayout.Space();
