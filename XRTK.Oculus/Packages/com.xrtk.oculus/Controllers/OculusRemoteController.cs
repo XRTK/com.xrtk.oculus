@@ -10,8 +10,10 @@ namespace XRTK.Oculus.Controllers
 {
     public class OculusRemoteController : BaseOculusController
     {
+        public OculusRemoteController() : base() { }
+
         /// <inheritdoc />
-        public OculusRemoteController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType, OculusApi.Node nodeType)
+        public OculusRemoteController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)
             : base(controllerDataProvider, trackingState, controllerHandedness, controllerMappingProfile, controllerType, nodeType)
         {
         }

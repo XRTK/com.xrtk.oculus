@@ -14,10 +14,12 @@ using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
 {
-    public class BaseOculusController : BaseController
+    public abstract class BaseOculusController : BaseController
     {
+        public BaseOculusController() : base() { }
+
         /// <inheritdoc />
-        public BaseOculusController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType, OculusApi.Node nodeType)
+        protected BaseOculusController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)
             : base(controllerDataProvider, trackingState, controllerHandedness, controllerMappingProfile)
         {
             ControllerType = controllerType;
@@ -27,12 +29,12 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// The Oculus Node Type.
         /// </summary>
-        public OculusApi.Node NodeType { get; }
+        private OculusApi.Node NodeType { get; }
 
         /// <summary>
         /// The Oculus Controller Type.
         /// </summary>
-        public OculusApi.Controller ControllerType { get; }
+        private OculusApi.Controller ControllerType { get; }
 
         private OculusApi.ControllerState4 previousState = new OculusApi.ControllerState4();
         private OculusApi.ControllerState4 currentState = new OculusApi.ControllerState4();
