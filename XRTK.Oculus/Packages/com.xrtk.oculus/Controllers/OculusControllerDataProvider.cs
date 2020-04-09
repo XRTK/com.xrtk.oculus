@@ -9,7 +9,6 @@ using XRTK.Definitions.Devices;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
-using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers
