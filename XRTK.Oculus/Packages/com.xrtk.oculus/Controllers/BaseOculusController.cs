@@ -3,13 +3,13 @@
 
 using System;
 using UnityEngine;
-using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Extensions;
+using XRTK.Providers.Controllers;
 using XRTK.Services;
 
 namespace XRTK.Oculus.Controllers

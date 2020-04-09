@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using XRTK.Definitions.Controllers.OpenVR;
 using XRTK.Definitions.Devices;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Profiles;
@@ -229,7 +228,7 @@ namespace XRTK.Oculus.Controllers
             }
         }
 
-        private Type GetCurrentControllerType(OculusApi.Controller controllerMask)
+        private static Type GetCurrentControllerType(OculusApi.Controller controllerMask)
         {
             switch (controllerMask)
             {
@@ -242,15 +241,9 @@ namespace XRTK.Oculus.Controllers
                 case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.RTrackedRemote:
                     return typeof(OculusGoController);
-                case OculusApi.Controller.Hands:
-                case OculusApi.Controller.LHand:
-                case OculusApi.Controller.RHand:
+                default:
                     return null;
             }
-
-            Debug.LogWarning($"{controllerMask} does not have a defined controller type, falling back to {nameof(GenericOpenVRController)}");
-
-            return typeof(GenericOpenVRController);
         }
     }
 }
