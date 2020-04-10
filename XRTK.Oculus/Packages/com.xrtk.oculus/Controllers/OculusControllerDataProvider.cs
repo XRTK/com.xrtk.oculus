@@ -127,7 +127,7 @@ namespace XRTK.Oculus.Controllers
                 return null;
             }
 
-            detectedController.TryRenderControllerModel(controllerType);
+            detectedController.TryRenderControllerModel();
 
             activeControllers.Add(controllerMask, detectedController);
             AddController(detectedController);

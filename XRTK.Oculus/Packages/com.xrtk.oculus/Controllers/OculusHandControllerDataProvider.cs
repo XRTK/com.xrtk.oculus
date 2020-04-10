@@ -131,7 +131,7 @@ namespace XRTK.Oculus.Controllers
                 return null;
             }
 
-            detectedController.TryRenderControllerModel(typeof(MixedRealityHandController));
+            detectedController.TryRenderControllerModel();
             AddController(detectedController);
             activeControllers.Add(handedness, detectedController);
             MixedRealityToolkit.InputSystem?.RaiseSourceDetected(detectedController.InputSource, detectedController);
