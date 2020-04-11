@@ -42,11 +42,7 @@ namespace XRTK.Oculus.Controllers
         {
             base.Initialize();
 
-            if (MixedRealityToolkit.CameraSystem != null)
-            {
-                MixedRealityToolkit.CameraSystem.HeadHeight = OculusApi.EyeHeight;
-            }
-
+            MixedRealityToolkit.CameraSystem?.SetHeadHeight(OculusApi.EyeHeight);
             OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
         }
 
