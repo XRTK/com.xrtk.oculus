@@ -65,11 +65,5 @@ namespace XRTK.Oculus.Controllers
             new MixedRealityInteractionMapping("Touch.SecondaryThumbRest Touch", AxisType.Digital, "RThumbRest", DeviceInputType.ThumbTouch),
             new MixedRealityInteractionMapping("Touch.SecondaryThumbRest Near Touch", AxisType.Digital, "RThumbRest", DeviceInputType.ThumbNearTouch)
         };
-
-        /// <inheritdoc />
-        public override void SetupDefaultInteractions(Handedness controllerHandedness)
-        {
-            AssignControllerMappings(controllerHandedness == Handedness.Left ? DefaultLeftHandedInteractions : DefaultRightHandedInteractions);
-        }
     }
 }
