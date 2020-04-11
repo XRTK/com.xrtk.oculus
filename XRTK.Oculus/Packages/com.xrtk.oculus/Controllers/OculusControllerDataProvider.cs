@@ -36,9 +36,9 @@ namespace XRTK.Oculus.Controllers
         private OculusApi.Controller lastDeviceList;
 
         /// <inheritdoc />
-        public override void Initialize()
+        public override void Enable()
         {
-            base.Initialize();
+            base.Enable();
 
             MixedRealityToolkit.CameraSystem?.SetHeadHeight(OculusApi.EyeHeight);
         }
