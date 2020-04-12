@@ -32,8 +32,7 @@ namespace XRTK.Oculus.Inspectors
 
             serializedObject.Update();
 
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Oculus Hand Settings");
+            EditorGUILayout.LabelField("Oculus Hand Settings", EditorStyles.boldLabel);
             minConfidenceRequired.intValue = (int)(OculusApi.TrackingConfidence)EditorGUILayout.EnumPopup(confidenceContent, (OculusApi.TrackingConfidence)minConfidenceRequired.intValue);
 
             serializedObject.ApplyModifiedProperties();
