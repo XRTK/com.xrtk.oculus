@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
+using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
@@ -14,14 +15,9 @@ namespace XRTK.Oculus.Controllers
 {
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="name">Name of the data provider as assigned in the configuration profile.</param>
-        /// <param name="priority">Data provider priority controls the order in the service registry.</param>
-        /// <param name="profile">Controller data provider profile assigned to the provider instance in the configuration inspector.</param>
-        public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile)
-            : base(name, priority, profile)
+        /// <inheritdoc />
+        public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile, IMixedRealityInputSystem parentService)
+            : base(name, priority, profile, parentService)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
         }
