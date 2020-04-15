@@ -20,10 +20,12 @@ namespace XRTK.Oculus.Controllers
             : base(name, priority, profile, parentService)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
+            leftHandConverter = new OculusHandDataConverter(Handedness.Left, TrackedPoses);
+            rightHandConverter = new OculusHandDataConverter(Handedness.Right, TrackedPoses);
         }
 
-        private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
-        private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
+        private readonly OculusHandDataConverter leftHandConverter;
+        private readonly OculusHandDataConverter rightHandConverter;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
 
         private OculusApi.HandState leftHandState = default;

@@ -5,21 +5,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
+using XRTK.Definitions.Controllers.Simulation.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
+using XRTK.Providers.Controllers.Hands;
 
 namespace XRTK.Oculus.Controllers
 {
     /// <summary>
     /// Converts oculus hand data to <see cref="HandData"/>.
     /// </summary>
-    public sealed class OculusHandDataConverter
+    public sealed class OculusHandDataConverter : BaseHandDataConverter
     {
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="handedness">Handedness of the hand this converter is created for.</param>
-        public OculusHandDataConverter(Handedness handedness)
+        /// <param name="trackedPoses">The tracked poses collection to use for pose recognition.</param>
+        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<SimulatedHandControllerPoseData> trackedPoses) : base(handedness, trackedPoses)
         {
             this.handedness = handedness;
         }
@@ -73,6 +76,7 @@ namespace XRTK.Oculus.Controllers
                 }
             }
 
+            PostProcess(updatedHandData);
             return updatedHandData;
         }
 
