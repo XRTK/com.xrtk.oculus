@@ -3,6 +3,7 @@
 
 using UnityEditor;
 using UnityEngine;
+using XRTK.Inspectors.Extensions;
 using XRTK.Inspectors.Profiles.InputSystem.Controllers;
 using XRTK.Oculus.Profiles;
 
@@ -16,7 +17,9 @@ namespace XRTK.Oculus.Inspectors
     {
         private SerializedProperty minConfidenceRequired;
 
+        private bool showOculusHandTrackingSettings = true;
         private GUIContent confidenceContent;
+        private static readonly GUIContent oculusHandSettingsFoldoutHeader = new GUIContent("Oculus Hand Tracking Settings");
 
         protected override void OnEnable()
         {
@@ -32,8 +35,13 @@ namespace XRTK.Oculus.Inspectors
 
             serializedObject.Update();
 
-            EditorGUILayout.LabelField("Oculus Hand Settings", EditorStyles.boldLabel);
-            minConfidenceRequired.intValue = (int)(OculusApi.TrackingConfidence)EditorGUILayout.EnumPopup(confidenceContent, (OculusApi.TrackingConfidence)minConfidenceRequired.intValue);
+            showOculusHandTrackingSettings = EditorGUILayoutExtensions.FoldoutWithBoldLabel(showOculusHandTrackingSettings, oculusHandSettingsFoldoutHeader, true);
+            if (showOculusHandTrackingSettings)
+            {
+                EditorGUI.indentLevel++;
+                minConfidenceRequired.intValue = (int)(OculusApi.TrackingConfidence)EditorGUILayout.EnumPopup(confidenceContent, (OculusApi.TrackingConfidence)minConfidenceRequired.intValue);
+                EditorGUI.indentLevel--;
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
