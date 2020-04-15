@@ -17,9 +17,9 @@ namespace XRTK.Oculus.Inspectors
     {
         private SerializedProperty minConfidenceRequired;
 
-        private GUIContent confidenceContent;
-
         private bool showOculusHandTrackingSettings = true;
+        private GUIContent confidenceContent;
+        private static readonly GUIContent oculusHandSettingsFoldoutHeader = new GUIContent("Oculus Hand Tracking Settings");
 
         protected override void OnEnable()
         {
@@ -35,7 +35,7 @@ namespace XRTK.Oculus.Inspectors
 
             serializedObject.Update();
 
-            showOculusHandTrackingSettings = EditorGUILayoutExtensions.FoldoutWithBoldLabel(showOculusHandTrackingSettings, new GUIContent("Oculus Hand Tracking Settings"), true);
+            showOculusHandTrackingSettings = EditorGUILayoutExtensions.FoldoutWithBoldLabel(showOculusHandTrackingSettings, oculusHandSettingsFoldoutHeader, true);
             if (showOculusHandTrackingSettings)
             {
                 EditorGUI.indentLevel++;
