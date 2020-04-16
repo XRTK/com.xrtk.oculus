@@ -23,12 +23,9 @@ namespace XRTK.Oculus.Controllers
         /// <param name="handedness">Handedness of the hand this converter is created for.</param>
         /// <param name="trackedPoses">The tracked poses collection to use for pose recognition.</param>
         public OculusHandDataConverter(Handedness handedness, IReadOnlyList<SimulatedHandControllerPoseData> trackedPoses) : base(handedness, trackedPoses)
-        {
-            this.handedness = handedness;
-        }
+        { }
 
         private readonly Dictionary<int, Transform> boneProxyTransforms = new Dictionary<int, Transform>();
-        private readonly Handedness handedness;
 
         private bool isInitialized = false;
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
@@ -48,17 +45,17 @@ namespace XRTK.Oculus.Controllers
         {
             if (!isInitialized)
             {
-                isInitialized = OculusApi.GetSkeleton(handedness.ToSkeletonType(), out handSkeleton);
+                isInitialized = OculusApi.GetSkeleton(Handedness.ToSkeletonType(), out handSkeleton);
                 if (!isInitialized)
                 {
-                    Debug.LogError($"{GetType().Name} - {handedness} failed to initialize.");
+                    Debug.LogError($"{GetType().Name} - {Handedness} failed to initialize.");
                     return null;
                 }
             }
 
             HandData updatedHandData = new HandData
             {
-                IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, handedness.ToHand(), ref handState),
+                IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, Handedness.ToHand(), ref handState),
                 TimeStamp = DateTimeOffset.UtcNow.Ticks
             };
 
@@ -177,7 +174,7 @@ namespace XRTK.Oculus.Controllers
 
         private bool TryGetUpdatedHandMeshData(out HandMeshData data)
         {
-            if (OculusApi.GetMesh(handedness.ToMeshType(), out handMesh))
+            if (OculusApi.GetMesh(Handedness.ToMeshType(), out handMesh))
             {
                 Vector3[] vertices = new Vector3[handMesh.NumVertices];
 
@@ -296,7 +293,7 @@ namespace XRTK.Oculus.Controllers
         {
             // WARNING THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK
             // - This fix is a hack to fix broken and inconsistent rotations for hands.
-            if (handedness == Handedness.Left)
+            if (Handedness == Handedness.Left)
             {
                 // Rotate bone 180 degrees on X to flip up.
                 bonePose.Rotation *= Quaternion.Euler(180f, 0f, 0f);
@@ -325,7 +322,7 @@ namespace XRTK.Oculus.Controllers
                 return boneProxyTransforms[(int)boneId];
             }
 
-            var transform = new GameObject($"Oculus Hand {handedness} {boneId} Proxy").transform;
+            var transform = new GameObject($"Oculus Hand {Handedness} {boneId} Proxy").transform;
             boneProxyTransforms.Add((int)boneId, transform);
 
             return transform;
