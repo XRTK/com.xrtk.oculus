@@ -22,7 +22,7 @@ namespace XRTK.Oculus.Controllers
         /// </summary>
         /// <param name="handedness">Handedness of the hand this converter is created for.</param>
         /// <param name="trackedPoses">The tracked poses collection to use for pose recognition.</param>
-        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<SimulatedHandControllerPoseData> trackedPoses) : base(handedness, trackedPoses)
+        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<HandControllerPoseDefinition> trackedPoses) : base(handedness, trackedPoses)
         { }
 
         private readonly Dictionary<int, Transform> boneProxyTransforms = new Dictionary<int, Transform>();
