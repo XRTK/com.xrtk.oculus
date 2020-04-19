@@ -32,14 +32,13 @@ namespace XRTK.Oculus.Controllers
         /// <summary>
         /// The minimum required tracking confidence for hands to be registered.
         /// </summary>
-        public OculusApi.TrackingConfidence MinConfidenceRequired { get; } = OculusApi.TrackingConfidence.Low;
+        public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
 
         /// <inheritdoc />
         public override void Enable()
         {
             base.Enable();
 
-            MixedRealityToolkit.CameraSystem?.SetHeadHeight(OculusApi.EyeHeight);
             OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
         }
 
