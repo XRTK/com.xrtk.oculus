@@ -40,7 +40,7 @@ namespace XRTK.Oculus
                             // Truncate unsupported trailing version info for System.Version. Original string is returned if not present.
                             pluginVersion = pluginVersion.Split('-')[0];
                             _version = new Version(pluginVersion);
-                            if (Debug.isDebugBuild)
+                            if (Debug.isDebugBuild && Application.isPlaying)
                             {
                                 Debug.Log($"Oculus API version detected was - [{_version.ToString()}]");
                             }
