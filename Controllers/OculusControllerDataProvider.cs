@@ -1,12 +1,13 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Extensions;
+using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
@@ -15,12 +16,12 @@ namespace XRTK.Oculus.Controllers
     public class OculusControllerDataProvider : BaseControllerDataProvider
     {
         /// <inheritdoc />
-        public OculusControllerDataProvider(string name, uint priority, BaseMixedRealityControllerDataProviderProfile profile, IMixedRealityInputSystem parentService)
+        public OculusControllerDataProvider(string name, uint priority, OculusControllerDataProviderProfile profile, IMixedRealityInputSystem parentService)
             : base(name, priority, profile, parentService)
         {
         }
 
-        private const float DeviceRefreshInterval = 3.0f;
+        private const float DEVICE_REFRESH_INTERVAL = 3.0f;
 
         /// <summary>
         /// Dictionary to capture all active controllers detected
@@ -41,7 +42,7 @@ namespace XRTK.Oculus.Controllers
 
             deviceRefreshTimer += Time.unscaledDeltaTime;
 
-            if (deviceRefreshTimer >= DeviceRefreshInterval)
+            if (deviceRefreshTimer >= DEVICE_REFRESH_INTERVAL)
             {
                 deviceRefreshTimer = 0.0f;
                 RefreshDevices();
@@ -88,34 +89,30 @@ namespace XRTK.Oculus.Controllers
 
             if (!addController) { return null; }
 
-            var controllerType = controllerMask.ToControllerType().ToImplementation();
-            if (controllerType == null)
+            var controllerType = GetCurrentControllerType(controllerMask);
+
+            var handedness = controllerMask.ToHandedness();
+            var nodeType = handedness.ToNode();
+
+            BaseOculusController detectedController;
+
+            try
             {
-                // If we could not map the controller to a type supported by this 
-                // XRTK platform it's ignored. This is intended behaviour.
+                detectedController = Activator.CreateInstance(controllerType, this, TrackingState.NotTracked, handedness, GetControllerMappingProfile(controllerType, handedness), controllerMask, nodeType) as BaseOculusController;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to create {controllerType.Name} controller!\n{e}");
                 return null;
             }
 
-            var controllingHand = controllerMask.ToHandedness();
-            var nodeType = controllingHand.ToNode();
-
-            var pointers = RequestPointers(typeof(BaseOculusController), controllingHand);
-            var inputSource = MixedRealityToolkit.InputSystem?.RequestNewGenericInputSource($"Oculus Controller {controllingHand}", pointers);
-            var detectedController = new BaseOculusController(this, TrackingState.NotTracked, controllingHand, controllerMask, nodeType, inputSource);
-
-            if (!detectedController.SetupConfiguration(controllerType))
+            if (detectedController == null)
             {
-                // Controller failed to be setup correctly.
-                // Return null so we don't raise the source detected.
+                Debug.LogError($"Failed to create {controllerType.Name} controller!");
                 return null;
             }
 
-            for (int i = 0; i < detectedController.InputSource?.Pointers?.Length; i++)
-            {
-                detectedController.InputSource.Pointers[i].Controller = detectedController;
-            }
-
-            detectedController.TryRenderControllerModel(controllerType);
+            detectedController.TryRenderControllerModel();
 
             activeControllers.Add(controllerMask, detectedController);
             AddController(detectedController);
@@ -215,6 +212,24 @@ namespace XRTK.Oculus.Controllers
             if (clearFromRegistry)
             {
                 activeControllers.Remove(activeController);
+            }
+        }
+
+        private static Type GetCurrentControllerType(OculusApi.Controller controllerMask)
+        {
+            switch (controllerMask)
+            {
+                case OculusApi.Controller.LTouch:
+                case OculusApi.Controller.RTouch:
+                case OculusApi.Controller.Touch:
+                    return typeof(OculusTouchController);
+                case OculusApi.Controller.Remote:
+                    return typeof(OculusRemoteController);
+                case OculusApi.Controller.LTrackedRemote:
+                case OculusApi.Controller.RTrackedRemote:
+                    return typeof(OculusGoController);
+                default:
+                    return null;
             }
         }
     }

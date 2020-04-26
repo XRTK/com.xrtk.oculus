@@ -3,14 +3,12 @@
 
 using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
-using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus.Profiles
 {
     /// <summary>
     /// Configuration profile for Oculus hand controllers.
     /// </summary>
-    [CreateAssetMenu(menuName = "Mixed Reality Toolkit/Input System/Controller Data Providers/Oculus Hand", fileName = "OculusHandControllerDataProviderProfile", order = (int)CreateProfileMenuItemIndices.Input)]
     public class OculusHandControllerDataProviderProfile : BaseHandControllerDataProviderProfile
     {
         [SerializeField]
