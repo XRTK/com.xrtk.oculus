@@ -2,42 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using UnityEngine;
-using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus.Extensions
 {
     public static class ControllerExtensions
     {
-        /// <summary>
-        /// Converts an <see cref="OculusApi.Controller"/> mask to a XRTK <see cref="SupportedControllerType"/>.
-        /// </summary>
-        /// <param name="controller">Controller mask.</param>
-        /// <returns>Controller type.</returns>
-        public static SupportedControllerType ToControllerType(this OculusApi.Controller controller)
-        {
-            switch (controller)
-            {
-                case OculusApi.Controller.LTouch:
-                case OculusApi.Controller.RTouch:
-                case OculusApi.Controller.Touch:
-                    return SupportedControllerType.OculusTouch;
-                case OculusApi.Controller.Remote:
-                    return SupportedControllerType.OculusRemote;
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.RTrackedRemote:
-                    return SupportedControllerType.OculusGo;
-                case OculusApi.Controller.LHand:
-                case OculusApi.Controller.RHand:
-                case OculusApi.Controller.Hands:
-                    return SupportedControllerType.Hand;
-            }
-
-            // If we couldn't map it then the provided controller type is not supported
-            // and we ignore it.
-            return SupportedControllerType.None;
-        }
-
         /// <summary>
         /// Converts an <see cref="OculusApi.Controller"/> mask to a XRTK <see cref="Handedness"/>.
         /// </summary>
