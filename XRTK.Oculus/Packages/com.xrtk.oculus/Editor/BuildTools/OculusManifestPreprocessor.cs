@@ -31,7 +31,7 @@ namespace XRTK.Oculus.Editor.Build
         [MenuItem("Mixed Reality Toolkit/Tools/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
         public static void GenerateManifestForSubmission()
         {
-            var so = ScriptableObject.CreateInstance(typeof(OculusEditorAssetLocator));
+            var so = ScriptableObject.CreateInstance(typeof(OculusPathFinder));
             var script = MonoScript.FromScriptableObject(so);
             var assetPath = AssetDatabase.GetAssetPath(script);
             var editorDir = Directory.GetParent(assetPath).FullName;
@@ -79,6 +79,8 @@ namespace XRTK.Oculus.Editor.Build
                 bool handTrackingEntryNeeded = true; // (targetHandTrackingSupport != OVRProjectConfig.HandTrackingSupport.ControllersOnly);
                 bool handTrackingRequired = false; // (targetHandTrackingSupport == OVRProjectConfig.HandTrackingSupport.HandsOnly);
 
+                // TODO add back in?
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (handTrackingEntryNeeded)
                 {
                     string handTrackingFeatureText = $"<uses-feature android:name=\"com.oculus.permission.HAND_TRACKING\" android:required=\"{(handTrackingRequired ? "true" : "false")}\" />";

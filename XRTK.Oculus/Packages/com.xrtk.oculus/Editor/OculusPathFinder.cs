@@ -20,10 +20,11 @@ limitations under the License.
 ************************************************************************************/
 
 using UnityEngine;
+using XRTK.Utilities.Editor;
 
 namespace XRTK.Oculus.Editor
 {
-    internal class OculusEditorAssetLocator : ScriptableObject
+    internal class OculusPathFinder : ScriptableObject, IPathFinder
     {
         // Stub helper class to locate the root editor path through Unity Editor API.
         // Required to be a standalone class in a separate file or else MonoScript.FromScriptableObject() returns an empty string path.
