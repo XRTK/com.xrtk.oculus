@@ -3,11 +3,12 @@
 
 using UnityEditor;
 using UnityEngine;
-using XRTK.Inspectors.Extensions;
-using XRTK.Inspectors.Profiles.InputSystem.Controllers;
+using XRTK.Editor.Extensions;
+using XRTK.Editor.Profiles.InputSystem.Controllers;
+using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
 
-namespace XRTK.Oculus.Inspectors
+namespace XRTK.Oculus.Editor
 {
     /// <summary>
     /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.

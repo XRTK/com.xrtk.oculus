@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using XRTK.Oculus.Extensions;
 
-namespace XRTK.Oculus
+namespace XRTK.Oculus.Plugins
 {
     public static class OculusApi
     {
