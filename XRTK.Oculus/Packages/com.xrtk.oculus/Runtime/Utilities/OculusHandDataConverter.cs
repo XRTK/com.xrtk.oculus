@@ -7,9 +7,10 @@ using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
+using XRTK.Oculus.Plugins;
 using XRTK.Providers.Controllers.Hands;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Utilities
 {
     /// <summary>
     /// Converts oculus hand data to <see cref="HandData"/>.

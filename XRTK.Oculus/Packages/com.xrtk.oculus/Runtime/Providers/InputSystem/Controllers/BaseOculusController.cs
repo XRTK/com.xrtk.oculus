@@ -13,7 +13,7 @@ using XRTK.Oculus.Plugins;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
-namespace XRTK.Oculus.Providers.Controllers
+namespace XRTK.Oculus.Providers.InputSystem.Controllers
 {
     public abstract class BaseOculusController : BaseController
     {
