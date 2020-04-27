@@ -3,6 +3,7 @@
 
 using XRTK.Definitions.CameraSystem;
 using XRTK.Interfaces.CameraSystem;
+using XRTK.Oculus.Plugins;
 using XRTK.Providers.CameraSystem;
 
 namespace XRTK.Oculus.Providers.CameraSystem

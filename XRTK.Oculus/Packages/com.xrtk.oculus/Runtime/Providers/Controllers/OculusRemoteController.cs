@@ -5,8 +5,9 @@ using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.Providers.Controllers;
+using XRTK.Oculus.Plugins;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     public class OculusRemoteController : BaseOculusController
     {
