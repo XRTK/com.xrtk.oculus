@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using UnityEngine;
+using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Extensions
 {
@@ -14,7 +15,7 @@ namespace XRTK.Oculus.Extensions
         /// <returns>Unity orientation.</returns>
         public static Quaternion FromFlippedZQuatf(this OculusApi.Quatf q)
         {
-            return new Quaternion() { x = -q.x, y = -q.y, z = q.z, w = q.w };
+            return new Quaternion { x = -q.x, y = -q.y, z = q.z, w = q.w };
         }
     }
 }

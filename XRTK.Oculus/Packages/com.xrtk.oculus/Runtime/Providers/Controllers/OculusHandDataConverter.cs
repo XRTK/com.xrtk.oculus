@@ -7,6 +7,7 @@ using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
+using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Providers.Controllers
 {

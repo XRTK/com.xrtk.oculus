@@ -21,7 +21,7 @@ limitations under the License.
 
 using UnityEngine;
 
-namespace XRTK.Oculus.Inspector
+namespace XRTK.Oculus.Editor
 {
     internal class OculusEditorAssetLocator : ScriptableObject
     {

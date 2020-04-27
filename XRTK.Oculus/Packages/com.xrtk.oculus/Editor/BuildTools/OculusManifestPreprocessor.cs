@@ -24,7 +24,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace XRTK.Oculus.Inspector.Build
+namespace XRTK.Oculus.Editor.Build
 {
     public class OculusManifestPreprocessor
     {

@@ -7,6 +7,7 @@ using UnityEngine;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
+using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;

@@ -1,81 +1,81 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using static XRTK.Oculus.OculusApi;
+using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Extensions
 {
     public static class HandednessExtensions
     {
         /// <summary>
-        /// Gets a <see cref="Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// Gets a <see cref="OculusApi.Hand"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="Hand"/></returns>
-        public static Hand ToHand(this Definitions.Utilities.Handedness handedness)
+        /// <returns><see cref="OculusApi.Hand"/></returns>
+        public static OculusApi.Hand ToHand(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
             {
                 case Definitions.Utilities.Handedness.Left:
-                    return Hand.HandLeft;
+                    return OculusApi.Hand.HandLeft;
                 case Definitions.Utilities.Handedness.Right:
-                    return Hand.HandRight;
+                    return OculusApi.Hand.HandRight;
                 default:
-                    return Hand.None;
+                    return OculusApi.Hand.None;
             }
         }
 
         /// <summary>
-        /// Gets a <see cref="Node"/> from the <see cref="Definitions.Utilities.Handedness"/>.
+        /// Gets a <see cref="OculusApi.Node"/> from the <see cref="Definitions.Utilities.Handedness"/>.
         /// </summary>
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>
-        /// <returns><see cref="Node"/></returns>
-        public static Node ToNode(this Definitions.Utilities.Handedness handedness)
+        /// <returns><see cref="OculusApi.Node"/></returns>
+        public static OculusApi.Node ToNode(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
             {
                 case Definitions.Utilities.Handedness.Left:
-                    return Node.HandLeft;
+                    return OculusApi.Node.HandLeft;
                 case Definitions.Utilities.Handedness.Right:
-                    return Node.HandRight;
+                    return OculusApi.Node.HandRight;
                 default:
-                    return Node.None;
+                    return OculusApi.Node.None;
             }
         }
 
         /// <summary>
-        /// Gets a <see cref="MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.	
+        /// Gets a <see cref="OculusApi.MeshType"/> from the <see cref="Definitions.Utilities.Handedness"/>.	
         /// </summary>	
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>	
-        /// <returns><see cref="MeshType"/></returns>	
-        public static MeshType ToMeshType(this Definitions.Utilities.Handedness handedness)
+        /// <returns><see cref="OculusApi.MeshType"/></returns>	
+        public static OculusApi.MeshType ToMeshType(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
             {
                 case Definitions.Utilities.Handedness.Left:
-                    return MeshType.HandLeft;
+                    return OculusApi.MeshType.HandLeft;
                 case Definitions.Utilities.Handedness.Right:
-                    return MeshType.HandRight;
+                    return OculusApi.MeshType.HandRight;
                 default:
-                    return MeshType.None;
+                    return OculusApi.MeshType.None;
             }
         }
 
         /// <summary>	
-        /// Gets an <see cref="SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.	
+        /// Gets an <see cref="OculusApi.SkeletonType"/> from the <see cref="Definitions.Utilities.Handedness"/>.	
         /// </summary>	
         /// <param name="handedness"><see cref="Definitions.Utilities.Handedness"/> to convert.</param>	
-        /// <returns><see cref="SkeletonType"/></returns>	
-        public static SkeletonType ToSkeletonType(this Definitions.Utilities.Handedness handedness)
+        /// <returns><see cref="OculusApi.SkeletonType"/></returns>	
+        public static OculusApi.SkeletonType ToSkeletonType(this Definitions.Utilities.Handedness handedness)
         {
             switch (handedness)
             {
                 case Definitions.Utilities.Handedness.Left:
-                    return SkeletonType.HandLeft;
+                    return OculusApi.SkeletonType.HandLeft;
                 case Definitions.Utilities.Handedness.Right:
-                    return SkeletonType.HandRight;
+                    return OculusApi.SkeletonType.HandRight;
                 default:
-                    return SkeletonType.None;
+                    return OculusApi.SkeletonType.None;
             }
         }
     }

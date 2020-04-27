@@ -9,6 +9,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
 using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Extensions;
+using XRTK.Oculus.Plugins;
 using XRTK.Providers.Controllers;
 using XRTK.Services;
 
