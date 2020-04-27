@@ -3,6 +3,7 @@
 
 using XRTK.Definitions.Platforms;
 using XRTK.Interfaces;
+using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus
 {

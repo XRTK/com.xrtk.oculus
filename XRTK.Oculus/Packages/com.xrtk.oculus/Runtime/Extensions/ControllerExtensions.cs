@@ -3,6 +3,7 @@
 
 using UnityEngine;
 using XRTK.Definitions.Utilities;
+using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Extensions
 {
