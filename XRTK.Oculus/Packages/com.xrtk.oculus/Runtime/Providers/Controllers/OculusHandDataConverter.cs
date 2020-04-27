@@ -8,7 +8,7 @@ using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     /// <summary>
     /// Converts oculus hand data to <see cref="HandData"/>.

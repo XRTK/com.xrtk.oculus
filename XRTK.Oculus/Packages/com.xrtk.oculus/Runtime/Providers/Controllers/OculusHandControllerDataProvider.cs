@@ -11,7 +11,7 @@ using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {

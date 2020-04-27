@@ -6,7 +6,7 @@ using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.Providers.Controllers;
 
-namespace XRTK.Oculus.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     public class OculusGoController : BaseOculusController
     {
