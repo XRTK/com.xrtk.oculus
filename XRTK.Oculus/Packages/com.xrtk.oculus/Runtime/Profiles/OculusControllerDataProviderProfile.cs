@@ -3,7 +3,7 @@
 
 using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Utilities;
-using XRTK.Oculus.Providers.Controllers;
+using XRTK.Oculus.Providers.InputSystem.Controllers;
 
 namespace XRTK.Oculus.Profiles
 {

@@ -9,6 +9,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
+using XRTK.Oculus.Utilities;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
