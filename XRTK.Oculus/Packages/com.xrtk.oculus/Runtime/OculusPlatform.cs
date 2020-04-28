@@ -7,6 +7,7 @@ using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus
 {
+    [System.Runtime.InteropServices.Guid("DB1ACC26-EC8D-4BC6-AFCA-C51351B2DA2E")]
     public class OculusPlatform : BasePlatform
     {
         private static readonly System.Version NoVersion = new System.Version();
