@@ -14,6 +14,7 @@ using XRTK.Services;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
+    [System.Runtime.InteropServices.Guid("EA666456-BAEF-4412-A829-A4C7132E98C3")]
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {
         /// <inheritdoc />
