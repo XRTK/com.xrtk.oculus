@@ -17,7 +17,8 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
 {
     public abstract class BaseOculusController : BaseController
     {
-        public BaseOculusController() : base() { }
+        /// <inheritdoc />
+        protected BaseOculusController() { }
 
         /// <inheritdoc />
         protected BaseOculusController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)

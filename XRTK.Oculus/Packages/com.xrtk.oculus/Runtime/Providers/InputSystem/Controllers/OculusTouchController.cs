@@ -9,9 +9,11 @@ using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Providers.InputSystem.Controllers
 {
+    [System.Runtime.InteropServices.Guid("1898974A-DBCD-4C88-8E03-726689848D52")]
     public class OculusTouchController : BaseOculusController
     {
-        public OculusTouchController() : base() { }
+        /// <inheritdoc />
+        public OculusTouchController() { }
 
         /// <inheritdoc />
         public OculusTouchController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)

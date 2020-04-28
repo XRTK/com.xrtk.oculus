@@ -8,6 +8,7 @@ using XRTK.Providers.CameraSystem;
 
 namespace XRTK.Oculus.Providers.CameraSystem
 {
+    [System.Runtime.InteropServices.Guid("83EFF552-ADF4-47C8-AD53-DF7406856D3F")]
     public class OculusCameraDataProvider : BaseCameraDataProvider
     {
         /// <inheritdoc />
