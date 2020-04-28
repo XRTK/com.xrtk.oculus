@@ -9,9 +9,11 @@ using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
+    [System.Runtime.InteropServices.Guid("071048C6-31F3-460C-863F-5D3121F47654")]
     public class OculusRemoteController : BaseOculusController
     {
-        public OculusRemoteController() : base() { }
+        /// <inheritdoc />
+        public OculusRemoteController() { }
 
         /// <inheritdoc />
         public OculusRemoteController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)

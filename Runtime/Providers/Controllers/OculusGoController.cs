@@ -9,9 +9,11 @@ using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
+    [System.Runtime.InteropServices.Guid("A1417657-5FF3-402D-8376-D8E1689175A9")]
     public class OculusGoController : BaseOculusController
     {
-        public OculusGoController() : base() { }
+        /// <inheritdoc />
+        public OculusGoController() { }
 
         /// <inheritdoc />
         public OculusGoController(IMixedRealityControllerDataProvider controllerDataProvider, TrackingState trackingState, Handedness controllerHandedness, MixedRealityControllerMappingProfile controllerMappingProfile, OculusApi.Controller controllerType = OculusApi.Controller.None, OculusApi.Node nodeType = OculusApi.Node.None)
