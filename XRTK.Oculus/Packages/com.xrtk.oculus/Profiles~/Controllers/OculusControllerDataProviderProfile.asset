@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c275ea0a537ee48b517e7c58643b53, type: 3}
+  m_Name: OculusControllerDataProviderProfile
+  m_EditorClassIdentifier: 
+  hasSetupDefaults: 1
+  controllerMappingProfiles:
+  - {fileID: 11400000, guid: 4f8c8cc63998d7440849e42e61a4ba64, type: 2}
+  - {fileID: 11400000, guid: 6a0035e25763ca640b14c9a709ee4bd9, type: 2}
+  - {fileID: 11400000, guid: 79cbea5e2d236ae488726a72c8f777af, type: 2}
+  - {fileID: 11400000, guid: 413843becb0ae4346a6a56bd3d95149c, type: 2}
+  - {fileID: 11400000, guid: eb176f0405197c841aaef5ea36db934a, type: 2}
