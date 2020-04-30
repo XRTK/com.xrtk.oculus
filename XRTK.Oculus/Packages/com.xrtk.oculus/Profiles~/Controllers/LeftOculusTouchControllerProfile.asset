@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d420c170b42dfe0438e2aa2a829775ed, type: 3}
+  m_Name: LeftOculusTouchControllerProfile
+  m_EditorClassIdentifier: 
+  controllerType:
+    reference: 1898974a-dbcd-4c88-8e03-726689848d52
+  handedness: 1
+  visualizationProfile: {fileID: 11400000, guid: fe125eaaf5547684d8506b794c5a6016,
+    type: 2}
+  useCustomInteractions: 0
+  interactionMappingProfiles:
+  - {fileID: 11400000, guid: 30554a684776dc64d832efa06d8879e6, type: 2}
+  - {fileID: 11400000, guid: 078df0b10d3e1074aa9976f4f928f38a, type: 2}
+  - {fileID: 11400000, guid: ba4b36566bff5d4458c382a5f8e2de42, type: 2}
+  - {fileID: 11400000, guid: 9eada80ad9c3f0c478db97cacea7f982, type: 2}
+  - {fileID: 11400000, guid: 6684da1c5537924408242aeb09a96722, type: 2}
+  - {fileID: 11400000, guid: b62bdd20dc750f84e95524a5ed7d4a95, type: 2}
+  - {fileID: 11400000, guid: 4e6ca112a89bc8a4da89d367f0972644, type: 2}
+  - {fileID: 11400000, guid: 8d73d3132335ac94b88a13f1de60c5ec, type: 2}
+  - {fileID: 11400000, guid: 71af88ada0f87b6408b687dfe017f671, type: 2}
+  - {fileID: 11400000, guid: eef5b794e9afa6d4588670577951c8cf, type: 2}
+  - {fileID: 11400000, guid: 80f56a87a099e6f4281aaa6a6c6bdfaa, type: 2}
+  - {fileID: 11400000, guid: 5d833127727b79d4dbc607a5a365a3f2, type: 2}
+  - {fileID: 11400000, guid: 70d4b454d4d7bd54184fffbfc81f5218, type: 2}
+  - {fileID: 11400000, guid: 0607425e4bb401441be2af20781aa40a, type: 2}
+  - {fileID: 11400000, guid: 1128cf02f922803459c393066239a212, type: 2}
+  - {fileID: 11400000, guid: 443ada4c65fe2ac4a875bcd77403e738, type: 2}
+  - {fileID: 11400000, guid: 5f2c3f2b7b17e8447b5cb3671f5089f4, type: 2}
+  - {fileID: 11400000, guid: 9fa15f0e93480ee45b868c815ae0a531, type: 2}
+  - {fileID: 11400000, guid: e9709613c576c064dabe0b6962a09252, type: 2}

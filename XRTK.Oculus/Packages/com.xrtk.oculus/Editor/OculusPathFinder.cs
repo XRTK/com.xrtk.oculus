@@ -24,9 +24,13 @@ using XRTK.Utilities.Editor;
 
 namespace XRTK.Oculus.Editor
 {
-    internal class OculusPathFinder : ScriptableObject, IPathFinder
+    /// <summary>
+    /// Dummy scriptable object used to find the relative path of the com.xrtk.oculus.
+    /// </summary>
+    /// <inheritdoc cref="IPathFinder" />
+    public class OculusPathFinder : ScriptableObject, IPathFinder
     {
-        // Stub helper class to locate the root editor path through Unity Editor API.
-        // Required to be a standalone class in a separate file or else MonoScript.FromScriptableObject() returns an empty string path.
+        /// <inheritdoc />
+        public string Location => $"/Editor/{nameof(OculusPathFinder)}.cs";
     }
 }

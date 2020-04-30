@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using XRTK.Attributes;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
@@ -14,6 +15,7 @@ using XRTK.Services;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
+    [RuntimePlatform(typeof(OculusPlatform))]
     [System.Runtime.InteropServices.Guid("EA666456-BAEF-4412-A829-A4C7132E98C3")]
     public class OculusHandControllerDataProvider : BaseHandControllerDataProvider
     {
