@@ -18,6 +18,7 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_44_0_version = new Version(1, 44, 0);
         private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
         private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
+        private static readonly Version OVRP_1_48_0_version = new Version(1, 48, 0);
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -327,6 +328,9 @@ namespace XRTK.Oculus.Plugins
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_SetTiledMultiResDynamic(Bool isDynamic);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetExternalCameraProperties(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics);
 
         #endregion Oculus API import
 
@@ -2409,7 +2413,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// Set the default camera
+        /// Set the default external camera runtime behaviour
         /// </summary>
         /// <param name="cameraName">name to apply to the default camera</param>
         /// <param name="cameraIntrinsics">(Out) Intrinsics defintion for the sepected camera</param>
@@ -2432,6 +2436,9 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Function to query the device to check if fixed foveated rendering is supported
+        /// </summary>
         public static bool fixedFoveatedRenderingSupported
         {
             get
@@ -2449,6 +2456,9 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Function to query the device to report on the fixed foveated rendering level applied
+        /// </summary>
         public static FixedFoveatedRenderingLevel fixedFoveatedRenderingLevel
         {
             get
@@ -2473,6 +2483,9 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Function to inform the device to enable dynamic foveated rendering
+        /// </summary>
         public static bool useDynamicFixedFoveatedRendering
         {
             get
@@ -2494,6 +2507,30 @@ namespace XRTK.Oculus.Plugins
                 {
                     Result result = ovrp_SetTiledMultiResDynamic(value ? Bool.True : Bool.False);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Set the default camera
+        /// </summary>
+        /// <param name="cameraName">name to apply to the default camera</param>
+        /// <param name="cameraIntrinsics">(Out) Intrinsics defintion for the sepected camera</param>
+        /// <param name="cameraExtrinsics">(Out) Extrinsics defintion for the sepected camera</param>
+        /// <returns>True if the camera was set as default</returns>
+        public static bool SetExternalCameraProperties(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics)
+        {
+            if (Version >= OVRP_1_48_0_version)
+            {
+                Result result = ovrp_SetExternalCameraProperties(cameraName, ref cameraIntrinsics, ref cameraExtrinsics);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
