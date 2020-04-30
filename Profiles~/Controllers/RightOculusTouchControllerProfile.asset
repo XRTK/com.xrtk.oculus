@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d420c170b42dfe0438e2aa2a829775ed, type: 3}
+  m_Name: RightOculusTouchControllerProfile
+  m_EditorClassIdentifier: 
+  controllerType:
+    reference: 1898974a-dbcd-4c88-8e03-726689848d52
+  handedness: 2
+  visualizationProfile: {fileID: 11400000, guid: 5ee67c77447ce88409a3e04e57806963,
+    type: 2}
+  useCustomInteractions: 0
+  interactionMappingProfiles:
+  - {fileID: 11400000, guid: b3dda0b9a337a1b4f8b49b4abe228acb, type: 2}
+  - {fileID: 11400000, guid: 0d499af05ab248c4fa0b76ca57527b2a, type: 2}
+  - {fileID: 11400000, guid: 8ebab325de63c1440bbcd61f35ebd278, type: 2}
+  - {fileID: 11400000, guid: 154f225352d33ad4badc96d265a10380, type: 2}
+  - {fileID: 11400000, guid: 5eb2d7a4736229049bdeee1927419c0d, type: 2}
+  - {fileID: 11400000, guid: c4fd1955456798541b4464d923b5b7e5, type: 2}
+  - {fileID: 11400000, guid: 4c67768e5e360dc4abbbba8e0145cdf1, type: 2}
+  - {fileID: 11400000, guid: 59c9da44d8d7ab54a83b905d5f4265e3, type: 2}
+  - {fileID: 11400000, guid: 583a2a4a4d22a63478d0ada16f510874, type: 2}
+  - {fileID: 11400000, guid: 1c3202d2b268f8149899c7e1487b656b, type: 2}
+  - {fileID: 11400000, guid: e7124493dc782cf4889645f9ec2c01bf, type: 2}
+  - {fileID: 11400000, guid: 888aed8e55b3f584188319372e7a8a55, type: 2}
+  - {fileID: 11400000, guid: 505faf22e96b9404d837af78c42932b2, type: 2}
+  - {fileID: 11400000, guid: 6f83c259404c1be489a7c9077ebb0b28, type: 2}
+  - {fileID: 11400000, guid: 5e8424acaef6b4f4f8d91b6e39808752, type: 2}
+  - {fileID: 11400000, guid: 87792809226055e40a2b904857601712, type: 2}
+  - {fileID: 11400000, guid: 881b2d5a2173e8c4e9921ed1e726b45c, type: 2}
+  - {fileID: 11400000, guid: 44d64e0bc9d128f42b8f4718a6a2484b, type: 2}
