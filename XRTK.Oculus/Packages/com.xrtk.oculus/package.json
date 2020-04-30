@@ -17,7 +17,7 @@
   "dependencies": {
     "com.xrtk.core": "0.2.0"
   },
-  "samples": [
+  "profiles": [
     {
       "displayName": "Default Profiles",
       "path": "Profiles~/"
