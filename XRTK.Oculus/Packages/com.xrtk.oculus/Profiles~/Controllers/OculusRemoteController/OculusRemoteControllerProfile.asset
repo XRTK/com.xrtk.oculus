@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d420c170b42dfe0438e2aa2a829775ed, type: 3}
+  m_Name: OculusRemoteControllerProfile
+  m_EditorClassIdentifier: 
+  controllerType:
+    reference: 071048c6-31f3-460c-863f-5d3121f47654
+  handedness: 0
+  visualizationProfile: {fileID: 0}
+  useCustomInteractions: 0
+  interactionMappingProfiles:
+  - {fileID: 11400000, guid: 881fb0b197e70874f8cca565a5de0955, type: 2}
+  - {fileID: 11400000, guid: e2e76decaa1d68f489b71d5a22a0ab7d, type: 2}
+  - {fileID: 11400000, guid: 8f540faec5641b54e81eac5f4c2e28b1, type: 2}
+  - {fileID: 11400000, guid: f84462ffd710eb84997822a0dd4bd60e, type: 2}
+  - {fileID: 11400000, guid: c481cd841c0dc14499c8a7dbb963db24, type: 2}
+  - {fileID: 11400000, guid: 57b8d52912d05d944a7bef8849e61746, type: 2}
+  - {fileID: 11400000, guid: d4ccc6a88a36a9248b3e2f02baa5a07e, type: 2}
+  - {fileID: 11400000, guid: 640f9efd0a00cb64db56fceb6cdf43fa, type: 2}
