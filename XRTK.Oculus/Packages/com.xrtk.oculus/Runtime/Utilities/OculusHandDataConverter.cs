@@ -10,6 +10,7 @@ using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
+using XRTK.Utilities;
 
 namespace XRTK.Oculus.Utilities
 {
@@ -258,15 +259,14 @@ namespace XRTK.Oculus.Utilities
 
         private MixedRealityPose ComputeJointPose(OculusApi.Bone bone)
         {
-            // HACK: The Pinky and Thumb 1+ bones depend on the Pinky/Thumb 0 bone
+            // The Pinky/Thumb 1+ bones depend on the Pinky/Thumb 0 bone
             // to be availble, which the XRTK hand tracking does not use. We still gotta update them to
             // be able to resolve pose dependencies.
             if (bone.Id == OculusApi.BoneId.Hand_Thumb1)
             {
                 ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb0]);
             }
-
-            if (bone.Id == OculusApi.BoneId.Hand_Pinky1)
+            else if (bone.Id == OculusApi.BoneId.Hand_Pinky1)
             {
                 ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
             }
@@ -277,7 +277,6 @@ namespace XRTK.Oculus.Utilities
             if (parentProxyTransform == null)
             {
                 Vector3 rootPosition = handState.RootPose.Position.FromFlippedZVector3f();
-                rootPosition.y += OculusApi.EyeHeight;
                 proxyTransform.position = rootPosition;
                 proxyTransform.rotation = handState.RootPose.Orientation.FromFlippedZQuatf();
             }
@@ -331,6 +330,11 @@ namespace XRTK.Oculus.Utilities
             return transform;
         }
 
+        /// <summary>
+        /// Gets the hand's pointer pose mixed reality playspace coordinates.
+        /// </summary>
+        /// <param name="hand">The hand state provided by native APIs.</param>
+        /// <returns>Pointer pose in playspace tracking space.</returns>
         private MixedRealityPose ComputePointerPose(OculusApi.HandState hand)
         {
             var platformPointerPose = hand.PointerPose.ToMixedRealityPose();
@@ -342,6 +346,17 @@ namespace XRTK.Oculus.Utilities
             var pointerRotation = Quaternion.LookRotation(pointerForward, pointerUp);
 
             return new MixedRealityPose(pointerPosition, pointerRotation);
+        }
+
+        private MixedRealityPose TranslateToCameraSpace(MixedRealityPose pose)
+        {
+            var cameraTransform = MixedRealityToolkit.CameraSystem != null
+                ? MixedRealityToolkit.CameraSystem.MainCameraRig.PlayerCamera.transform
+                : CameraCache.Main.transform;
+
+            pose.Position = cameraTransform.TransformPoint(pose.Position);
+
+            return pose;
         }
     }
 }

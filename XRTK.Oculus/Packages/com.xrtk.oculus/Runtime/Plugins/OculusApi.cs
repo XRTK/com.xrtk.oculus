@@ -43,7 +43,7 @@ namespace XRTK.Oculus.Plugins
                             _version = new Version(pluginVersion);
                             if (Debug.isDebugBuild && Application.isPlaying)
                             {
-                                Debug.Log($"Oculus API version detected was - [{_version.ToString()}]");
+                                Debug.Log($"Oculus API version detected is - [{_version.ToString()}]");
                             }
                         }
                         else
