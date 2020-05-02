@@ -41,7 +41,7 @@ namespace XRTK.Oculus.Utilities
         /// Reads hand data for the current frame and converts it to agnostic hand data.
         /// </summary>
         /// <returns>Updated hand data.</returns>
-        public HandData GetHandData()
+        public HandData GetHandData(OculusApi.HandState hand)
         {
             if (!isInitialized)
             {

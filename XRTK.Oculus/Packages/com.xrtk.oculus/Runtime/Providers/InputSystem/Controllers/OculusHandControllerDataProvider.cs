@@ -63,7 +63,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             if (isLeftHandTracked)
             {
                 var controller = GetOrAddController(Handedness.Left);
-                controller?.UpdateController(leftHandConverter.GetHandData());
+                controller?.UpdateController(leftHandConverter.GetHandData(leftHandState));
             }
             else
             {
@@ -77,7 +77,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             if (isRightHandTracked)
             {
                 var controller = GetOrAddController(Handedness.Right);
-                controller?.UpdateController(rightHandConverter.GetHandData());
+                controller?.UpdateController(rightHandConverter.GetHandData(rightHandState));
             }
             else
             {
