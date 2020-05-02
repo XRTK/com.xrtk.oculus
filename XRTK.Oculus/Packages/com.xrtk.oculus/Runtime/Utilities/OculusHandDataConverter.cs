@@ -9,6 +9,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
 using XRTK.Providers.Controllers.Hands;
+using XRTK.Services;
 
 namespace XRTK.Oculus.Utilities
 {
@@ -71,6 +72,8 @@ namespace XRTK.Oculus.Utilities
                 {
                     updatedHandData.Mesh = new HandMeshData();
                 }
+
+                updatedHandData.PointerPose = ComputePointerPose(hand);
             }
 
             PostProcess(updatedHandData);
@@ -326,6 +329,19 @@ namespace XRTK.Oculus.Utilities
             boneProxyTransforms.Add((int)boneId, transform);
 
             return transform;
+        }
+
+        private MixedRealityPose ComputePointerPose(OculusApi.HandState hand)
+        {
+            var platformPointerPose = hand.PointerPose.ToMixedRealityPose();
+            var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
+            var pointerForward = playspaceTransform.TransformDirection(platformPointerPose.Forward);
+            var pointerUp = playspaceTransform.TransformDirection(platformPointerPose.Up);
+
+            var pointerPosition = playspaceTransform.TransformPoint(platformPointerPose.Position);
+            var pointerRotation = Quaternion.LookRotation(pointerForward, pointerUp);
+
+            return new MixedRealityPose(pointerPosition, pointerRotation);
         }
     }
 }
