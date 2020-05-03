@@ -288,7 +288,7 @@ namespace XRTK.Oculus.Utilities
             }
 
             // Compute final bone pose.
-            return FixRotation(new MixedRealityPose(proxyTransform.position, proxyTransform.rotation));
+            return TranslateToCameraSpace(FixRotation(new MixedRealityPose(proxyTransform.position, proxyTransform.rotation)));
         }
 
         private MixedRealityPose FixRotation(MixedRealityPose bonePose)
@@ -345,7 +345,7 @@ namespace XRTK.Oculus.Utilities
             var pointerPosition = playspaceTransform.TransformPoint(platformPointerPose.Position);
             var pointerRotation = Quaternion.LookRotation(pointerForward, pointerUp);
 
-            return new MixedRealityPose(pointerPosition, pointerRotation);
+            return TranslateToCameraSpace(new MixedRealityPose(pointerPosition, pointerRotation));
         }
 
         private MixedRealityPose TranslateToCameraSpace(MixedRealityPose pose)
@@ -354,7 +354,8 @@ namespace XRTK.Oculus.Utilities
                 ? MixedRealityToolkit.CameraSystem.MainCameraRig.PlayerCamera.transform
                 : CameraCache.Main.transform;
 
-            pose.Position = cameraTransform.TransformPoint(pose.Position);
+            var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
+            pose.Position = playspaceTransform.TransformPoint(pose.Position) + new Vector3(0, cameraTransform.position.y, 0f);
 
             return pose;
         }
