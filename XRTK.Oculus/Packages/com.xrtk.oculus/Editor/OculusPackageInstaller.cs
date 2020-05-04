@@ -29,15 +29,15 @@ namespace XRTK.Oculus.Editor
         [MenuItem("Mixed Reality Toolkit/Packages/Install Oculus Package Assets...")]
         private static void ImportLuminPackageAssets()
         {
-            EditorPreferences.Set($"{nameof(OculusPackageInstaller)}", false);
+            EditorPreferences.Set($"{nameof(OculusPackageInstaller)}.Profiles", false);
             EditorApplication.delayCall += CheckPackage;
         }
 
         private static void CheckPackage()
         {
-            if (!EditorPreferences.Get($"{nameof(OculusPackageInstaller)}", false))
+            if (!EditorPreferences.Get($"{nameof(OculusPackageInstaller)}.Profiles", false))
             {
-                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}", PackageInstaller.TryInstallAssets(HiddenPath, $"{DefaultPath}\\Profiles"));
+                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}.Profiles", PackageInstaller.TryInstallAssets(HiddenPath, $"{DefaultPath}\\Profiles"));
             }
         }
     }
