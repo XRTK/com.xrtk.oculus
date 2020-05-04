@@ -19,7 +19,7 @@ namespace XRTK.Oculus.Editor
         {
             if (!EditorPreferences.Get($"{nameof(OculusPackageInstaller)}", false))
             {
-                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}", PackageInstaller.TryInstallProfiles(HiddenPath, DefaultPath));
+                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}", PackageInstaller.TryInstallAssets(HiddenPath, $"{DefaultPath}\\Profiles"));
             }
         }
     }
