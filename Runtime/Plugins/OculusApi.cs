@@ -104,13 +104,20 @@ namespace XRTK.Oculus.Plugins
         internal static Controller connectedControllerTypes = Controller.None;
 
         /// <summary>
-        /// Oculus API Initialised check
+        /// Oculus API Initialized check
         /// </summary>
         public static bool Initialized
         {
             get
             {
-                return ovrp_GetInitialized() == Bool.True;
+                try
+                {
+                    return ovrp_GetInitialized() == Bool.True;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 
