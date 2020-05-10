@@ -43,18 +43,12 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
 
         /// <inheritdoc />
-        public override void Enable()
-        {
-            base.Enable();
-            OculusHandDataConverter.HandMeshingEnabled = RenderingMode == HandRenderingMode.Mesh;
-        }
-
-        /// <inheritdoc />
         public override void Update()
         {
             base.Update();
 
             var step = OculusApi.Step.Render;
+            OculusHandDataConverter.HandMeshingEnabled = RenderingMode == HandRenderingMode.Mesh;
 
             bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState) &&
                                      leftHandState.HandConfidence >= MinConfidenceRequired &&
