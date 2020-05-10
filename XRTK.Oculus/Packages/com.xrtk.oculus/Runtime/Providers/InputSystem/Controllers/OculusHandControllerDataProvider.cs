@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Attributes;
+using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
@@ -45,8 +46,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         public override void Enable()
         {
             base.Enable();
-
-            OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
+            OculusHandDataConverter.HandMeshingEnabled = RenderingMode == HandRenderingMode.Mesh;
         }
 
         /// <inheritdoc />
