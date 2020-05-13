@@ -28,7 +28,7 @@ namespace XRTK.Oculus.Editor.Build
 {
     public class OculusManifestPreprocessor
     {
-        [MenuItem("Mixed Reality Toolkit/Tools/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
+        [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
         public static void GenerateManifestForSubmission()
         {
             var so = ScriptableObject.CreateInstance(typeof(OculusPathFinder));
@@ -99,7 +99,7 @@ namespace XRTK.Oculus.Editor.Build
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("Mixed Reality Toolkit/Tools/Remove AndroidManifest.xml", false, 100001)]
+        [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Remove AndroidManifest.xml", false, 100001)]
         public static void RemoveAndroidManifest()
         {
             AssetDatabase.DeleteAsset("Assets/Plugins/Android/AndroidManifest.xml");
