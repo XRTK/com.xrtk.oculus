@@ -64,7 +64,7 @@ namespace XRTK.Oculus.Editor.Build
             if (dofTextIndex != -1)
             {
                 //Forces Quest configuration.  Needs flip for Go/Gear viewer
-                const string headTrackingFeatureText = "<uses-feature android:name=\"com.oculus.permission.HAND_TRACKING\" android:version=\"1\" android:required=\"true\" />";
+                const string headTrackingFeatureText = "<uses-feature android:name=\"oculus.software.handtracking\" android:version=\"1\" android:required=\"true\" />";
                 manifestText = manifestText.Insert(dofTextIndex, headTrackingFeatureText);
             }
             else
@@ -83,7 +83,7 @@ namespace XRTK.Oculus.Editor.Build
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (handTrackingEntryNeeded)
                 {
-                    string handTrackingFeatureText = $"<uses-feature android:name=\"com.oculus.permission.HAND_TRACKING\" android:required=\"{(handTrackingRequired ? "true" : "false")}\" />";
+                    string handTrackingFeatureText = $"<uses-feature android:name=\"oculus.software.handtracking\" android:required=\"{(handTrackingRequired ? "true" : "false")}\" />";
                     const string handTrackingPermissionText = "<uses-permission android:name=\"com.oculus.permission.HAND_TRACKING\" />";
 
                     manifestText = manifestText.Insert(handTrackingTextIndex, handTrackingPermissionText);
