@@ -34,6 +34,18 @@ namespace XRTK.Oculus.Utilities
         private OculusApi.HandState handState = new OculusApi.HandState();
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
 
+        /// <inheritdoc />
+        protected override bool PlatformProvidesPointerPose => true;
+
+        /// <inheritdoc />
+        protected override bool PlatformProvidesIsPinching => false;
+
+        /// <inheritdoc />
+        protected override bool PlatformProvidesPinchStrength => false;
+
+        /// <inheritdoc />
+        protected override bool PlatformProvidesIsPointing => false;
+
         /// <summary>
         /// Gets or sets whether hand mesh data should be read and converted.
         /// </summary>
@@ -77,7 +89,7 @@ namespace XRTK.Oculus.Utilities
                 updatedHandData.PointerPose = ComputePointerPose(hand);
             }
 
-            PostProcess(updatedHandData);
+            Finalize(updatedHandData);
             return updatedHandData;
         }
 
