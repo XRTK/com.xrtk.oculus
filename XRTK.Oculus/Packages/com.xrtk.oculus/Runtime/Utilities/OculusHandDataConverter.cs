@@ -8,7 +8,6 @@ using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
-using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 using XRTK.Utilities;
 
@@ -23,8 +22,7 @@ namespace XRTK.Oculus.Utilities
         /// Constructor.
         /// </summary>
         /// <param name="handedness">Handedness of the hand this converter is created for.</param>
-        /// <param name="trackedPoses">The tracked poses collection to use for pose recognition.</param>
-        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<HandControllerPoseDefinition> trackedPoses)
+        public OculusHandDataConverter(Handedness handedness)
         {
             this.handedness = handedness;
         }

@@ -26,8 +26,8 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             : base(name, priority, profile, parentService)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
-            leftHandConverter = new OculusHandDataConverter(Handedness.Left, TrackedPoses);
-            rightHandConverter = new OculusHandDataConverter(Handedness.Right, TrackedPoses);
+            leftHandConverter = new OculusHandDataConverter(Handedness.Left);
+            rightHandConverter = new OculusHandDataConverter(Handedness.Right);
 
             postProcessor = new HandDataPostProcessor(TrackedPoses)
             {
