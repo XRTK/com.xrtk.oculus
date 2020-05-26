@@ -28,10 +28,16 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
             leftHandConverter = new OculusHandDataConverter(Handedness.Left, TrackedPoses);
             rightHandConverter = new OculusHandDataConverter(Handedness.Right, TrackedPoses);
+
+            postProcessor = new HandDataPostProcessor(TrackedPoses)
+            {
+                PlatformProvidesPointerPose = true
+            };
         }
 
         private readonly OculusHandDataConverter leftHandConverter;
         private readonly OculusHandDataConverter rightHandConverter;
+        private readonly HandDataPostProcessor postProcessor;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
 
         private OculusApi.HandState leftHandState = default;
@@ -57,7 +63,10 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             if (isLeftHandTracked)
             {
                 var controller = GetOrAddController(Handedness.Left);
-                controller?.UpdateController(leftHandConverter.GetHandData(leftHandState));
+                var handData = leftHandConverter.GetHandData(leftHandState);
+
+                postProcessor.PostProcess(handData);
+                controller?.UpdateController(handData);
             }
             else
             {
@@ -71,7 +80,10 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             if (isRightHandTracked)
             {
                 var controller = GetOrAddController(Handedness.Right);
-                controller?.UpdateController(rightHandConverter.GetHandData(rightHandState));
+                var handData = rightHandConverter.GetHandData(rightHandState);
+
+                postProcessor.PostProcess(handData);
+                controller?.UpdateController(handData);
             }
             else
             {

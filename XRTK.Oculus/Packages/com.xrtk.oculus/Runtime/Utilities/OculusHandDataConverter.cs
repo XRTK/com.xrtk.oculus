@@ -17,34 +17,25 @@ namespace XRTK.Oculus.Utilities
     /// <summary>
     /// Converts oculus hand data to <see cref="HandData"/>.
     /// </summary>
-    public sealed class OculusHandDataConverter : BaseHandDataConverter
+    public sealed class OculusHandDataConverter
     {
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="handedness">Handedness of the hand this converter is created for.</param>
         /// <param name="trackedPoses">The tracked poses collection to use for pose recognition.</param>
-        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<HandControllerPoseDefinition> trackedPoses) : base(handedness, trackedPoses)
-        { }
+        public OculusHandDataConverter(Handedness handedness, IReadOnlyList<HandControllerPoseDefinition> trackedPoses)
+        {
+            this.handedness = handedness;
+        }
 
         private readonly Dictionary<int, Transform> boneProxyTransforms = new Dictionary<int, Transform>();
+        private readonly Handedness handedness;
 
         private bool isInitialized = false;
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
         private OculusApi.HandState handState = new OculusApi.HandState();
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
-
-        /// <inheritdoc />
-        protected override bool PlatformProvidesPointerPose => true;
-
-        /// <inheritdoc />
-        protected override bool PlatformProvidesIsPinching => false;
-
-        /// <inheritdoc />
-        protected override bool PlatformProvidesPinchStrength => false;
-
-        /// <inheritdoc />
-        protected override bool PlatformProvidesIsPointing => false;
 
         /// <summary>
         /// Gets or sets whether hand mesh data should be read and converted.
@@ -59,18 +50,19 @@ namespace XRTK.Oculus.Utilities
         {
             if (!isInitialized)
             {
-                isInitialized = OculusApi.GetSkeleton(Handedness.ToSkeletonType(), out handSkeleton);
+                isInitialized = OculusApi.GetSkeleton(handedness.ToSkeletonType(), out handSkeleton);
                 if (!isInitialized)
                 {
-                    Debug.LogError($"{GetType().Name} - {Handedness} failed to initialize.");
+                    Debug.LogError($"{GetType().Name} - {handedness} failed to initialize.");
                     return null;
                 }
             }
 
             HandData updatedHandData = new HandData
             {
-                IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, Handedness.ToHand(), ref handState),
-                TimeStamp = DateTimeOffset.UtcNow.Ticks
+                IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, handedness.ToHand(), ref handState),
+                UpdatedAt = DateTimeOffset.UtcNow.Ticks,
+                Handedness = handedness
             };
 
             if (updatedHandData.IsTracked)
@@ -89,7 +81,6 @@ namespace XRTK.Oculus.Utilities
                 updatedHandData.PointerPose = ComputePointerPose(hand);
             }
 
-            Finalize(updatedHandData);
             return updatedHandData;
         }
 
@@ -190,7 +181,7 @@ namespace XRTK.Oculus.Utilities
 
         private bool TryGetUpdatedHandMeshData(out HandMeshData data)
         {
-            if (OculusApi.GetMesh(Handedness.ToMeshType(), out handMesh))
+            if (OculusApi.GetMesh(handedness.ToMeshType(), out handMesh))
             {
                 Vector3[] vertices = new Vector3[handMesh.NumVertices];
 
@@ -307,7 +298,7 @@ namespace XRTK.Oculus.Utilities
         {
             // WARNING THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK
             // - This fix is a hack to fix broken and inconsistent rotations for hands.
-            if (Handedness == Handedness.Left)
+            if (handedness == Handedness.Left)
             {
                 // Rotate bone 180 degrees on X to flip up.
                 bonePose.Rotation *= Quaternion.Euler(180f, 0f, 0f);
@@ -336,7 +327,7 @@ namespace XRTK.Oculus.Utilities
                 return boneProxyTransforms[(int)boneId];
             }
 
-            var transform = new GameObject($"Oculus Hand {Handedness} {boneId} Proxy").transform;
+            var transform = new GameObject($"Oculus Hand {handedness} {boneId} Proxy").transform;
             boneProxyTransforms.Add((int)boneId, transform);
 
             return transform;
