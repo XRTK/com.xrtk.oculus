@@ -97,13 +97,13 @@ namespace XRTK.Oculus.Utilities
                         jointPoses[i] = EstimatePalmPose();
                         break;
                     // Finger: Thumb
-                    case TrackedHandJoint.ThumbMetacarpalJoint:
+                    case TrackedHandJoint.ThumbMetacarpal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
                         break;
-                    case TrackedHandJoint.ThumbProximalJoint:
+                    case TrackedHandJoint.ThumbProximal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb2]);
                         break;
-                    case TrackedHandJoint.ThumbDistalJoint:
+                    case TrackedHandJoint.ThumbDistal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb3]);
                         break;
                     case TrackedHandJoint.ThumbTip:
@@ -113,13 +113,13 @@ namespace XRTK.Oculus.Utilities
                     case TrackedHandJoint.IndexMetacarpal:
                         jointPoses[i] = EstimateIndexMetacarpal();
                         break;
-                    case TrackedHandJoint.IndexKnuckle:
+                    case TrackedHandJoint.IndexProximal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index1]);
                         break;
-                    case TrackedHandJoint.IndexMiddleJoint:
+                    case TrackedHandJoint.IndexIntermediate:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index2]);
                         break;
-                    case TrackedHandJoint.IndexDistalJoint:
+                    case TrackedHandJoint.IndexDistal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index3]);
                         break;
                     case TrackedHandJoint.IndexTip:
@@ -129,13 +129,13 @@ namespace XRTK.Oculus.Utilities
                     case TrackedHandJoint.MiddleMetacarpal:
                         jointPoses[i] = EstimateMiddleMetacarpal();
                         break;
-                    case TrackedHandJoint.MiddleKnuckle:
+                    case TrackedHandJoint.MiddleProximal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
                         break;
-                    case TrackedHandJoint.MiddleMiddleJoint:
+                    case TrackedHandJoint.MiddleIntermediate:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle2]);
                         break;
-                    case TrackedHandJoint.MiddleDistalJoint:
+                    case TrackedHandJoint.MiddleDistal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle3]);
                         break;
                     case TrackedHandJoint.MiddleTip:
@@ -145,32 +145,32 @@ namespace XRTK.Oculus.Utilities
                     case TrackedHandJoint.RingMetacarpal:
                         jointPoses[i] = EstimateRingMetacarpal();
                         break;
-                    case TrackedHandJoint.RingKnuckle:
+                    case TrackedHandJoint.RingProximal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring1]);
                         break;
-                    case TrackedHandJoint.RingMiddleJoint:
+                    case TrackedHandJoint.RingIntermediate:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring2]);
                         break;
-                    case TrackedHandJoint.RingDistalJoint:
+                    case TrackedHandJoint.RingDistal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring3]);
                         break;
                     case TrackedHandJoint.RingTip:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_RingTip]);
                         break;
                     // Finger: Pinky
-                    case TrackedHandJoint.PinkyMetacarpal:
+                    case TrackedHandJoint.LittleMetacarpal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
                         break;
-                    case TrackedHandJoint.PinkyKnuckle:
+                    case TrackedHandJoint.LittleProximal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky1]);
                         break;
-                    case TrackedHandJoint.PinkyMiddleJoint:
+                    case TrackedHandJoint.LittleIntermediate:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky2]);
                         break;
-                    case TrackedHandJoint.PinkyDistalJoint:
+                    case TrackedHandJoint.LittleDistal:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky3]);
                         break;
-                    case TrackedHandJoint.PinkyTip:
+                    case TrackedHandJoint.LittleTip:
                         jointPoses[i] = ComputeJointPose(handSkeleton.Bones[(int)OculusApi.BoneId.Hand_PinkyTip]);
                         break;
                 }
