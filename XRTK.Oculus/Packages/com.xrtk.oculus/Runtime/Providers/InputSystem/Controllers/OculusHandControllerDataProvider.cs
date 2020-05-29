@@ -65,7 +65,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                 var controller = GetOrAddController(Handedness.Left);
                 var handData = leftHandConverter.GetHandData(leftHandState);
 
-                postProcessor.PostProcess(handData);
+                postProcessor.PostProcess(Handedness.Left, handData);
                 controller?.UpdateController(handData);
             }
             else
@@ -82,7 +82,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                 var controller = GetOrAddController(Handedness.Right);
                 var handData = rightHandConverter.GetHandData(rightHandState);
 
-                postProcessor.PostProcess(handData);
+                postProcessor.PostProcess(Handedness.Right, handData);
                 controller?.UpdateController(handData);
             }
             else
