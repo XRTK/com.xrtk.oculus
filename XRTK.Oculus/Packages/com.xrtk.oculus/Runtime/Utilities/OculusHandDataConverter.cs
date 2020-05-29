@@ -59,8 +59,7 @@ namespace XRTK.Oculus.Utilities
             HandData updatedHandData = new HandData
             {
                 IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, handedness.ToHand(), ref handState),
-                UpdatedAt = DateTimeOffset.UtcNow.Ticks,
-                Handedness = handedness
+                UpdatedAt = DateTimeOffset.UtcNow.Ticks
             };
 
             if (updatedHandData.IsTracked)
