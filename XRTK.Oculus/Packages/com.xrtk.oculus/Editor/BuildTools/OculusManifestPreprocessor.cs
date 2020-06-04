@@ -26,8 +26,24 @@ using System.IO;
 
 namespace XRTK.Oculus.Editor.Build
 {
+    /// <summary>
+    /// https://developer.oculus.com/documentation/native/android/mobile-native-manifest/
+    /// </summary>
     public class OculusManifestPreprocessor
     {
+        private const string TEMPLATE_MANIFEST_FILE_NAME = "AndroidManifest.OVRSubmission.xml";
+        private const string OUTPUT_MANIFEST_FILE_NAME = "AndroidManifest.xml";
+        private const string DOF_MODE_MARKER = "<!-- Request the headset DoF mode -->";
+        private const string HAND_TRACKING_MODE_MARKER = "<!-- Request the headset handtracking mode -->";
+
+        private static string ManifestFolder => $"{Application.dataPath}/Plugins/Android";
+
+        private static string DestinationPath => $"{ManifestFolder}/{OUTPUT_MANIFEST_FILE_NAME}";
+
+        /// <summary>
+        /// Generates an Android Manifest that is valid for Oculus Store submissions and enables
+        /// hand tracking on the Oculus Quest.
+        /// </summary>
         [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
         public static void GenerateManifestForSubmission()
         {
@@ -35,7 +51,7 @@ namespace XRTK.Oculus.Editor.Build
             var script = MonoScript.FromScriptableObject(so);
             var assetPath = AssetDatabase.GetAssetPath(script);
             var editorDir = Directory.GetParent(assetPath).FullName;
-            var srcFile = $"{editorDir}/BuildTools/AndroidManifest.OVRSubmission.xml";
+            var srcFile = $"{editorDir}/BuildTools/{TEMPLATE_MANIFEST_FILE_NAME}";
 
             if (!File.Exists(srcFile))
             {
@@ -43,28 +59,24 @@ namespace XRTK.Oculus.Editor.Build
                 return;
             }
 
-            var manifestFolder = $"{Application.dataPath}/Plugins/Android";
-
-            if (!Directory.Exists(manifestFolder))
+            if (!Directory.Exists(ManifestFolder))
             {
-                Directory.CreateDirectory(manifestFolder);
+                Directory.CreateDirectory(ManifestFolder);
             }
 
-            var dstFile = $"{manifestFolder}/AndroidManifest.xml";
-
-            if (File.Exists(dstFile))
+            if (File.Exists(DestinationPath))
             {
-                Debug.LogWarning($"Cannot create Oculus store-compatible manifest due to conflicting file: \"{dstFile}\". Please remove it and try again.");
+                Debug.LogWarning($"Cannot create Oculus store-compatible manifest due to conflicting file: \"{DestinationPath}\". Please remove it and try again.");
                 return;
             }
 
             var manifestText = File.ReadAllText(srcFile);
-            var dofTextIndex = manifestText.IndexOf("<!-- Request the headset DoF mode -->", StringComparison.Ordinal);
+            var dofTextIndex = manifestText.IndexOf(DOF_MODE_MARKER, StringComparison.Ordinal);
 
             if (dofTextIndex != -1)
             {
-                //Forces Quest configuration.  Needs flip for Go/Gear viewer
-                const string headTrackingFeatureText = "<uses-feature android:name=\"oculus.software.handtracking\" android:version=\"1\" android:required=\"true\" />";
+                //Forces Quest configuration. Needs flip for Go/Gear viewer
+                const string headTrackingFeatureText = "<uses-feature android:name=\"android.hardware.vr.headtracking\" android:version=\"1\" android:required=\"true\" />";
                 manifestText = manifestText.Insert(dofTextIndex, headTrackingFeatureText);
             }
             else
@@ -72,7 +84,7 @@ namespace XRTK.Oculus.Editor.Build
                 Debug.LogWarning("Manifest error: unable to locate headset DoF mode");
             }
 
-            var handTrackingTextIndex = manifestText.IndexOf("<!-- Request the headset handtracking mode -->", StringComparison.Ordinal);
+            var handTrackingTextIndex = manifestText.IndexOf(HAND_TRACKING_MODE_MARKER, StringComparison.Ordinal);
 
             if (handTrackingTextIndex != -1)
             {
@@ -95,10 +107,13 @@ namespace XRTK.Oculus.Editor.Build
                 Debug.LogWarning("Manifest error: unable to locate headset hand tracking mode");
             }
 
-            System.IO.File.WriteAllText(dstFile, manifestText);
+            File.WriteAllText(DestinationPath, manifestText);
             AssetDatabase.Refresh();
         }
 
+        /// <summary>
+        /// Removes any existing Andriod Manifest if it exists.
+        /// </summary>
         [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Remove AndroidManifest.xml", false, 100001)]
         public static void RemoveAndroidManifest()
         {
