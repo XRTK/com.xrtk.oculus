@@ -34,7 +34,7 @@ namespace XRTK.Oculus.Editor.Build
         private const string TEMPLATE_MANIFEST_FILE_NAME = "AndroidManifest.OVRSubmission.xml";
         private const string OUTPUT_MANIFEST_FILE_NAME = "AndroidManifest.xml";
         private const string DOF_MODE_MARKER = "<!-- Request the headset DoF mode -->";
-        private const string HAND_TRACKING_MODE_MARKER = "<!-- Request the headset handtracking mode -->";
+        private const string HAND_TRACKING_MODE_MARKER = "<!-- Request the headset hand tracking mode -->";
 
         private static string ManifestFolder => $"{Application.dataPath}/Plugins/Android";
 
@@ -55,7 +55,7 @@ namespace XRTK.Oculus.Editor.Build
 
             if (!File.Exists(srcFile))
             {
-                Debug.LogError("Cannot find Android manifest template for submission. Please delete the OVR folder and reimport the Oculus Utilities.");
+                Debug.LogError("Cannot find Android manifest template for submission. Please reimport the XRTK.Oculus package.");
                 return;
             }
 
