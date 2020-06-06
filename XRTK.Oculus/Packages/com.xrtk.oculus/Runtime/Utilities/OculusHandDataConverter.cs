@@ -44,7 +44,7 @@ namespace XRTK.Oculus.Utilities
         /// Reads hand data for the current frame and converts it to agnostic hand data.
         /// </summary>
         /// <returns>Updated hand data.</returns>
-        public HandData GetHandData(OculusApi.HandState hand)
+        public bool TryGetHandData(OculusApi.HandState hand, out HandData handData)
         {
             if (!isInitialized)
             {
@@ -52,37 +52,37 @@ namespace XRTK.Oculus.Utilities
                 if (!isInitialized)
                 {
                     Debug.LogError($"{GetType().Name} - {handedness} failed to initialize.");
-                    return null;
+                    handData = default;
+                    return false;
                 }
             }
 
-            HandData updatedHandData = new HandData
-            {
-                IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, handedness.ToHand(), ref handState),
-                UpdatedAt = DateTimeOffset.UtcNow.Ticks
-            };
+            handData = new HandData();
+            handData.IsTracked = OculusApi.GetHandState(OculusApi.Step.Render, handedness.ToHand(), ref handState);
+            handData.UpdatedAt = DateTimeOffset.UtcNow.Ticks;
 
-            if (updatedHandData.IsTracked)
+            if (handData.IsTracked)
             {
-                UpdateHandJoints(updatedHandData.Joints);
+                handData.Joints = GetJointPoses();
 
                 if (HandMeshingEnabled && TryGetUpdatedHandMeshData(out HandMeshData data))
                 {
-                    updatedHandData.Mesh = data;
+                    handData.Mesh = data;
                 }
                 else
                 {
-                    updatedHandData.Mesh = new HandMeshData();
+                    handData.Mesh = new HandMeshData();
                 }
 
-                updatedHandData.PointerPose = ComputePointerPose(hand);
+                handData.PointerPose = ComputePointerPose(hand);
             }
 
-            return updatedHandData;
+            return true;
         }
 
-        private void UpdateHandJoints(MixedRealityPose[] jointPoses)
+        private MixedRealityPose[] GetJointPoses()
         {
+            var jointPoses = new MixedRealityPose[HandData.JointCount];
             for (int i = 0; i < jointPoses.Length; i++)
             {
                 TrackedHandJoint trackedHandJoint = (TrackedHandJoint)i;
@@ -174,6 +174,8 @@ namespace XRTK.Oculus.Utilities
                         break;
                 }
             }
+
+            return jointPoses;
         }
 
         private bool TryGetUpdatedHandMeshData(out HandMeshData data)

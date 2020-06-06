@@ -60,13 +60,11 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                                      leftHandState.HandConfidence >= MinConfidenceRequired &&
                                      (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
 
-            if (isLeftHandTracked)
+            if (isLeftHandTracked && leftHandConverter.TryGetHandData(leftHandState, out var leftHandData))
             {
                 var controller = GetOrAddController(Handedness.Left);
-                var handData = leftHandConverter.GetHandData(leftHandState);
-
-                postProcessor.PostProcess(Handedness.Left, handData);
-                controller?.UpdateController(handData);
+                leftHandData = postProcessor.PostProcess(Handedness.Left, leftHandData);
+                controller?.UpdateController(leftHandData);
             }
             else
             {
@@ -77,13 +75,11 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                                       rightHandState.HandConfidence >= MinConfidenceRequired &&
                                       (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
 
-            if (isRightHandTracked)
+            if (isRightHandTracked && rightHandConverter.TryGetHandData(rightHandState, out var rightHandData))
             {
                 var controller = GetOrAddController(Handedness.Right);
-                var handData = rightHandConverter.GetHandData(rightHandState);
-
-                postProcessor.PostProcess(Handedness.Right, handData);
-                controller?.UpdateController(handData);
+                rightHandData = postProcessor.PostProcess(Handedness.Right, rightHandData);
+                controller?.UpdateController(rightHandData);
             }
             else
             {
