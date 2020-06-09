@@ -72,7 +72,7 @@ namespace XRTK.Oculus.Utilities
                     handData.Mesh = new HandMeshData();
                 }
 
-                handData.PointerPose = ComputePointerPose(hand);
+                handData.PointerPose = ComputePointerPose();
             }
 
             return true;
@@ -331,13 +331,15 @@ namespace XRTK.Oculus.Utilities
         }
 
         /// <summary>
-        /// Gets the hand's pointer pose mixed reality playspace coordinates.
+        /// Gets the hand's local pointer pose.
         /// </summary>
-        /// <param name="hand">The hand state provided by native APIs.</param>
-        /// <returns>Pointer pose in playspace tracking space.</returns>
-        private MixedRealityPose ComputePointerPose(OculusApi.HandState hand)
+        /// <returns>Pointer pose relative to <see cref="HandData.RootPose"/>.</returns>
+        private MixedRealityPose ComputePointerPose()
         {
-            var platformPointerPose = hand.PointerPose.ToMixedRealityPose();
+            var platformPointerPose = new MixedRealityPose(
+                handState.PointerPose.Position.FromFlippedZVector3f(),
+                handState.PointerPose.Orientation.FromFlippedZQuatf());
+
             var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
             var pointerForward = playspaceTransform.TransformDirection(platformPointerPose.Forward);
             var pointerUp = playspaceTransform.TransformDirection(platformPointerPose.Up);
