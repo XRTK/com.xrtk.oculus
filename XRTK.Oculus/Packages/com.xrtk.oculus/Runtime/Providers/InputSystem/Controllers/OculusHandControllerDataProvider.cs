@@ -54,13 +54,12 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             base.Update();
 
             var step = OculusApi.Step.Render;
-            OculusHandDataConverter.HandMeshingEnabled = RenderingMode == HandRenderingMode.Mesh;
 
             bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState) &&
                                      leftHandState.HandConfidence >= MinConfidenceRequired &&
                                      (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
 
-            if (isLeftHandTracked && leftHandConverter.TryGetHandData(leftHandState, out var leftHandData))
+            if (isLeftHandTracked && leftHandConverter.TryGetHandData(leftHandState, RenderingMode == HandRenderingMode.Mesh, out var leftHandData))
             {
                 var controller = GetOrAddController(Handedness.Left);
                 leftHandData = postProcessor.PostProcess(Handedness.Left, leftHandData);
@@ -75,7 +74,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                                       rightHandState.HandConfidence >= MinConfidenceRequired &&
                                       (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
 
-            if (isRightHandTracked && rightHandConverter.TryGetHandData(rightHandState, out var rightHandData))
+            if (isRightHandTracked && rightHandConverter.TryGetHandData(rightHandState, RenderingMode == HandRenderingMode.Mesh, out var rightHandData))
             {
                 var controller = GetOrAddController(Handedness.Right);
                 rightHandData = postProcessor.PostProcess(Handedness.Right, rightHandData);

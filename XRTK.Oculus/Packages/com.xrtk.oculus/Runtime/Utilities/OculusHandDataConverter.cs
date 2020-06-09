@@ -36,15 +36,13 @@ namespace XRTK.Oculus.Utilities
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
 
         /// <summary>
-        /// Gets or sets whether hand mesh data should be read and converted.
-        /// </summary>
-        public static bool HandMeshingEnabled { get; set; }
-
-        /// <summary>
         /// Reads hand data for the current frame and converts it to agnostic hand data.
         /// </summary>
+        /// <param name="hand">The hand</param>
+        /// <param name="includeMeshData">If set, hand mesh information will be included in the hand data.</param>
+        /// <param name="handData">The output hand data.</param>
         /// <returns>Updated hand data.</returns>
-        public bool TryGetHandData(OculusApi.HandState hand, out HandData handData)
+        public bool TryGetHandData(OculusApi.HandState hand, bool includeMeshData, out HandData handData)
         {
             if (!isInitialized)
             {
@@ -65,7 +63,7 @@ namespace XRTK.Oculus.Utilities
             {
                 handData.Joints = GetJointPoses();
 
-                if (HandMeshingEnabled && TryGetUpdatedHandMeshData(out HandMeshData data))
+                if (includeMeshData && TryGetUpdatedHandMeshData(out HandMeshData data))
                 {
                     handData.Mesh = data;
                 }
@@ -210,7 +208,7 @@ namespace XRTK.Oculus.Utilities
                     normals[i] = handMesh.VertexNormals[i].FromFlippedZVector3f();
                 }
 
-                data = new HandMeshData(vertices, triangles, normals, uvs, handState.RootPose.Position.FromFlippedZVector3f(), handState.RootPose.Orientation.FromFlippedZQuatf());
+                data = new HandMeshData(vertices, triangles, normals, uvs);
 
                 return true;
             }
