@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto">
   <!-- Request the headset DoF mode -->
-  <!-- Request the headset handtracking mode -->
+  <!-- Request the headset hand tracking mode -->
   <application
       android:label="@string/app_name"
       android:icon="@mipmap/app_icon">
