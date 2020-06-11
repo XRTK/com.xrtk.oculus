@@ -40,9 +40,6 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         private readonly HandDataPostProcessor postProcessor;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
 
-        private OculusApi.HandState leftHandState = default;
-        private OculusApi.HandState rightHandState = default;
-
         /// <summary>
         /// The minimum required tracking confidence for hands to be registered.
         /// </summary>
@@ -53,13 +50,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         {
             base.Update();
 
-            var step = OculusApi.Step.Render;
-
-            bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState) &&
-                                     leftHandState.HandConfidence >= MinConfidenceRequired &&
-                                     (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
-
-            if (isLeftHandTracked && leftHandConverter.TryGetHandData(leftHandState, RenderingMode == HandRenderingMode.Mesh, out var leftHandData))
+            if (leftHandConverter.TryGetHandData(RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var leftHandData))
             {
                 var controller = GetOrAddController(Handedness.Left);
                 leftHandData = postProcessor.PostProcess(Handedness.Left, leftHandData);
@@ -70,11 +61,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                 RemoveController(Handedness.Left);
             }
 
-            bool isRightHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState) &&
-                                      rightHandState.HandConfidence >= MinConfidenceRequired &&
-                                      (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
-
-            if (isRightHandTracked && rightHandConverter.TryGetHandData(rightHandState, RenderingMode == HandRenderingMode.Mesh, out var rightHandData))
+            if (rightHandConverter.TryGetHandData(RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var rightHandData))
             {
                 var controller = GetOrAddController(Handedness.Right);
                 rightHandData = postProcessor.PostProcess(Handedness.Right, rightHandData);
