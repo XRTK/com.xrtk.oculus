@@ -41,7 +41,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         /// <summary>
         /// The minimum required tracking confidence for hands to be registered.
         /// </summary>
-        public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
+        public OculusApi.TrackingConfidence MinConfidenceRequired { get; set; }
 
         /// <inheritdoc />
         public override void Update()
