@@ -26,8 +26,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             : base(name, priority, profile, parentService)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
-            leftHandConverter = new OculusHandDataConverter(Handedness.Left);
-            rightHandConverter = new OculusHandDataConverter(Handedness.Right);
+            handDataProvider = new OculusHandDataConverter();
 
             postProcessor = new HandDataPostProcessor(TrackedPoses)
             {
@@ -35,8 +34,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
             };
         }
 
-        private readonly OculusHandDataConverter leftHandConverter;
-        private readonly OculusHandDataConverter rightHandConverter;
+        private readonly OculusHandDataConverter handDataProvider;
         private readonly HandDataPostProcessor postProcessor;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
 
@@ -50,7 +48,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
         {
             base.Update();
 
-            if (leftHandConverter.TryGetHandData(RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var leftHandData))
+            if (handDataProvider.TryGetHandData(Handedness.Left, RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var leftHandData))
             {
                 var controller = GetOrAddController(Handedness.Left);
                 leftHandData = postProcessor.PostProcess(Handedness.Left, leftHandData);
@@ -61,7 +59,7 @@ namespace XRTK.Oculus.Providers.InputSystem.Controllers
                 RemoveController(Handedness.Left);
             }
 
-            if (rightHandConverter.TryGetHandData(RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var rightHandData))
+            if (handDataProvider.TryGetHandData(Handedness.Right, RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var rightHandData))
             {
                 var controller = GetOrAddController(Handedness.Right);
                 rightHandData = postProcessor.PostProcess(Handedness.Right, rightHandData);
