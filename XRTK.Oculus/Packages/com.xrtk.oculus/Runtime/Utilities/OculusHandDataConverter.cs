@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Utilities;
+using XRTK.Extensions;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
 using XRTK.Services;
@@ -18,7 +19,21 @@ namespace XRTK.Oculus.Utilities
     /// </summary>
     public sealed class OculusHandDataConverter
     {
-        private readonly Dictionary<OculusApi.BoneId, Transform> boneProxyTransforms = new Dictionary<OculusApi.BoneId, Transform>();
+        /// <summary>
+        /// Destructor.
+        /// </summary>
+        ~OculusHandDataConverter()
+        {
+            if (!conversionProxyRootTransform.IsNull())
+            {
+                conversionProxyTransforms.Clear();
+                conversionProxyRootTransform.Destroy();
+            }
+        }
+
+        private Transform conversionProxyRootTransform;
+        private Transform pointerProxyTransform;
+        private readonly Dictionary<OculusApi.BoneId, Transform> conversionProxyTransforms = new Dictionary<OculusApi.BoneId, Transform>();
 
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
         private OculusApi.HandState handState = new OculusApi.HandState();
@@ -55,7 +70,8 @@ namespace XRTK.Oculus.Utilities
             if (handData.IsTracked)
             {
                 handData.RootPose = GetHandRootPose(handedness);
-                handData.Joints = GetJointPoses(handedness, handData.RootPose);
+                handData.Joints = GetJointPoses(handedness);
+                handData.PointerPose = GetPointerPose(handedness);
 
                 if (includeMeshData && TryGetUpdatedHandMeshData(handedness, out HandMeshData data))
                 {
@@ -65,8 +81,6 @@ namespace XRTK.Oculus.Utilities
                 {
                     handData.Mesh = default;
                 }
-
-                handData.PointerPose = ComputePointerPose(handedness);
             }
 
             // Even if the hand is being tracked by the system but the confidence did not
@@ -75,37 +89,42 @@ namespace XRTK.Oculus.Utilities
             return true;
         }
 
-        private MixedRealityPose[] GetJointPoses(Handedness handedness, MixedRealityPose handRootPose)
+        /// <summary>
+        /// Gets updated joint poses for all <see cref="TrackedHandJoint"/>s.
+        /// </summary>
+        /// <param name="handedness">Handedness of the hand to read joint poses for.</param>
+        /// <returns>Joint poses in <see cref="TrackedHandJoint"/> order.</returns>
+        private MixedRealityPose[] GetJointPoses(Handedness handedness)
         {
             var jointPoses = new MixedRealityPose[HandData.JointCount];
 
-            jointPoses[(int)TrackedHandJoint.Wrist] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_WristRoot]);
+            jointPoses[(int)TrackedHandJoint.Wrist] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_WristRoot]);
 
-            jointPoses[(int)TrackedHandJoint.ThumbMetacarpal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
-            jointPoses[(int)TrackedHandJoint.ThumbProximal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb2]);
-            jointPoses[(int)TrackedHandJoint.ThumbDistal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb3]);
-            jointPoses[(int)TrackedHandJoint.ThumbTip] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_ThumbTip]);
+            jointPoses[(int)TrackedHandJoint.ThumbMetacarpal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
+            jointPoses[(int)TrackedHandJoint.ThumbProximal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb2]);
+            jointPoses[(int)TrackedHandJoint.ThumbDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb3]);
+            jointPoses[(int)TrackedHandJoint.ThumbTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_ThumbTip]);
 
-            jointPoses[(int)TrackedHandJoint.IndexProximal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index1]);
-            jointPoses[(int)TrackedHandJoint.IndexIntermediate] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index2]);
-            jointPoses[(int)TrackedHandJoint.IndexDistal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index3]);
-            jointPoses[(int)TrackedHandJoint.IndexTip] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_IndexTip]);
+            jointPoses[(int)TrackedHandJoint.IndexProximal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index1]);
+            jointPoses[(int)TrackedHandJoint.IndexIntermediate] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index2]);
+            jointPoses[(int)TrackedHandJoint.IndexDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Index3]);
+            jointPoses[(int)TrackedHandJoint.IndexTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_IndexTip]);
 
-            jointPoses[(int)TrackedHandJoint.MiddleProximal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
-            jointPoses[(int)TrackedHandJoint.MiddleIntermediate] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle2]);
-            jointPoses[(int)TrackedHandJoint.MiddleDistal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle3]);
-            jointPoses[(int)TrackedHandJoint.MiddleTip] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_MiddleTip]);
+            jointPoses[(int)TrackedHandJoint.MiddleProximal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle1]);
+            jointPoses[(int)TrackedHandJoint.MiddleIntermediate] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle2]);
+            jointPoses[(int)TrackedHandJoint.MiddleDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Middle3]);
+            jointPoses[(int)TrackedHandJoint.MiddleTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_MiddleTip]);
 
-            jointPoses[(int)TrackedHandJoint.RingProximal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring1]);
-            jointPoses[(int)TrackedHandJoint.RingIntermediate] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring2]);
-            jointPoses[(int)TrackedHandJoint.RingDistal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring3]);
-            jointPoses[(int)TrackedHandJoint.RingTip] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_RingTip]);
+            jointPoses[(int)TrackedHandJoint.RingProximal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring1]);
+            jointPoses[(int)TrackedHandJoint.RingIntermediate] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring2]);
+            jointPoses[(int)TrackedHandJoint.RingDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Ring3]);
+            jointPoses[(int)TrackedHandJoint.RingTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_RingTip]);
 
-            jointPoses[(int)TrackedHandJoint.LittleMetacarpal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
-            jointPoses[(int)TrackedHandJoint.LittleProximal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky1]);
-            jointPoses[(int)TrackedHandJoint.LittleIntermediate] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky2]);
-            jointPoses[(int)TrackedHandJoint.LittleDistal] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky3]);
-            jointPoses[(int)TrackedHandJoint.LittleTip] = ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_PinkyTip]);
+            jointPoses[(int)TrackedHandJoint.LittleMetacarpal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+            jointPoses[(int)TrackedHandJoint.LittleProximal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky1]);
+            jointPoses[(int)TrackedHandJoint.LittleIntermediate] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky2]);
+            jointPoses[(int)TrackedHandJoint.LittleDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky3]);
+            jointPoses[(int)TrackedHandJoint.LittleTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_PinkyTip]);
 
             // Estimated: These joint poses are not provided by the Ouclus
             // hand tracking implementation. But with the data we now have, we can
@@ -118,6 +137,12 @@ namespace XRTK.Oculus.Utilities
             return jointPoses;
         }
 
+        /// <summary>
+        /// Attempts to get updated hand mesh data.
+        /// </summary>
+        /// <param name="handedness">The handedness of the hand to get mesh data for.</param>
+        /// <param name="data">Mesh information retrieved in case of success.</param>
+        /// <returns>True, if mesh data could be loaded.</returns>
         private bool TryGetUpdatedHandMeshData(Handedness handedness, out HandMeshData data)
         {
             if (OculusApi.GetMesh(handedness.ToMeshType(), out handMesh))
@@ -159,35 +184,50 @@ namespace XRTK.Oculus.Utilities
             return false;
         }
 
-        private MixedRealityPose ComputeJointPose(Handedness handedness, MixedRealityPose handRootPose, OculusApi.Bone bone)
+        /// <summary>
+        /// Gets a single joint's pose relative to the hand root pose.
+        /// </summary>
+        /// <param name="handedness">Handedness of the hand the pose belongs to.</param>
+        /// <param name="bone">Bone data retrieved from Oculus API with pose information.</param>
+        /// <returns>Converted joint pose in hand space.</returns>
+        private MixedRealityPose GetJointPose(Handedness handedness, OculusApi.Bone bone)
         {
             // The Pinky/Thumb 1+ bones depend on the Pinky/Thumb 0 bone
-            // to be available, which the XRTK hand tracking does not use. We still gotta update them to
-            // be able to resolve pose dependencies.
+            // to be available, which the XRTK hand tracking does not use. We still have to compute them to
+            // be able to resolve pose relation dependencies.
             if (bone.Id == OculusApi.BoneId.Hand_Thumb1)
             {
-                ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb0]);
+                GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb0]);
             }
             else if (bone.Id == OculusApi.BoneId.Hand_Pinky1)
             {
-                ComputeJointPose(handedness, handRootPose, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
+                GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky0]);
             }
 
-            var rootBoneTransform = GetProxyTransform(handedness, OculusApi.BoneId.Hand_Start);
             var boneProxyTransform = GetProxyTransform(handedness, bone.Id);
             var parentProxyTransform = GetProxyTransform(handedness, (OculusApi.BoneId)bone.ParentBoneIndex);
 
-            boneProxyTransform.SetParent(parentProxyTransform, false);
-            boneProxyTransform.localPosition = bone.Pose.Position.FromFlippedZVector3f();
-            boneProxyTransform.localRotation = handState.BoneRotations[(int)bone.Id].FromFlippedZQuatf();
+            boneProxyTransform.parent = parentProxyTransform;
+
+            if (bone.ParentBoneIndex == (int)OculusApi.BoneId.Invalid)
+            {
+                var rootPose = FixRotation(handedness, new MixedRealityPose(conversionProxyRootTransform.localPosition, conversionProxyRootTransform.localRotation));
+                boneProxyTransform.localPosition = rootPose.Position;
+                boneProxyTransform.localRotation = rootPose.Rotation;
+            }
+            else
+            {
+                boneProxyTransform.localPosition = bone.Pose.Position.FromFlippedZVector3f();
+                boneProxyTransform.localRotation = handState.BoneRotations[(int)bone.Id].FromFlippedZQuatf();
+            }
 
             return FixRotation(handedness, new MixedRealityPose(
-                rootBoneTransform.InverseTransformPoint(boneProxyTransform.position),
-                Quaternion.Inverse(rootBoneTransform.rotation) * boneProxyTransform.rotation));
+                conversionProxyRootTransform.InverseTransformPoint(boneProxyTransform.position),
+                Quaternion.Inverse(conversionProxyRootTransform.rotation) * boneProxyTransform.rotation));
         }
 
         /// <summary>
-        /// WARNING THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK.
+        /// WARNING: THIS CODE IS SUBJECT TO CHANGE WITH THE OCULUS SDK.
         /// This fix is a hack to fix broken and inconsistent rotations for hands.
         /// </summary>
         /// <param name="handedness">Handedness of the hand the pose belongs to.</param>
@@ -215,7 +255,7 @@ namespace XRTK.Oculus.Utilities
         /// <summary>
         /// THe oculus APIs return joint poses relative to their parent joint unlike
         /// other platforms where joint poses are relative to the hand root. To convert
-        /// the joint-->parent-joint relation to hand-root-->joint relations proxy <see cref="Transform"/>s
+        /// the joint-->parent-joint relation to joint-->hand-root relations proxy <see cref="Transform"/>s
         /// are used. The proxies are parented to their respective parent <see cref="Transform"/>.
         /// That way we can make use of Unity APIs to translate coordinate spaces.
         /// </summary>
@@ -224,23 +264,43 @@ namespace XRTK.Oculus.Utilities
         /// <returns>The proxy <see cref="Transform"/>.</returns>
         private Transform GetProxyTransform(Handedness handedness, OculusApi.BoneId boneId)
         {
+            if (conversionProxyRootTransform.IsNull())
+            {
+                conversionProxyRootTransform = new GameObject($"Oculus Hand Conversion Proxy").transform;
+                conversionProxyRootTransform.transform.SetParent(MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform, false);
+                conversionProxyRootTransform.gameObject.SetActive(false);
+            }
+
+            // Depending on the handedness we are currently working on, we need to
+            // rotate the conversion root. Same dilemma as with FixRotation above.
+            conversionProxyRootTransform.localRotation = Quaternion.Euler(0f, handedness == Handedness.Right ? 180f : 0f, 0f);
+
             if (boneId == OculusApi.BoneId.Invalid)
             {
-                return MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
+                return conversionProxyRootTransform;
             }
 
-            if (boneProxyTransforms.ContainsKey(boneId))
+            if (conversionProxyTransforms.ContainsKey(boneId))
             {
-                return boneProxyTransforms[boneId];
+                return conversionProxyTransforms[boneId];
             }
 
-            var transform = new GameObject($"Oculus {handedness} Hand {boneId} Proxy").transform;
-            transform.gameObject.SetActive(false);
-            boneProxyTransforms.Add(boneId, transform);
+            var transform = new GameObject($"Oculus Hand {boneId} Proxy").transform;
+
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.localScale = new Vector3(.01f, .01f, .01f);
+            cube.transform.SetParent(transform, false);
+
+            conversionProxyTransforms.Add(boneId, transform);
 
             return transform;
         }
 
+        /// <summary>
+        /// Gets the hand's root pose.
+        /// </summary>
+        /// <param name="handedness">Handedness of the hand to get the pose for.</param>
+        /// <returns>The hand root pose is the point of reference for all joint poses.</returns>
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
             var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
@@ -259,13 +319,24 @@ namespace XRTK.Oculus.Utilities
         /// </summary>
         /// <param name="handedness">Handedness of the hand the pose belongs to.</param>
         /// <returns>Pointer pose relative to <see cref="HandData.RootPose"/>.</returns>
-        private MixedRealityPose ComputePointerPose(Handedness handedness)
+        private MixedRealityPose GetPointerPose(Handedness handedness)
         {
-            var platformPointerPose = new MixedRealityPose(
-                handState.PointerPose.Position.FromFlippedZVector3f(),
-                handState.PointerPose.Orientation.FromFlippedZQuatf());
+            if (pointerProxyTransform.IsNull())
+            {
+                pointerProxyTransform = new GameObject("Oculus Hand Pointer Pose Proxy").transform;
+                pointerProxyTransform.SetParent(conversionProxyRootTransform, false);
+            }
 
-            return FixRotation(handedness, platformPointerPose);
+            var platformPointerPose = FixRotation(handedness, new MixedRealityPose(
+                handState.PointerPose.Position.FromFlippedZVector3f(),
+                handState.PointerPose.Orientation.FromFlippedZQuatf()));
+
+            pointerProxyTransform.localPosition = conversionProxyRootTransform.InverseTransformPoint(platformPointerPose.Position);
+            pointerProxyTransform.localRotation = platformPointerPose.Rotation;
+
+            return new MixedRealityPose(
+                pointerProxyTransform.localPosition,
+                pointerProxyTransform.localRotation);
         }
     }
 }
