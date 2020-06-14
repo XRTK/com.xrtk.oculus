@@ -32,7 +32,6 @@ namespace XRTK.Oculus.Utilities
         }
 
         private Transform conversionProxyRootTransform;
-        private Transform pointerProxyTransform;
         private readonly Dictionary<OculusApi.BoneId, Transform> conversionProxyTransforms = new Dictionary<OculusApi.BoneId, Transform>();
 
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
@@ -79,7 +78,7 @@ namespace XRTK.Oculus.Utilities
                 }
                 else
                 {
-                    handData.Mesh = default;
+                    handData.Mesh = HandMeshData.Empty;
                 }
             }
 
@@ -311,7 +310,7 @@ namespace XRTK.Oculus.Utilities
             var rootPosition = playspaceTransform.InverseTransformPoint(handState.RootPose.Position.FromFlippedZVector3f());
             var rootRotation = Quaternion.Inverse(playspaceTransform.rotation) * handState.RootPose.Orientation.FromFlippedZQuatf();
 
-            return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, cameraTransform.localPosition.y, 0f), rootRotation));
+            return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, OculusApi.EyeHeight, 0f), rootRotation));
         }
 
         /// <summary>
@@ -321,22 +320,14 @@ namespace XRTK.Oculus.Utilities
         /// <returns>Pointer pose relative to <see cref="HandData.RootPose"/>.</returns>
         private MixedRealityPose GetPointerPose(Handedness handedness)
         {
-            if (pointerProxyTransform.IsNull())
-            {
-                pointerProxyTransform = new GameObject("Oculus Hand Pointer Pose Proxy").transform;
-                pointerProxyTransform.SetParent(conversionProxyRootTransform, false);
-            }
+            var platformRootPose = FixRotation(handedness, new MixedRealityPose(
+                handState.RootPose.Position.FromFlippedZVector3f(),
+                handState.RootPose.Orientation.FromFlippedZQuatf()));
 
-            var platformPointerPose = FixRotation(handedness, new MixedRealityPose(
-                handState.PointerPose.Position.FromFlippedZVector3f(),
-                handState.PointerPose.Orientation.FromFlippedZQuatf()));
+            var platformPointerPosition = handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPose.Position;
+            var platformPointerRotation = platformRootPose.Rotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
 
-            pointerProxyTransform.localPosition = conversionProxyRootTransform.InverseTransformPoint(platformPointerPose.Position);
-            pointerProxyTransform.localRotation = platformPointerPose.Rotation;
-
-            return new MixedRealityPose(
-                pointerProxyTransform.localPosition,
-                pointerProxyTransform.localRotation);
+            return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }
     }
 }
