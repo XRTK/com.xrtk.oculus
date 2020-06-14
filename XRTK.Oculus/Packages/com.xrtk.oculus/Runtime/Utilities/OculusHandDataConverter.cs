@@ -300,7 +300,7 @@ namespace XRTK.Oculus.Utilities
         /// Gets the hand's root pose.
         /// </summary>
         /// <param name="handedness">Handedness of the hand to get the pose for.</param>
-        /// <returns>The hand root pose is the point of reference for all joint poses.</returns>
+        /// <returns>The hands <see cref="HandData.RootPose"/> value.</returns>
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
             var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
@@ -314,19 +314,15 @@ namespace XRTK.Oculus.Utilities
         /// Gets the hand's local pointer pose.
         /// </summary>
         /// <param name="handedness">Handedness of the hand the pose belongs to.</param>
-        /// <returns>Pointer pose relative to <see cref="HandData.RootPose"/>.</returns>
+        /// <returns>The hands <see cref="HandData.PointerPose"/> value.</returns>
         private MixedRealityPose GetPointerPose(Handedness handedness)
         {
             var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
+            var rootPose = GetHandRootPose(handedness);
+            var platformRootPosition = handState.RootPose.Position.FromFlippedZVector3f();
 
-            var platformRootPose = FixRotation(handedness, new MixedRealityPose(
-                handState.RootPose.Position.FromFlippedZVector3f(),
-                handState.RootPose.Orientation.FromFlippedZQuatf()));
-
-            var platformPointerPosition = handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPose.Position;
-
-            var platformPointerRotation = Quaternion.Inverse(playspaceTransform.rotation) * platformRootPose.Rotation;
-            //var platformPointerRotation = platformRootPose.Rotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
+            var platformPointerPosition = rootPose.Position + handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPosition;
+            var platformPointerRotation = Quaternion.Inverse(playspaceTransform.rotation) * handState.PointerPose.Orientation.FromFlippedZQuatf();
 
             return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }
