@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Definitions.Controllers.Hands;
+using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
 using XRTK.Oculus.Extensions;
@@ -60,13 +61,13 @@ namespace XRTK.Oculus.Utilities
             // it tracked.
             handData = new HandData
             {
-                IsTracked = handState.HandConfidence >= minTrackingConfidence && (handState.Status & OculusApi.HandStatus.HandTracked) != 0,
+                TrackingState = (handState.HandConfidence >= minTrackingConfidence && (handState.Status & OculusApi.HandStatus.HandTracked) != 0) ? TrackingState.Tracked : TrackingState.NotTracked,
                 UpdatedAt = DateTimeOffset.UtcNow.Ticks
             };
 
             // If the hand is tracked per requirements, we get updated joint data
             // and other data needed for updating the hand controller's state.
-            if (handData.IsTracked)
+            if (handData.TrackingState == TrackingState.Tracked)
             {
                 handData.RootPose = GetHandRootPose(handedness);
                 handData.Joints = GetJointPoses(handedness);
@@ -303,10 +304,6 @@ namespace XRTK.Oculus.Utilities
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
             var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
-            var cameraTransform = MixedRealityToolkit.CameraSystem != null
-                ? MixedRealityToolkit.CameraSystem.MainCameraRig.PlayerCamera.transform
-                : CameraCache.Main.transform;
-
             var rootPosition = playspaceTransform.InverseTransformPoint(handState.RootPose.Position.FromFlippedZVector3f());
             var rootRotation = Quaternion.Inverse(playspaceTransform.rotation) * handState.RootPose.Orientation.FromFlippedZQuatf();
 
@@ -320,12 +317,16 @@ namespace XRTK.Oculus.Utilities
         /// <returns>Pointer pose relative to <see cref="HandData.RootPose"/>.</returns>
         private MixedRealityPose GetPointerPose(Handedness handedness)
         {
+            var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
+
             var platformRootPose = FixRotation(handedness, new MixedRealityPose(
                 handState.RootPose.Position.FromFlippedZVector3f(),
                 handState.RootPose.Orientation.FromFlippedZQuatf()));
 
             var platformPointerPosition = handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPose.Position;
-            var platformPointerRotation = platformRootPose.Rotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
+
+            var platformPointerRotation = Quaternion.Inverse(playspaceTransform.rotation) * platformRootPose.Rotation;
+            //var platformPointerRotation = platformRootPose.Rotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
 
             return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }
