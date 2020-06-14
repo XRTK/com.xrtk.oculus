@@ -15,7 +15,7 @@ using XRTK.Oculus.Utilities;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
-namespace XRTK.Oculus.Providers.InputSystem.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     [RuntimePlatform(typeof(OculusPlatform))]
     [System.Runtime.InteropServices.Guid("EA666456-BAEF-4412-A829-A4C7132E98C3")]

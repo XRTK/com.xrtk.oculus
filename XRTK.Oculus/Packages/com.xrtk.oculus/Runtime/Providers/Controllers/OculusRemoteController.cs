@@ -7,7 +7,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Plugins;
 
-namespace XRTK.Oculus.Providers.InputSystem.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     [System.Runtime.InteropServices.Guid("071048C6-31F3-460C-863F-5D3121F47654")]
     public class OculusRemoteController : BaseOculusController

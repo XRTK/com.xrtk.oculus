@@ -7,7 +7,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Plugins;
 
-namespace XRTK.Oculus.Providers.InputSystem.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     [System.Runtime.InteropServices.Guid("A1417657-5FF3-402D-8376-D8E1689175A9")]
     public class OculusGoController : BaseOculusController

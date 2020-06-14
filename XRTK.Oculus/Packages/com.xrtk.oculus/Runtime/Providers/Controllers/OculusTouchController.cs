@@ -7,7 +7,7 @@ using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.Providers.Controllers;
 using XRTK.Oculus.Plugins;
 
-namespace XRTK.Oculus.Providers.InputSystem.Controllers
+namespace XRTK.Oculus.Providers.Controllers
 {
     [System.Runtime.InteropServices.Guid("1898974A-DBCD-4C88-8E03-726689848D52")]
     public class OculusTouchController : BaseOculusController
