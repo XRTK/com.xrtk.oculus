@@ -126,7 +126,7 @@ namespace XRTK.Oculus.Utilities
             jointPoses[(int)TrackedHandJoint.LittleDistal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Pinky3]);
             jointPoses[(int)TrackedHandJoint.LittleTip] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_PinkyTip]);
 
-            // Estimated: These joint poses are not provided by the Ouclus
+            // Estimated: These joint poses are not provided by the Oculus
             // hand tracking implementation. But with the data we now have, we can
             // estimate their poses fairly well.
             jointPoses[(int)TrackedHandJoint.Palm] = HandUtilities.GetEstimatedPalmPose(jointPoses);
@@ -266,7 +266,7 @@ namespace XRTK.Oculus.Utilities
         {
             if (conversionProxyRootTransform.IsNull())
             {
-                conversionProxyRootTransform = new GameObject($"Oculus Hand Conversion Proxy").transform;
+                conversionProxyRootTransform = new GameObject("Oculus Hand Conversion Proxy").transform;
                 conversionProxyRootTransform.transform.SetParent(MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform, false);
                 conversionProxyRootTransform.gameObject.SetActive(false);
             }
