@@ -34,6 +34,7 @@ namespace XRTK.Oculus.Utilities
 
         private Transform conversionProxyRootTransform;
         private readonly Dictionary<OculusApi.BoneId, Transform> conversionProxyTransforms = new Dictionary<OculusApi.BoneId, Transform>();
+        private readonly MixedRealityPose[] jointPoses = new MixedRealityPose[HandData.JointCount];
 
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
         private OculusApi.HandState handState = new OculusApi.HandState();
@@ -96,8 +97,6 @@ namespace XRTK.Oculus.Utilities
         /// <returns>Joint poses in <see cref="TrackedHandJoint"/> order.</returns>
         private MixedRealityPose[] GetJointPoses(Handedness handedness)
         {
-            var jointPoses = new MixedRealityPose[HandData.JointCount];
-
             jointPoses[(int)TrackedHandJoint.Wrist] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_WristRoot]);
 
             jointPoses[(int)TrackedHandJoint.ThumbMetacarpal] = GetJointPose(handedness, handSkeleton.Bones[(int)OculusApi.BoneId.Hand_Thumb1]);
