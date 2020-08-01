@@ -285,11 +285,6 @@ namespace XRTK.Oculus.Utilities
             }
 
             var transform = new GameObject($"Oculus Hand {boneId} Proxy").transform;
-
-            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.localScale = new Vector3(.01f, .01f, .01f);
-            cube.transform.SetParent(transform, false);
-
             conversionProxyTransforms.Add(boneId, transform);
 
             return transform;
