@@ -123,6 +123,10 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        #endregion Oculus API Properties
+
+        #region Oculus Device Characteristics
+
         /// <summary>
         /// Reported Eye Depth from the Oculus API
         /// </summary>
@@ -167,9 +171,143 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
-        #endregion Oculus API Properties
+        /// <summary>
+        /// Returns the current battery level of the device
+        /// </summary>
+        public static float batteryLevel
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryLevel();
+            }
+        }
+
+        /// <summary>
+        /// Returns the current battery temperature
+        /// </summary>
+        public static float batteryTemperature
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryTemperature();
+            }
+        }
+
+        /// <summary>
+        /// Manages the device runtime CPU level for performance
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 2, normally set by the device
+        /// </remarks>
+        public static int cpuLevel
+        {
+            get
+            {
+                return ovrp_GetSystemCpuLevel();
+            }
+            set
+            {
+                ovrp_SetSystemCpuLevel(value);
+            }
+        }
+        /// <summary>
+        /// Manages the device runtime GPU level for performance
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 2, normally set by the device
+        /// </remarks>
+        public static int gpuLevel
+        {
+            get
+            {
+                return ovrp_GetSystemGpuLevel();
+            }
+            set
+            {
+                ovrp_SetSystemGpuLevel(value);
+            }
+        }
+
+        /// <summary>
+        /// Manages the device vSync Count
+        /// </summary>
+        public static int vsyncCount
+        {
+            get
+            {
+                return ovrp_GetSystemVSyncCount();
+            }
+            set
+            {
+                ovrp_SetSystemVSyncCount(value);
+            }
+        }
+
+        /// <summary>
+        /// Returns the current system volume
+        /// </summary>
+        public static float systemVolume
+        {
+            get
+            {
+
+                return ovrp_GetSystemVolume();
+            }
+        }
+
+        /// <summary>
+        /// Manages the Software IPD level for the device
+        /// </summary>
+        public static float ipd
+        {
+            get
+            {
+                return ovrp_GetUserIPD();
+            }
+            set
+            {
+                ovrp_SetUserIPD(value);
+            }
+        }
+
+        /// <summary>
+        /// Manages the software occlusion mesh for the eyes
+        /// </summary>
+        public static bool occlusionMesh
+        {
+            get
+            {
+                return Initialized && (ovrp_GetEyeOcclusionMeshEnabled() == Bool.True);
+            }
+            set
+            {
+                if (!Initialized)
+                    return;
+
+                ovrp_SetEyeOcclusionMeshEnabled(ToBool(value));
+            }
+        }
+
+        /// <summary>
+        /// Returns the current battery status for the device
+        /// </summary>
+        public static BatteryStatus batteryStatus
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryStatus();
+            }
+        }
+
+
+        #endregion Oculus Device Characteristics
 
         #region Oculus API import
+
+        private static Bool ToBool(bool b)
+        {
+            return (b) ? Bool.True : Bool.False;
+        }
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Bool ovrp_GetInitialized();
@@ -201,6 +339,57 @@ namespace XRTK.Oculus.Plugins
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern float ovrp_GetUserEyeHeight();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetEyeOcclusionMeshEnabled();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetEyeOcclusionMeshEnabled(Bool value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetSystemHeadphonesPresent();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetUserIPD();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetUserIPD(float value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemCpuLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemCpuLevel(int value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemGpuLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemGpuLevel(int value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetSystemPowerSavingMode();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemDisplayFrequency();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemVSyncCount();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemVolume();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemVSyncCount(int vsyncCount);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern BatteryStatus ovrp_GetSystemBatteryStatus();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemBatteryLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemBatteryTemperature();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetExternalCameraIntrinsics(int cameraId, out CameraIntrinsics cameraIntrinsics);
@@ -333,7 +522,6 @@ namespace XRTK.Oculus.Plugins
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetTiledMultiResDynamic(out Bool isDynamic);
-
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_SetTiledMultiResDynamic(Bool isDynamic);
