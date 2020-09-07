@@ -19,6 +19,8 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
         private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
         private static readonly Version OVRP_1_48_0_version = new Version(1, 48, 0);
+        private static readonly Version OVRP_1_49_0_version = new Version(1, 49, 0);
+        
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -338,6 +340,15 @@ namespace XRTK.Oculus.Plugins
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_SetExternalCameraProperties(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetClientColorDesc(ColorSpace colorSpace);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetHmdColorDesc(ref ColorSpace colorSpace);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_Media_SetHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose);
 
         #endregion Oculus API import
 
@@ -1181,6 +1192,28 @@ namespace XRTK.Oculus.Plugins
             // High foveation setting with more detail toward the bottom of the view and more foveation near the top (Same as High on Oculus Go)
             HighTop = 4,
             EnumSize = 0x7FFFFFFF
+        }
+
+        public enum ColorSpace
+        {
+            /// The default value from GetHmdColorSpace until SetClientColorDesc is called. Only valid on PC, and will be remapped to Quest on Mobile
+            Unknown = 0,
+            /// No color correction, not recommended for production use. See documentation for more info
+            Unmanaged = 1,
+            /// Preferred color space for standardized color across all Oculus HMDs with D65 white point
+            Rec_2020 = 2,
+            /// Rec. 709 is used on Oculus Go and shares the same primary color coordinates as sRGB
+            Rec_709 = 3,
+            /// Oculus Rift CV1 uses a unique color space, see documentation for more info
+            Rift_CV1 = 4,
+            /// Oculus Rift S uses a unique color space, see documentation for more info
+            Rift_S = 5,
+            /// Oculus Quest's native color space is slightly different than Rift CV1
+            Quest = 6,
+            /// Similar to DCI-P3. See documentation for more details on P3
+            P3 = 7,
+            /// Similar to sRGB but with deeper greens using D65 white point
+            Adobe_RGB = 8,
         }
 
         #region Hands Implementation
@@ -2538,6 +2571,54 @@ namespace XRTK.Oculus.Plugins
             else
             {
                 return false;
+            }
+        }
+
+        public static bool SetMrcHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose)
+        {
+            if (Version >= OVRP_1_49_0_version)
+            {
+                Result res = ovrp_Media_SetHeadsetControllerPose(headsetPose, leftControllerPose, rightControllerPose);
+                return res == Result.Success;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SetClientColorDesc(ColorSpace colorSpace)
+        {
+            if (Version >= OVRP_1_49_0_version)
+            {
+#if UNITY_ANDROID
+			if (colorSpace == ColorSpace.Unknown)
+				colorSpace = ColorSpace.Quest;
+#endif
+                return ovrp_SetClientColorDesc(colorSpace) == Result.Success;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static ColorSpace GetHmdColorDesc()
+        {
+            ColorSpace colorSpace = ColorSpace.Unknown;
+            if (Version >= OVRP_1_49_0_version)
+            {
+                Result res = ovrp_GetHmdColorDesc(ref colorSpace);
+                if (res != Result.Success)
+                {
+                    Debug.LogError("GetHmdColorDesc: Failed to get Hmd color description");
+                }
+                return colorSpace;
+            }
+            else
+            {
+                Debug.LogError("GetHmdColorDesc: Not supported on this version of OVRPlugin");
+                return colorSpace;
             }
         }
 
