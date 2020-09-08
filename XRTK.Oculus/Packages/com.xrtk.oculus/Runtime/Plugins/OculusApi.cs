@@ -19,6 +19,8 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_45_0_version = new Version(1, 45, 0);
         private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
         private static readonly Version OVRP_1_48_0_version = new Version(1, 48, 0);
+        private static readonly Version OVRP_1_49_0_version = new Version(1, 49, 0);
+        
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -121,6 +123,10 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        #endregion Oculus API Properties
+
+        #region Oculus Device Characteristics
+
         /// <summary>
         /// Reported Eye Depth from the Oculus API
         /// </summary>
@@ -165,9 +171,143 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
-        #endregion Oculus API Properties
+        /// <summary>
+        /// Returns the current battery level of the device
+        /// </summary>
+        public static float batteryLevel
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryLevel();
+            }
+        }
+
+        /// <summary>
+        /// Returns the current battery temperature
+        /// </summary>
+        public static float batteryTemperature
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryTemperature();
+            }
+        }
+
+        /// <summary>
+        /// Manages the device runtime CPU level for performance
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 2, normally set by the device
+        /// </remarks>
+        public static int cpuLevel
+        {
+            get
+            {
+                return ovrp_GetSystemCpuLevel();
+            }
+            set
+            {
+                ovrp_SetSystemCpuLevel(value);
+            }
+        }
+        /// <summary>
+        /// Manages the device runtime GPU level for performance
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 2, normally set by the device
+        /// </remarks>
+        public static int gpuLevel
+        {
+            get
+            {
+                return ovrp_GetSystemGpuLevel();
+            }
+            set
+            {
+                ovrp_SetSystemGpuLevel(value);
+            }
+        }
+
+        /// <summary>
+        /// Manages the device vSync Count
+        /// </summary>
+        public static int vsyncCount
+        {
+            get
+            {
+                return ovrp_GetSystemVSyncCount();
+            }
+            set
+            {
+                ovrp_SetSystemVSyncCount(value);
+            }
+        }
+
+        /// <summary>
+        /// Returns the current system volume
+        /// </summary>
+        public static float systemVolume
+        {
+            get
+            {
+
+                return ovrp_GetSystemVolume();
+            }
+        }
+
+        /// <summary>
+        /// Manages the Software IPD level for the device
+        /// </summary>
+        public static float ipd
+        {
+            get
+            {
+                return ovrp_GetUserIPD();
+            }
+            set
+            {
+                ovrp_SetUserIPD(value);
+            }
+        }
+
+        /// <summary>
+        /// Manages the software occlusion mesh for the eyes
+        /// </summary>
+        public static bool occlusionMesh
+        {
+            get
+            {
+                return Initialized && (ovrp_GetEyeOcclusionMeshEnabled() == Bool.True);
+            }
+            set
+            {
+                if (!Initialized)
+                    return;
+
+                ovrp_SetEyeOcclusionMeshEnabled(ToBool(value));
+            }
+        }
+
+        /// <summary>
+        /// Returns the current battery status for the device
+        /// </summary>
+        public static BatteryStatus batteryStatus
+        {
+            get
+            {
+                return ovrp_GetSystemBatteryStatus();
+            }
+        }
+
+
+        #endregion Oculus Device Characteristics
 
         #region Oculus API import
+
+        private static Bool ToBool(bool b)
+        {
+            return (b) ? Bool.True : Bool.False;
+        }
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Bool ovrp_GetInitialized();
@@ -199,6 +339,57 @@ namespace XRTK.Oculus.Plugins
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern float ovrp_GetUserEyeHeight();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetEyeOcclusionMeshEnabled();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetEyeOcclusionMeshEnabled(Bool value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetSystemHeadphonesPresent();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetUserIPD();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetUserIPD(float value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemCpuLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemCpuLevel(int value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemGpuLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemGpuLevel(int value);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_GetSystemPowerSavingMode();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemDisplayFrequency();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ovrp_GetSystemVSyncCount();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemVolume();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Bool ovrp_SetSystemVSyncCount(int vsyncCount);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern BatteryStatus ovrp_GetSystemBatteryStatus();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemBatteryLevel();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern float ovrp_GetSystemBatteryTemperature();
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetExternalCameraIntrinsics(int cameraId, out CameraIntrinsics cameraIntrinsics);
@@ -332,12 +523,20 @@ namespace XRTK.Oculus.Plugins
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetTiledMultiResDynamic(out Bool isDynamic);
 
-
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_SetTiledMultiResDynamic(Bool isDynamic);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_SetExternalCameraProperties(string cameraName, ref CameraIntrinsics cameraIntrinsics, ref CameraExtrinsics cameraExtrinsics);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_SetClientColorDesc(ColorSpace colorSpace);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetHmdColorDesc(ref ColorSpace colorSpace);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_Media_SetHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose);
 
         #endregion Oculus API import
 
@@ -1181,6 +1380,28 @@ namespace XRTK.Oculus.Plugins
             // High foveation setting with more detail toward the bottom of the view and more foveation near the top (Same as High on Oculus Go)
             HighTop = 4,
             EnumSize = 0x7FFFFFFF
+        }
+
+        public enum ColorSpace
+        {
+            /// The default value from GetHmdColorSpace until SetClientColorDesc is called. Only valid on PC, and will be remapped to Quest on Mobile
+            Unknown = 0,
+            /// No color correction, not recommended for production use. See documentation for more info
+            Unmanaged = 1,
+            /// Preferred color space for standardized color across all Oculus HMDs with D65 white point
+            Rec_2020 = 2,
+            /// Rec. 709 is used on Oculus Go and shares the same primary color coordinates as sRGB
+            Rec_709 = 3,
+            /// Oculus Rift CV1 uses a unique color space, see documentation for more info
+            Rift_CV1 = 4,
+            /// Oculus Rift S uses a unique color space, see documentation for more info
+            Rift_S = 5,
+            /// Oculus Quest's native color space is slightly different than Rift CV1
+            Quest = 6,
+            /// Similar to DCI-P3. See documentation for more details on P3
+            P3 = 7,
+            /// Similar to sRGB but with deeper greens using D65 white point
+            Adobe_RGB = 8,
         }
 
         #region Hands Implementation
@@ -2538,6 +2759,54 @@ namespace XRTK.Oculus.Plugins
             else
             {
                 return false;
+            }
+        }
+
+        public static bool SetMrcHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose)
+        {
+            if (Version >= OVRP_1_49_0_version)
+            {
+                Result res = ovrp_Media_SetHeadsetControllerPose(headsetPose, leftControllerPose, rightControllerPose);
+                return res == Result.Success;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SetClientColorDesc(ColorSpace colorSpace)
+        {
+            if (Version >= OVRP_1_49_0_version)
+            {
+#if UNITY_ANDROID
+			if (colorSpace == ColorSpace.Unknown)
+				colorSpace = ColorSpace.Quest;
+#endif
+                return ovrp_SetClientColorDesc(colorSpace) == Result.Success;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static ColorSpace GetHmdColorDesc()
+        {
+            ColorSpace colorSpace = ColorSpace.Unknown;
+            if (Version >= OVRP_1_49_0_version)
+            {
+                Result res = ovrp_GetHmdColorDesc(ref colorSpace);
+                if (res != Result.Success)
+                {
+                    Debug.LogError("GetHmdColorDesc: Failed to get Hmd color description");
+                }
+                return colorSpace;
+            }
+            else
+            {
+                Debug.LogError("GetHmdColorDesc: Not supported on this version of OVRPlugin");
+                return colorSpace;
             }
         }
 
