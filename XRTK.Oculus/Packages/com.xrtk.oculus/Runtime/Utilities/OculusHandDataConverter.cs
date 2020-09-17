@@ -252,7 +252,7 @@ namespace XRTK.Oculus.Utilities
         }
 
         /// <summary>
-        /// THe oculus APIs return joint poses relative to their parent joint unlike
+        /// The oculus APIs return joint poses relative to their parent joint unlike
         /// other platforms where joint poses are relative to the hand root. To convert
         /// the joint-->parent-joint relation to joint-->hand-root relations proxy <see cref="Transform"/>s
         /// are used. The proxies are parented to their respective parent <see cref="Transform"/>.
