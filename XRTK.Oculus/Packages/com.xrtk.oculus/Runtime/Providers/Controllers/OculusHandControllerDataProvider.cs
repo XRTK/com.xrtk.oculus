@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XRTK.Attributes;
+using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
+using XRTK.Oculus.Utilities;
 using XRTK.Providers.Controllers.Hands;
 using XRTK.Services;
 
@@ -24,57 +26,44 @@ namespace XRTK.Oculus.Providers.Controllers
             : base(name, priority, profile, parentService)
         {
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
+            handDataProvider = new OculusHandDataConverter();
+
+            postProcessor = new HandDataPostProcessor(TrackedPoses)
+            {
+                PlatformProvidesPointerPose = true
+            };
         }
 
-        private readonly OculusHandDataConverter leftHandConverter = new OculusHandDataConverter(Handedness.Left);
-        private readonly OculusHandDataConverter rightHandConverter = new OculusHandDataConverter(Handedness.Right);
+        private readonly OculusHandDataConverter handDataProvider;
+        private readonly HandDataPostProcessor postProcessor;
         private readonly Dictionary<Handedness, MixedRealityHandController> activeControllers = new Dictionary<Handedness, MixedRealityHandController>();
-
-        private OculusApi.HandState leftHandState = default;
-        private OculusApi.HandState rightHandState = default;
 
         /// <summary>
         /// The minimum required tracking confidence for hands to be registered.
         /// </summary>
-        public OculusApi.TrackingConfidence MinConfidenceRequired { get; }
-
-        /// <inheritdoc />
-        public override void Enable()
-        {
-            base.Enable();
-
-            OculusHandDataConverter.HandMeshingEnabled = HandMeshingEnabled;
-        }
+        public OculusApi.TrackingConfidence MinConfidenceRequired { get; set; }
 
         /// <inheritdoc />
         public override void Update()
         {
             base.Update();
 
-            var step = OculusApi.Step.Render;
-
-            bool isLeftHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandLeft, ref leftHandState) &&
-                                     leftHandState.HandConfidence >= MinConfidenceRequired &&
-                                     (leftHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
-
-            if (isLeftHandTracked)
+            if (handDataProvider.TryGetHandData(Handedness.Left, RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var leftHandData))
             {
                 var controller = GetOrAddController(Handedness.Left);
-                controller?.UpdateController(leftHandConverter.GetHandData());
+                leftHandData = postProcessor.PostProcess(Handedness.Left, leftHandData);
+                controller?.UpdateController(leftHandData);
             }
             else
             {
                 RemoveController(Handedness.Left);
             }
 
-            bool isRightHandTracked = OculusApi.GetHandState(step, OculusApi.Hand.HandRight, ref rightHandState) &&
-                                      rightHandState.HandConfidence >= MinConfidenceRequired &&
-                                      (rightHandState.Status & OculusApi.HandStatus.HandTracked) != 0;
-
-            if (isRightHandTracked)
+            if (handDataProvider.TryGetHandData(Handedness.Right, RenderingMode == HandRenderingMode.Mesh, MinConfidenceRequired, out var rightHandData))
             {
                 var controller = GetOrAddController(Handedness.Right);
-                controller?.UpdateController(rightHandConverter.GetHandData());
+                rightHandData = postProcessor.PostProcess(Handedness.Right, rightHandData);
+                controller?.UpdateController(rightHandData);
             }
             else
             {
