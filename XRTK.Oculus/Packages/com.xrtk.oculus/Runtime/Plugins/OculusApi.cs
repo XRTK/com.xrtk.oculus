@@ -80,9 +80,6 @@ namespace XRTK.Oculus.Plugins
                     {
 #if UNITY_ANDROID && !UNITY_EDITOR
                         new OVRControllerGamepadAndroid(),
-                        new OVRControllerTouchpad(),
-                        new OVRControllerLTrackedRemote(),
-                        new OVRControllerRTrackedRemote(),
                         new OVRControllerLTouch(),
                         new OVRControllerRTouch(),
                         new OVRControllerTouch(),
