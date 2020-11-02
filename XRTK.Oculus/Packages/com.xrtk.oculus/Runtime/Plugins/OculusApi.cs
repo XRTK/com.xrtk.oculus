@@ -558,7 +558,9 @@ namespace XRTK.Oculus.Plugins
             Failure_Unsupported = -1004,
             Failure_NotYetImplemented = -1005,
             Failure_OperationFailed = -1006,
-            Failure_InsufficientSize = -1007
+            Failure_InsufficientSize = -1007,
+            Failure_DataIsInvalid = -1008,
+            Failure_DeprecatedOperation = -1009
         }
 
         /// <summary>
@@ -580,6 +582,7 @@ namespace XRTK.Oculus.Plugins
             CameraStatus_Calibrating,
             CameraStatus_CalibrationFailed,
             CameraStatus_Calibrated,
+            CameraStatus_ThirdPerson,
             CameraStatus_EnumSize = 0x7fffffff
         }
 
@@ -682,7 +685,7 @@ namespace XRTK.Oculus.Plugins
             public static readonly Vector3f zero = new Vector3f { x = 0.0f, y = 0.0f, z = 0.0f };
             public override string ToString()
             {
-                return $"{x}, {y}, {z}";
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}", x, y, z);
             }
         }
 
@@ -699,7 +702,7 @@ namespace XRTK.Oculus.Plugins
             public static readonly Vector4f zero = new Vector4f { x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f };
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
         }
 
@@ -716,7 +719,7 @@ namespace XRTK.Oculus.Plugins
             public static readonly Vector4s zero = new Vector4s { x = 0, y = 0, z = 0, w = 0 };
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}, {3}", x, y, z, w);
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
         }
 
@@ -733,7 +736,7 @@ namespace XRTK.Oculus.Plugins
             public static readonly Quatf identity = new Quatf { x = 0.0f, y = 0.0f, z = 0.0f, w = 1.0f };
             public override string ToString()
             {
-                return $"{x}, {y}, {z}, {w}";
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
         }
 
@@ -748,7 +751,7 @@ namespace XRTK.Oculus.Plugins
             public static readonly Posef identity = new Posef { Orientation = Quatf.identity, Position = Vector3f.zero };
             public override string ToString()
             {
-                return $"Position ({Position}), Orientation({Orientation})";
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "Position ({0}), Orientation({1})", Position, Orientation);
             }
         }
 
@@ -1199,11 +1202,8 @@ namespace XRTK.Oculus.Plugins
             LHand = 0x00000020,
             RHand = 0x00000040,
             Hands = LHand | RHand,
-            Touchpad = 0x08000000,
-            LTrackedRemote = 0x01000000,
-            RTrackedRemote = 0x02000000,
             Active = unchecked((int)0x80000000),
-            All = ~None
+            All = ~None,
         }
 
         /// <summary>
@@ -1244,9 +1244,8 @@ namespace XRTK.Oculus.Plugins
         public enum RecenterFlags
         {
             Default = 0,
-            Controllers = 0x40000000,
             IgnoreAll = unchecked((int)0x80000000),
-            Count
+            Count,
         }
 
         /// <summary>
@@ -1352,24 +1351,33 @@ namespace XRTK.Oculus.Plugins
         /// <summary>
         /// Type of headset detected by the Oculus API
         /// </summary>
-        public enum SystemHeadset
-        {
-            None = 0,
-            GearVR_R320, // Note4 Innovator
-            GearVR_R321, // S6 Innovator
-            GearVR_R322, // Commercial 1
-            GearVR_R323, // Commercial 2 (USB Type C)
-            GearVR_R324, // Commercial 3 (USB Type C)
-            GearVR_R325, // Commercial 4 (USB Type C)
-            Oculus_Go,
-            Oculus_Quest,
+	public enum SystemHeadset
+	{
+		None = 0,
 
-            Rift_DK1 = 0x1000,
-            Rift_DK2,
-            Rift_CV1,
-            Rift_CB,
-            Rift_S
-        }
+		// Standalone headsets
+		Oculus_Quest = 8,
+		Oculus_Quest_2 = 9,
+		Placeholder_10,
+		Placeholder_11,
+		Placeholder_12,
+		Placeholder_13,
+		Placeholder_14,
+
+		// PC headsets
+		Rift_DK1 = 0x1000,
+		Rift_DK2,
+		Rift_CV1,
+		Rift_CB,
+		Rift_S,
+		Oculus_Link_Quest,
+		PC_Placeholder_4102,
+		PC_Placeholder_4103,
+		PC_Placeholder_4104,
+		PC_Placeholder_4105,
+		PC_Placeholder_4106,
+		PC_Placeholder_4107
+	}
 
         public enum FixedFoveatedRenderingLevel
         {
@@ -1434,6 +1442,8 @@ namespace XRTK.Oculus.Plugins
             HandTracked = (1 << 0), // if this is set the hand pose and bone rotations data is usable
             InputStateValid = (1 << 1), // if this is set the pointer pose and pinch data is usable
             SystemGestureInProgress = (1 << 6), // if this is set the hand is currently processing a system gesture
+            DominantHand = (1 << 7), // if this is set the hand is currently the dominant hand
+            MenuPressed = (1 << 8) // if this is set the hand performed a menu press
         }
 
         /// <summary>
@@ -1694,7 +1704,7 @@ namespace XRTK.Oculus.Plugins
 
             public virtual void RecenterController()
             {
-                RecenterTrackingOrigin(RecenterFlags.Controllers);
+                RecenterTrackingOrigin(RecenterFlags.Default);
             }
 
             public virtual bool WasRecentered()
@@ -1818,60 +1828,6 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
-        private class OVRControllerTouchpad : OVRControllerBase
-        {
-            public OVRControllerTouchpad()
-            {
-                controllerType = Controller.Touchpad;
-            }
-        }
-
-        private class OVRControllerLTrackedRemote : OVRControllerBase
-        {
-            public OVRControllerLTrackedRemote()
-            {
-                controllerType = Controller.LTrackedRemote;
-            }
-
-            public override bool WasRecentered()
-            {
-                return (currentState.LRecenterCount != previousState.LRecenterCount);
-            }
-
-            public override byte GetRecenterCount()
-            {
-                return currentState.LRecenterCount;
-            }
-
-            public override byte GetBatteryPercentRemaining()
-            {
-                return currentState.LBatteryPercentRemaining;
-            }
-        }
-
-        private class OVRControllerRTrackedRemote : OVRControllerBase
-        {
-            public OVRControllerRTrackedRemote()
-            {
-                controllerType = Controller.RTrackedRemote;
-            }
-
-            public override bool WasRecentered()
-            {
-                return (currentState.RRecenterCount != previousState.RRecenterCount);
-            }
-
-            public override byte GetRecenterCount()
-            {
-                return currentState.RRecenterCount;
-            }
-
-            public override byte GetBatteryPercentRemaining()
-            {
-                return currentState.RBatteryPercentRemaining;
-            }
-        }
-
         #endregion Oculus Controller Definition
 
         #region Oculus Positional Tracking
@@ -1921,10 +1877,8 @@ namespace XRTK.Oculus.Plugins
             switch (controllerType)
             {
                 case Controller.LTouch:
-                case Controller.LTrackedRemote:
                     return GetNodePose(Node.HandLeft, stepType).GetPosePosition();
                 case Controller.RTouch:
-                case Controller.RTrackedRemote:
                     return GetNodePose(Node.HandRight, stepType).GetPosePosition();
                 default:
                     return Vector3.zero;
