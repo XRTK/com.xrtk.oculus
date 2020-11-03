@@ -13,8 +13,6 @@ namespace XRTK.Oculus.Profiles
         {
             return new[]
             {
-                new ControllerDefinition(typeof(OculusGoController), Handedness.Left),
-                new ControllerDefinition(typeof(OculusGoController), Handedness.Right),
                 new ControllerDefinition(typeof(OculusRemoteController)),
                 new ControllerDefinition(typeof(OculusTouchController), Handedness.Left),
                 new ControllerDefinition(typeof(OculusTouchController), Handedness.Right),
