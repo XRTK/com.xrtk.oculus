@@ -229,9 +229,6 @@ namespace XRTK.Oculus.Providers.Controllers
                     return typeof(OculusTouchController);
                 case OculusApi.Controller.Remote:
                     return typeof(OculusRemoteController);
-                case OculusApi.Controller.LTrackedRemote:
-                case OculusApi.Controller.RTrackedRemote:
-                    return typeof(OculusGoController);
                 default:
                     return null;
             }

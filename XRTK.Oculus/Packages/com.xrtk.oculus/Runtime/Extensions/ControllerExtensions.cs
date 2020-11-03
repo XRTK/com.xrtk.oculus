@@ -18,13 +18,10 @@ namespace XRTK.Oculus.Extensions
         {
             switch (controller)
             {
-                case OculusApi.Controller.LTrackedRemote:
                 case OculusApi.Controller.LTouch:
                     return Handedness.Left;
-                case OculusApi.Controller.RTrackedRemote:
                 case OculusApi.Controller.RTouch:
                     return Handedness.Right;
-                case OculusApi.Controller.Touchpad:
                 case OculusApi.Controller.Gamepad:
                 case OculusApi.Controller.Remote:
                     return Handedness.Both;

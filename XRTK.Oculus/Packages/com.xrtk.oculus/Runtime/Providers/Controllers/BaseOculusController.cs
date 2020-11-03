@@ -264,9 +264,7 @@ namespace XRTK.Oculus.Providers.Controllers
         {
             return controller == OculusApi.Controller.Touch ||
                    controller == OculusApi.Controller.LTouch ||
-                   controller == OculusApi.Controller.RTouch ||
-                   controller == OculusApi.Controller.LTrackedRemote ||
-                   controller == OculusApi.Controller.RTrackedRemote;
+                   controller == OculusApi.Controller.RTouch;
         }
 
         private void UpdateButtonDataPress(MixedRealityInteractionMapping interactionMapping)
