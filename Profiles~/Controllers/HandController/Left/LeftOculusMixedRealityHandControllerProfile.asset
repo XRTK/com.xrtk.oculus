@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d420c170b42dfe0438e2aa2a829775ed, type: 3}
+  m_Name: LeftOculusMixedRealityHandControllerProfile
+  m_EditorClassIdentifier: 
+  controllerType:
+    reference: b18a9a6c-e5fd-40ae-89e9-9822415ec62b
+  handedness: 1
+  visualizationProfile: {fileID: 11400000, guid: 6a4c47b083709314491c3236c6df96ef,
+    type: 2}
+  useCustomInteractions: 0
+  interactionMappingProfiles:
+  - {fileID: 11400000, guid: 95a5f5969e530914390dbd7304421e19, type: 2}
+  - {fileID: 11400000, guid: a0b589e69acf0f0458c3cebe23ecb913, type: 2}
+  - {fileID: 11400000, guid: 3b51dbb80753f774399c497057796d83, type: 2}
+  - {fileID: 11400000, guid: 0d91d3578a3927c469cbff77dea5c542, type: 2}
+  - {fileID: 11400000, guid: 119c4a2f2e3e2654485be9fa255ab266, type: 2}
+  - {fileID: 11400000, guid: 36eee5731d287f247a5e1b724ef55ab2, type: 2}
