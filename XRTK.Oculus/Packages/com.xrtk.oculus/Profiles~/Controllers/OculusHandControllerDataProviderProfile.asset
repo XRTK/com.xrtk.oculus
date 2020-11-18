@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hasSetupDefaults: 1
   controllerMappingProfiles:
-  - {fileID: 11400000, guid: dd499836e4b82f14da2f414aad1fed8b, type: 2}
-  - {fileID: 11400000, guid: 78bf44d2b6970a74ea2721883b0b22bc, type: 2}
+  - {fileID: 11400000, guid: 6f5955c3fbc9a2f4a9ad5760ed372b1c, type: 2}
+  - {fileID: 11400000, guid: 183f92446961a1a4b980f615fa51264c, type: 2}
   renderingMode: 1
   handPhysicsEnabled: 0
   useTriggers: 0
