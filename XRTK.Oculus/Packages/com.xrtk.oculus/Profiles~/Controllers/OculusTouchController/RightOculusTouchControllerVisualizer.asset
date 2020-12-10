@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b7926164960ef644850207ccce1b07e, type: 3}
-  m_Name: RightControllerVisualizer
+  m_Name: RightOculusTouchControllerVisualizer
   m_EditorClassIdentifier: 
   controllerVisualizationType:
     reference: ea41f336-8b46-4aea-a8b4-8b93b52e67a9

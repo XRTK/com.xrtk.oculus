@@ -28,5 +28,5 @@ MonoBehaviour:
     axisCodeY: 
     inputProcessors: []
   pointerProfiles:
-  - {fileID: 11400000, guid: 9e0e4acc675a18b4b9c65e9ff85cfe58, type: 2}
-  - {fileID: 11400000, guid: d3736f91cbeeb284fb90b9d389b7fe33, type: 2}
+  - {fileID: 11400000, guid: a5e48f344f9c77e48ba2b349bb851422, type: 2}
+  - {fileID: 11400000, guid: 2626c6ea89f08f6428609d3045124809, type: 2}

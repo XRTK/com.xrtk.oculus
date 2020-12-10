@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c156ea3e1a7a493dac236ed84c4a819a, type: 3}
   m_Name: OculusHandControllerSpatialPointerProfile
   m_EditorClassIdentifier: 
-  pointerPrefab: {fileID: 1247086986094436, guid: 3c6b5e276e9a37446b574ff0ee1eee58,
+  pointerPrefab: {fileID: 1247086986094436, guid: b147edefbc60db74081049c48d969162,
     type: 3}
   pointingExtent: 10
   pointingRaycastLayerMasks:

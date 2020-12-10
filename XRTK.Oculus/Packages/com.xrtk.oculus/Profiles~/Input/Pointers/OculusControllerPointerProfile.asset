@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c156ea3e1a7a493dac236ed84c4a819a, type: 3}
-  m_Name: ControllerPointerProfile
+  m_Name: OculusControllerPointerProfile
   m_EditorClassIdentifier: 
   pointerPrefab: {fileID: 1247086986094436, guid: 54d78dc3333741c5b7f30fe3506096ba,
     type: 3}
