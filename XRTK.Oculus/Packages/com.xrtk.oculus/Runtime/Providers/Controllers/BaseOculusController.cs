@@ -275,15 +275,14 @@ namespace XRTK.Oculus.Providers.Controllers
 
             if (interactionButton != OculusApi.RawButton.None)
             {
-                if (((OculusApi.RawButton)previousState.Buttons & interactionButton) != 0)
-                {
-                    interactionMapping.BoolData = false;
-                }
-
-                if (((OculusApi.RawButton)currentState.Buttons & interactionButton) != 0 &&
-                    ((OculusApi.RawButton)previousState.Buttons & interactionButton) == 0)
+                if (((OculusApi.RawButton)currentState.Buttons & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = true;
+                }
+                else if (((OculusApi.RawButton)currentState.Buttons & interactionButton) == 0 &&
+                        ((OculusApi.RawButton)previousState.Buttons & interactionButton) != 0)
+                {
+                    interactionMapping.BoolData = false;
                 }
             }
         }
@@ -296,16 +295,15 @@ namespace XRTK.Oculus.Providers.Controllers
 
             if (interactionButton != OculusApi.RawTouch.None)
             {
-                if (((OculusApi.RawTouch)previousState.Touches & interactionButton) != 0)
-                {
-                    interactionMapping.BoolData = false;
-                }
-
-                if (((OculusApi.RawTouch)currentState.Touches & interactionButton) != 0 &&
-                    ((OculusApi.RawTouch)previousState.Touches & interactionButton) == 0)
+                if (((OculusApi.RawTouch)currentState.Touches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = true;
                 }
+                else if (((OculusApi.RawTouch)currentState.Touches & interactionButton) == 0 &&
+                        ((OculusApi.RawTouch)previousState.Touches & interactionButton) != 0)
+                {
+                    interactionMapping.BoolData = false;
+                }                
             }
         }
 
@@ -317,16 +315,15 @@ namespace XRTK.Oculus.Providers.Controllers
 
             if (interactionButton != OculusApi.RawNearTouch.None)
             {
-                if (((OculusApi.RawNearTouch)previousState.NearTouches & interactionButton) != 0)
-                {
-                    interactionMapping.BoolData = false;
-                }
-
-                if (((OculusApi.RawNearTouch)currentState.NearTouches & interactionButton) != 0 &&
-                    ((OculusApi.RawNearTouch)previousState.NearTouches & interactionButton) == 0)
+                if (((OculusApi.RawNearTouch)currentState.NearTouches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = true;
                 }
+                else if (((OculusApi.RawNearTouch)currentState.NearTouches & interactionButton) == 0 &&
+                        ((OculusApi.RawNearTouch)previousState.NearTouches & interactionButton) != 0)
+                {
+                    interactionMapping.BoolData = false;
+                }                  
             }
         }
 
@@ -356,7 +353,6 @@ namespace XRTK.Oculus.Providers.Controllers
                         singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
                         break;
                     case OculusApi.RawAxis1D.RHandTrigger:
-
                         singleAxisValue = currentState.RHandTrigger;
 
                         singleAxisValue = OculusApi.CalculateAbsMax(0, singleAxisValue);
