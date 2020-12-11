@@ -87,6 +87,7 @@ namespace XRTK.Oculus.Providers.Controllers
         private MixedRealityPose currentPointerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose lastControllerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose currentControllerPose = MixedRealityPose.ZeroIdentity;
+        private OculusApi.PoseStatef currentControllerVelocity = new OculusApi.PoseStatef();
         private float singleAxisValue = 0.0f;
         private Vector2 dualAxisPosition = Vector2.zero;
 
@@ -236,6 +237,9 @@ namespace XRTK.Oculus.Providers.Controllers
             }
 
             currentControllerPose = OculusApi.GetNodePose(NodeType, OculusApi.stepType).ToMixedRealityPose(true);
+            currentControllerVelocity = OculusApi.GetNodeState(NodeType, OculusApi.stepType);
+            Velocity = currentControllerVelocity.Velocity.ToVector3();
+            AngularVelocity = currentControllerVelocity.AngularVelocity.ToVector3();
 
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)

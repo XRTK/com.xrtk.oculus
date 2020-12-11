@@ -1996,6 +1996,17 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
+        /// Oculus native api translation, gets the current input velocity for a specific node type in the current render cycle
+        /// </summary>
+        /// <param name="nodeId">Oculus Node definition, e.g. LeftHand / RightHand</param>
+        /// <param name="stepId">render / physics step</param>
+        /// <returns>Oculus native Vector3 detailing the current input velocity</returns>
+        public static PoseStatef GetNodeState(Node nodeId, Step stepId)
+        {
+            return ovrp_GetNodePoseState(stepId, nodeId);
+        }
+
+        /// <summary>
         /// Gets the position of the given Controller local to its tracking space.
         /// Only supported for Oculus LTouch and RTouch controllers. Non-tracked controllers will return Vector3.zero.
         /// </summary>
