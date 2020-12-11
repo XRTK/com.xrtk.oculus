@@ -26,5 +26,15 @@ namespace XRTK.Oculus.Extensions
         {
             return new Vector3() { x = v.x, y = v.y, z = -v.z };
         }
+
+        /// <summary>
+        /// Returns a Unity Vector3 from an Oculus Vector3f
+        /// </summary>
+        /// <param name="v">Input vector</param>
+        /// <returns>Unity Vector3 translation</returns>
+        public static Vector3 ToVector3(this OculusApi.Vector3f v)
+        {
+            return new Vector3() { x = v.x, y = v.y, z = v.z };
+        }
     }
 }
