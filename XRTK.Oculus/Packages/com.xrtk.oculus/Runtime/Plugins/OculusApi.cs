@@ -20,7 +20,8 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_46_0_version = new Version(1, 46, 0);
         private static readonly Version OVRP_1_48_0_version = new Version(1, 48, 0);
         private static readonly Version OVRP_1_49_0_version = new Version(1, 49, 0);
-        
+        private static readonly Version OVRP_1_55_0_version = new Version(1, 55, 0);
+
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
@@ -535,6 +536,17 @@ namespace XRTK.Oculus.Plugins
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_Media_SetHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose);
 
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetSkeleton2(SkeletonType skeletonType, out Skeleton2Internal skeleton);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_PollEvent(out EventDataBuffer eventDataBuffer);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetNativeXrApiType(out XrApi xrApi);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_GetNativeOpenXRHandles(out UInt64 xrInstance, out UInt64 xrSession);
         #endregion Oculus API import
 
         #region Oculus Data Types
@@ -581,6 +593,23 @@ namespace XRTK.Oculus.Plugins
             CameraStatus_Calibrated,
             CameraStatus_ThirdPerson,
             CameraStatus_EnumSize = 0x7fffffff
+        }
+
+        public enum CameraAnchorType
+        {
+            CameraAnchorType_PreDefined = 0,
+            CameraAnchorType_Custom = 1,
+            CameraAnchorType_Count,
+            CameraAnchorType_EnumSize = 0x7fffffff
+        }
+
+        public enum XrApi
+        {
+            Unknown = 0,
+            CAPI = 1,
+            VRAPI = 2,
+            OpenXR = 3,
+            EnumSize = 0x7fffffff
         }
 
         /// <summary>
@@ -1409,6 +1438,22 @@ namespace XRTK.Oculus.Plugins
             Adobe_RGB = 8,
         }
 
+        public enum EventType
+        {
+            Unknown = 0,
+            DisplayRefreshRateChanged = 1,
+        }
+
+        private const int EventDataBufferSize = 4000;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct EventDataBuffer
+        {
+            public EventType EventType;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = EventDataBufferSize)]
+            public byte[] EventData;
+        }
+
         #region Hands Implementation
 
         /// <summary>
@@ -1635,6 +1680,93 @@ namespace XRTK.Oculus.Plugins
             public Bone[] Bones;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)SkeletonConstants.MaxBoneCapsules)]
             public BoneCapsule[] BoneCapsules;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Skeleton2
+        {
+            public SkeletonType Type;
+            public uint NumBones;
+            public uint NumBoneCapsules;
+            public Bone[] Bones;
+            public BoneCapsule[] BoneCapsules;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Skeleton2Internal
+        {
+            public SkeletonType Type;
+            public uint NumBones;
+            public uint NumBoneCapsules;
+            public Bone Bones_0;
+            public Bone Bones_1;
+            public Bone Bones_2;
+            public Bone Bones_3;
+            public Bone Bones_4;
+            public Bone Bones_5;
+            public Bone Bones_6;
+            public Bone Bones_7;
+            public Bone Bones_8;
+            public Bone Bones_9;
+            public Bone Bones_10;
+            public Bone Bones_11;
+            public Bone Bones_12;
+            public Bone Bones_13;
+            public Bone Bones_14;
+            public Bone Bones_15;
+            public Bone Bones_16;
+            public Bone Bones_17;
+            public Bone Bones_18;
+            public Bone Bones_19;
+            public Bone Bones_20;
+            public Bone Bones_21;
+            public Bone Bones_22;
+            public Bone Bones_23;
+            public Bone Bones_24;
+            public Bone Bones_25;
+            public Bone Bones_26;
+            public Bone Bones_27;
+            public Bone Bones_28;
+            public Bone Bones_29;
+            public Bone Bones_30;
+            public Bone Bones_31;
+            public Bone Bones_32;
+            public Bone Bones_33;
+            public Bone Bones_34;
+            public Bone Bones_35;
+            public Bone Bones_36;
+            public Bone Bones_37;
+            public Bone Bones_38;
+            public Bone Bones_39;
+            public Bone Bones_40;
+            public Bone Bones_41;
+            public Bone Bones_42;
+            public Bone Bones_43;
+            public Bone Bones_44;
+            public Bone Bones_45;
+            public Bone Bones_46;
+            public Bone Bones_47;
+            public Bone Bones_48;
+            public Bone Bones_49;
+            public BoneCapsule BoneCapsules_0;
+            public BoneCapsule BoneCapsules_1;
+            public BoneCapsule BoneCapsules_2;
+            public BoneCapsule BoneCapsules_3;
+            public BoneCapsule BoneCapsules_4;
+            public BoneCapsule BoneCapsules_5;
+            public BoneCapsule BoneCapsules_6;
+            public BoneCapsule BoneCapsules_7;
+            public BoneCapsule BoneCapsules_8;
+            public BoneCapsule BoneCapsules_9;
+            public BoneCapsule BoneCapsules_10;
+            public BoneCapsule BoneCapsules_11;
+            public BoneCapsule BoneCapsules_12;
+            public BoneCapsule BoneCapsules_13;
+            public BoneCapsule BoneCapsules_14;
+            public BoneCapsule BoneCapsules_15;
+            public BoneCapsule BoneCapsules_16;
+            public BoneCapsule BoneCapsules_17;
+            public BoneCapsule BoneCapsules_18;
         }
 
         /// <summary>
@@ -2397,6 +2529,145 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        private static Skeleton cachedSkeleton = new Skeleton();
+        private static Skeleton2Internal cachedSkeleton2 = new Skeleton2Internal();
+
+        /// <summary>
+        /// Gets the current skeletal definition for a specific hand
+        /// </summary>
+        /// <param name="skeletonType">Type of skeleton to query for</param>
+        /// <param name="skeleton">(Out) Skeletal definition</param>
+        /// <returns>True of the API was successful in retriving the hand data</returns>
+        public static bool GetSkeleton2(SkeletonType skeletonType, ref Skeleton2 skeleton)
+        {
+            if (Version >= OVRP_1_55_0_version)
+            {
+                Result res = ovrp_GetSkeleton2(skeletonType, out cachedSkeleton2);
+                if (res == Result.Success)
+                {
+                    if (skeleton.Bones == null || skeleton.Bones.Length != (int)SkeletonConstants.MaxBones)
+                    {
+                        skeleton.Bones = new Bone[(int)SkeletonConstants.MaxBones];
+                    }
+                    if (skeleton.BoneCapsules == null || skeleton.BoneCapsules.Length != (int)SkeletonConstants.MaxBoneCapsules)
+                    {
+                        skeleton.BoneCapsules = new BoneCapsule[(int)SkeletonConstants.MaxBoneCapsules];
+                    }
+
+                    skeleton.Type = cachedSkeleton2.Type;
+                    skeleton.NumBones = cachedSkeleton2.NumBones;
+                    skeleton.NumBoneCapsules = cachedSkeleton2.NumBoneCapsules;
+                    skeleton.Bones[0] = cachedSkeleton2.Bones_0;
+                    skeleton.Bones[1] = cachedSkeleton2.Bones_1;
+                    skeleton.Bones[2] = cachedSkeleton2.Bones_2;
+                    skeleton.Bones[3] = cachedSkeleton2.Bones_3;
+                    skeleton.Bones[4] = cachedSkeleton2.Bones_4;
+                    skeleton.Bones[5] = cachedSkeleton2.Bones_5;
+                    skeleton.Bones[6] = cachedSkeleton2.Bones_6;
+                    skeleton.Bones[7] = cachedSkeleton2.Bones_7;
+                    skeleton.Bones[8] = cachedSkeleton2.Bones_8;
+                    skeleton.Bones[9] = cachedSkeleton2.Bones_9;
+                    skeleton.Bones[10] = cachedSkeleton2.Bones_10;
+                    skeleton.Bones[11] = cachedSkeleton2.Bones_11;
+                    skeleton.Bones[12] = cachedSkeleton2.Bones_12;
+                    skeleton.Bones[13] = cachedSkeleton2.Bones_13;
+                    skeleton.Bones[14] = cachedSkeleton2.Bones_14;
+                    skeleton.Bones[15] = cachedSkeleton2.Bones_15;
+                    skeleton.Bones[16] = cachedSkeleton2.Bones_16;
+                    skeleton.Bones[17] = cachedSkeleton2.Bones_17;
+                    skeleton.Bones[18] = cachedSkeleton2.Bones_18;
+                    skeleton.Bones[19] = cachedSkeleton2.Bones_19;
+                    skeleton.Bones[20] = cachedSkeleton2.Bones_20;
+                    skeleton.Bones[21] = cachedSkeleton2.Bones_21;
+                    skeleton.Bones[22] = cachedSkeleton2.Bones_22;
+                    skeleton.Bones[23] = cachedSkeleton2.Bones_23;
+                    skeleton.Bones[24] = cachedSkeleton2.Bones_24;
+                    skeleton.Bones[25] = cachedSkeleton2.Bones_25;
+                    skeleton.Bones[26] = cachedSkeleton2.Bones_26;
+                    skeleton.Bones[27] = cachedSkeleton2.Bones_27;
+                    skeleton.Bones[28] = cachedSkeleton2.Bones_28;
+                    skeleton.Bones[29] = cachedSkeleton2.Bones_29;
+                    skeleton.Bones[30] = cachedSkeleton2.Bones_30;
+                    skeleton.Bones[31] = cachedSkeleton2.Bones_31;
+                    skeleton.Bones[32] = cachedSkeleton2.Bones_32;
+                    skeleton.Bones[33] = cachedSkeleton2.Bones_33;
+                    skeleton.Bones[34] = cachedSkeleton2.Bones_34;
+                    skeleton.Bones[35] = cachedSkeleton2.Bones_35;
+                    skeleton.Bones[36] = cachedSkeleton2.Bones_36;
+                    skeleton.Bones[37] = cachedSkeleton2.Bones_37;
+                    skeleton.Bones[38] = cachedSkeleton2.Bones_38;
+                    skeleton.Bones[39] = cachedSkeleton2.Bones_39;
+                    skeleton.Bones[40] = cachedSkeleton2.Bones_40;
+                    skeleton.Bones[41] = cachedSkeleton2.Bones_41;
+                    skeleton.Bones[42] = cachedSkeleton2.Bones_42;
+                    skeleton.Bones[43] = cachedSkeleton2.Bones_43;
+                    skeleton.Bones[44] = cachedSkeleton2.Bones_44;
+                    skeleton.Bones[45] = cachedSkeleton2.Bones_45;
+                    skeleton.Bones[46] = cachedSkeleton2.Bones_46;
+                    skeleton.Bones[47] = cachedSkeleton2.Bones_47;
+                    skeleton.Bones[48] = cachedSkeleton2.Bones_48;
+                    skeleton.Bones[49] = cachedSkeleton2.Bones_49;
+                    skeleton.BoneCapsules[0] = cachedSkeleton2.BoneCapsules_0;
+                    skeleton.BoneCapsules[1] = cachedSkeleton2.BoneCapsules_1;
+                    skeleton.BoneCapsules[2] = cachedSkeleton2.BoneCapsules_2;
+                    skeleton.BoneCapsules[3] = cachedSkeleton2.BoneCapsules_3;
+                    skeleton.BoneCapsules[4] = cachedSkeleton2.BoneCapsules_4;
+                    skeleton.BoneCapsules[5] = cachedSkeleton2.BoneCapsules_5;
+                    skeleton.BoneCapsules[6] = cachedSkeleton2.BoneCapsules_6;
+                    skeleton.BoneCapsules[7] = cachedSkeleton2.BoneCapsules_7;
+                    skeleton.BoneCapsules[8] = cachedSkeleton2.BoneCapsules_8;
+                    skeleton.BoneCapsules[9] = cachedSkeleton2.BoneCapsules_9;
+                    skeleton.BoneCapsules[10] = cachedSkeleton2.BoneCapsules_10;
+                    skeleton.BoneCapsules[11] = cachedSkeleton2.BoneCapsules_11;
+                    skeleton.BoneCapsules[12] = cachedSkeleton2.BoneCapsules_12;
+                    skeleton.BoneCapsules[13] = cachedSkeleton2.BoneCapsules_13;
+                    skeleton.BoneCapsules[14] = cachedSkeleton2.BoneCapsules_14;
+                    skeleton.BoneCapsules[15] = cachedSkeleton2.BoneCapsules_15;
+                    skeleton.BoneCapsules[16] = cachedSkeleton2.BoneCapsules_16;
+                    skeleton.BoneCapsules[17] = cachedSkeleton2.BoneCapsules_17;
+                    skeleton.BoneCapsules[18] = cachedSkeleton2.BoneCapsules_18;
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (GetSkeleton(skeletonType, out cachedSkeleton))
+                {
+                    if (skeleton.Bones == null || skeleton.Bones.Length != (int)SkeletonConstants.MaxBones)
+                    {
+                        skeleton.Bones = new Bone[(int)SkeletonConstants.MaxBones];
+                    }
+                    if (skeleton.BoneCapsules == null || skeleton.BoneCapsules.Length != (int)SkeletonConstants.MaxBoneCapsules)
+                    {
+                        skeleton.BoneCapsules = new BoneCapsule[(int)SkeletonConstants.MaxBoneCapsules];
+                    }
+
+                    skeleton.Type = cachedSkeleton.Type;
+                    skeleton.NumBones = cachedSkeleton.NumBones;
+                    skeleton.NumBoneCapsules = cachedSkeleton.NumBoneCapsules;
+
+                    for (int i = 0; i < skeleton.NumBones; i++)
+                    {
+                        skeleton.Bones[i] = cachedSkeleton.Bones[i];
+                    }
+
+                    for (int i = 0; i < skeleton.NumBoneCapsules; i++)
+                    {
+                        skeleton.BoneCapsules[i] = cachedSkeleton.BoneCapsules[i];
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         /// <summary>
         /// Gets the mesh for the detected hand
         /// </summary>
@@ -2713,6 +2984,13 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Sets the current headset controller pose
+        /// </summary>
+        /// <param name="headsetPose">Headset pose to apply</param>
+        /// <param name="leftControllerPose">Left controller pose to apply</param>
+        /// <param name="rightControllerPose">Right controller pose to apply</param>
+        /// <returns>Returns true if the pose was applied successfully</returns>
         public static bool SetMrcHeadsetControllerPose(Posef headsetPose, Posef leftControllerPose, Posef rightControllerPose)
         {
             if (Version >= OVRP_1_49_0_version)
@@ -2726,6 +3004,11 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Sets a new color description for the client
+        /// </summary>
+        /// <param name="colorSpace">New color space to apply</param>
+        /// <returns></returns>
         public static bool SetClientColorDesc(ColorSpace colorSpace)
         {
             if (Version >= OVRP_1_49_0_version)
@@ -2742,6 +3025,10 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        /// <summary>
+        /// Get the current color description for the headset
+        /// </summary>
+        /// <returns>Returns a ColorSpace definition</returns>
         public static ColorSpace GetHmdColorDesc()
         {
             ColorSpace colorSpace = ColorSpace.Unknown;
@@ -2759,6 +3046,58 @@ namespace XRTK.Oculus.Plugins
                 Debug.LogError("GetHmdColorDesc: Not supported on this version of OVRPlugin");
                 return colorSpace;
             }
+        }
+
+        /// <summary>
+        /// Polls the current data buffer from the environment
+        /// </summary>
+        /// <param name="eventDataBuffer">(out) Populated EventBuffer</param>
+        /// <returns>Returns true if the poll was successful</returns>
+        public static bool PollEvent(out EventDataBuffer eventDataBuffer)
+        {
+            if (Version >= OVRP_1_55_0_version)
+            {
+                return ovrp_PollEvent(out eventDataBuffer) == Result.Success;
+            }
+            else
+            {
+                eventDataBuffer = default(EventDataBuffer);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the curent instance of the XR session
+        /// </summary>
+        /// <returns>Returns the indiex of the current native buffer</returns>
+        public static UInt64 GetNativeOpenXRInstance()
+        {
+            if (Version >= OVRP_1_55_0_version)
+            {
+                UInt64 instance, session;
+                if (ovrp_GetNativeOpenXRHandles(out instance, out session) == Result.Success)
+                {
+                    return instance;
+                }
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets the native pointer reference the the existing session
+        /// </summary>
+        /// <returns>Returns the indiex of the current native buffer</returns>
+        public static UInt64 GetNativeOpenXRSession()
+        {
+            if (Version >= OVRP_1_55_0_version)
+            {
+                UInt64 instance, session;
+                if (ovrp_GetNativeOpenXRHandles(out instance, out session) == Result.Success)
+                {
+                    return session;
+                }
+            }
+            return 0;
         }
 
         #endregion
