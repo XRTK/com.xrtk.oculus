@@ -143,6 +143,9 @@ namespace XRTK.Oculus.Providers.Controllers
                     case DeviceInputType.Touchpad:
                         UpdateDualAxisData(interactionMapping);
                         break;
+                    case DeviceInputType.SpatialGrip:
+                        UpdateSpatialGripData(interactionMapping);
+                        break;
                     default:
                         Debug.LogError($"Input [{interactionMapping.InputType}] is not handled for this controller [{GetType().Name}]");
                         break;
@@ -367,6 +370,12 @@ namespace XRTK.Oculus.Providers.Controllers
 
             // Update the interaction data source
             interactionMapping.FloatData = singleAxisValue;
+        }
+
+        private void UpdateSpatialGripData(MixedRealityInteractionMapping interactionMapping)
+        {
+            Debug.Assert(interactionMapping.AxisType == AxisType.SixDof);
+            interactionMapping.PoseData = currentControllerPose;
         }
 
         private void UpdateDualAxisData(MixedRealityInteractionMapping interactionMapping)
