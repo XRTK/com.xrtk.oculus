@@ -76,6 +76,7 @@ namespace XRTK.Oculus.Providers.Controllers
             new MixedRealityInteractionMapping("Button.DpadLeft Press", AxisType.Digital, "DpadLeft", DeviceInputType.ThumbStickPress),
             new MixedRealityInteractionMapping("Button.DpadRight Press", AxisType.Digital, "DpadRight", DeviceInputType.ThumbStickPress),
             new MixedRealityInteractionMapping("Button.RTouchpad", AxisType.Digital, "RTouchpad", DeviceInputType.ThumbTouch),
+            new MixedRealityInteractionMapping("Grip Pose", AxisType.SixDof, DeviceInputType.SpatialGrip)
         };
 
         /// <inheritdoc />
@@ -307,7 +308,7 @@ namespace XRTK.Oculus.Providers.Controllers
                         ((OculusApi.RawTouch)previousState.Touches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = false;
-                }                
+                }
             }
         }
 
@@ -327,7 +328,7 @@ namespace XRTK.Oculus.Providers.Controllers
                         ((OculusApi.RawNearTouch)previousState.NearTouches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = false;
-                }                  
+                }
             }
         }
 
