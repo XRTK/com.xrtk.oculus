@@ -18,10 +18,10 @@ MonoBehaviour:
     axisType: 2
     inputType: 13
     inputAction:
-      profileGuid: 00000000000000000000000000000000
-      id: 0
-      description: None
-      axisConstraint: 0
+      profileGuid: 399335ccc89c4d12b79f3539ca7771db
+      id: 16
+      description: Grip Press
+      axisConstraint: 2
     keyCode: 0
     inputName: RHandTrigger
     axisCodeX: AXIS_12
