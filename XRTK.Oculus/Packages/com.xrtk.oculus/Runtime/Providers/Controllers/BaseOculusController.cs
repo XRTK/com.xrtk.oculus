@@ -29,6 +29,13 @@ namespace XRTK.Oculus.Providers.Controllers
         }
 
         /// <summary>
+        /// Local offset from the controller position defining where the grip pose is.
+        /// The grip pose may be used to attach things to the controller when grabbing objects.
+        /// </summary>
+        private readonly MixedRealityPose gripPoseOffset = new
+            MixedRealityPose(new Vector3(0f, 0f, .03f), Quaternion.Euler(0f, 90f, 0f));
+
+        /// <summary>
         /// The Oculus Node Type.
         /// </summary>
         private OculusApi.Node NodeType { get; }
@@ -375,7 +382,9 @@ namespace XRTK.Oculus.Providers.Controllers
         private void UpdateSpatialGripData(MixedRealityInteractionMapping interactionMapping)
         {
             Debug.Assert(interactionMapping.AxisType == AxisType.SixDof);
-            interactionMapping.PoseData = currentControllerPose;
+            interactionMapping.PoseData = new MixedRealityPose(
+                currentControllerPose.Position + gripPoseOffset.Position,
+                Quaternion.Euler(currentControllerPose.Rotation.eulerAngles + gripPoseOffset.Rotation.eulerAngles));
         }
 
         private void UpdateDualAxisData(MixedRealityInteractionMapping interactionMapping)
