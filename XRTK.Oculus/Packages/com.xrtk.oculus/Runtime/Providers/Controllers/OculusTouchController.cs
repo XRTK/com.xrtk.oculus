@@ -43,7 +43,8 @@ namespace XRTK.Oculus.Providers.Controllers
             new MixedRealityInteractionMapping("Button.Four Touch", AxisType.Digital, "Y", DeviceInputType.ButtonTouch),
             new MixedRealityInteractionMapping("Axis2D.PrimaryThumbRest", AxisType.DualAxis, "LTouchpad", DeviceInputType.ThumbStick),
             new MixedRealityInteractionMapping("Touch.PrimaryThumbRest Touch", AxisType.Digital, "LThumbRest", DeviceInputType.ThumbTouch),
-            new MixedRealityInteractionMapping("Touch.PrimaryThumbRest Near Touch", AxisType.Digital, "LThumbRest", DeviceInputType.ThumbNearTouch)
+            new MixedRealityInteractionMapping("Touch.PrimaryThumbRest Near Touch", AxisType.Digital, "LThumbRest", DeviceInputType.ThumbNearTouch),
+            new MixedRealityInteractionMapping("Grip Pose", AxisType.SixDof, DeviceInputType.SpatialGrip)
         };
 
         /// <inheritdoc />
@@ -66,7 +67,8 @@ namespace XRTK.Oculus.Providers.Controllers
             new MixedRealityInteractionMapping("Button.Two Touch", AxisType.Digital, "B", DeviceInputType.ButtonTouch),
             new MixedRealityInteractionMapping("Axis2D.SecondaryThumbRest", AxisType.DualAxis, "RTouchpad", DeviceInputType.ThumbStick),
             new MixedRealityInteractionMapping("Touch.SecondaryThumbRest Touch", AxisType.Digital, "RThumbRest", DeviceInputType.ThumbTouch),
-            new MixedRealityInteractionMapping("Touch.SecondaryThumbRest Near Touch", AxisType.Digital, "RThumbRest", DeviceInputType.ThumbNearTouch)
+            new MixedRealityInteractionMapping("Touch.SecondaryThumbRest Near Touch", AxisType.Digital, "RThumbRest", DeviceInputType.ThumbNearTouch),
+            new MixedRealityInteractionMapping("Grip Pose", AxisType.SixDof, DeviceInputType.SpatialGrip)
         };
     }
 }

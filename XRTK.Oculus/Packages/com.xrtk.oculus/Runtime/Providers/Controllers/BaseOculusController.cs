@@ -33,6 +33,9 @@ namespace XRTK.Oculus.Providers.Controllers
         /// </summary>
         private OculusApi.Node NodeType { get; }
 
+        /// <inheritdoc />
+        protected override MixedRealityPose GripPoseOffset => new MixedRealityPose(Vector3.zero, Quaternion.Euler(0f, 0f, -90f));
+
         /// <summary>
         /// The Oculus Controller Type.
         /// </summary>
@@ -76,6 +79,7 @@ namespace XRTK.Oculus.Providers.Controllers
             new MixedRealityInteractionMapping("Button.DpadLeft Press", AxisType.Digital, "DpadLeft", DeviceInputType.ThumbStickPress),
             new MixedRealityInteractionMapping("Button.DpadRight Press", AxisType.Digital, "DpadRight", DeviceInputType.ThumbStickPress),
             new MixedRealityInteractionMapping("Button.RTouchpad", AxisType.Digital, "RTouchpad", DeviceInputType.ThumbTouch),
+            new MixedRealityInteractionMapping("Grip Pose", AxisType.SixDof, DeviceInputType.SpatialGrip)
         };
 
         /// <inheritdoc />
@@ -141,6 +145,9 @@ namespace XRTK.Oculus.Providers.Controllers
                     case DeviceInputType.ThumbStick:
                     case DeviceInputType.Touchpad:
                         UpdateDualAxisData(interactionMapping);
+                        break;
+                    case DeviceInputType.SpatialGrip:
+                        UpdateSpatialGripData(interactionMapping);
                         break;
                     default:
                         Debug.LogError($"Input [{interactionMapping.InputType}] is not handled for this controller [{GetType().Name}]");
@@ -307,7 +314,7 @@ namespace XRTK.Oculus.Providers.Controllers
                         ((OculusApi.RawTouch)previousState.Touches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = false;
-                }                
+                }
             }
         }
 
@@ -327,7 +334,7 @@ namespace XRTK.Oculus.Providers.Controllers
                         ((OculusApi.RawNearTouch)previousState.NearTouches & interactionButton) != 0)
                 {
                     interactionMapping.BoolData = false;
-                }                  
+                }
             }
         }
 
@@ -366,6 +373,14 @@ namespace XRTK.Oculus.Providers.Controllers
 
             // Update the interaction data source
             interactionMapping.FloatData = singleAxisValue;
+        }
+
+        private void UpdateSpatialGripData(MixedRealityInteractionMapping interactionMapping)
+        {
+            Debug.Assert(interactionMapping.AxisType == AxisType.SixDof);
+            interactionMapping.PoseData = new MixedRealityPose(
+                currentControllerPose.Position + currentControllerPose.Rotation * GripPoseOffset.Position,
+                currentControllerPose.Rotation * GripPoseOffset.Rotation);
         }
 
         private void UpdateDualAxisData(MixedRealityInteractionMapping interactionMapping)
