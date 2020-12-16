@@ -15,7 +15,7 @@ namespace XRTK.Oculus.Profiles
             {
                 new ControllerDefinition(typeof(OculusRemoteController)),
                 new ControllerDefinition(typeof(OculusTouchController), Handedness.Left),
-                new ControllerDefinition(typeof(OculusTouchController), Handedness.Right),
+                new ControllerDefinition(typeof(OculusTouchController), Handedness.Right)
             };
         }
     }
