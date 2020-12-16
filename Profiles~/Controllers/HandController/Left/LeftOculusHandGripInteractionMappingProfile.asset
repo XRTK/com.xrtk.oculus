@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftOculusHandGripInteractionMappingProfile
   m_EditorClassIdentifier: 
   interactionMapping:
-    description: Grip
+    description: Grip Press
     stateChangeType: 0
     axisType: 2
     inputType: 13

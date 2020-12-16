@@ -25,7 +25,7 @@ MonoBehaviour:
       runtimePlatforms:
       - reference: c838c4f5-a87e-48c7-8742-09a4d85fc3bc
       - reference: db1acc26-ec8d-4bc6-afca-c51351b2da2e
-    profile: {fileID: 11400000, guid: c02516a14adf1ff45b2e6feaefd1d090, type: 2}
+    profile: {fileID: 11400000, guid: 69601914bd8789b49bc45cc0a9220b4d, type: 2}
   - instancedType:
       reference: 0de5da40-feb8-4891-b9b2-942eafd041b9
     name: Oculus Controller Data Provider

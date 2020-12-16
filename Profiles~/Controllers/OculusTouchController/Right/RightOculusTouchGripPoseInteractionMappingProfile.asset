@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3fb79524faca40478c0844c24e542f7, type: 3}
-  m_Name: RightOculusHandGripInteractionMappingProfile
+  m_Name: RightOculusTouchGripPoseInteractionMappingProfile
   m_EditorClassIdentifier: 
   interactionMapping:
-    description: Grip Press
+    description: Grip Pose
     stateChangeType: 0
-    axisType: 2
-    inputType: 13
+    axisType: 7
+    inputType: 14
     inputAction:
       profileGuid: 399335ccc89c4d12b79f3539ca7771db
-      id: 16
-      description: Grip Press
-      axisConstraint: 2
+      id: 3
+      description: Grip Pose
+      axisConstraint: 7
     keyCode: 0
     inputName: 
     axisCodeX: 
