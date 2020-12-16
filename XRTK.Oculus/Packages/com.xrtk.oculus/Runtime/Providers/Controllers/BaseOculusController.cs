@@ -33,6 +33,9 @@ namespace XRTK.Oculus.Providers.Controllers
         /// </summary>
         private OculusApi.Node NodeType { get; }
 
+        /// <inheritdoc />
+        protected override MixedRealityPose GripPoseOffset => new MixedRealityPose(Vector3.zero, Quaternion.Euler(0f, 0f, -90f));
+
         /// <summary>
         /// The Oculus Controller Type.
         /// </summary>
@@ -376,8 +379,8 @@ namespace XRTK.Oculus.Providers.Controllers
         {
             Debug.Assert(interactionMapping.AxisType == AxisType.SixDof);
             interactionMapping.PoseData = new MixedRealityPose(
-                currentControllerPose.Position + GripPoseOffset.Position,
-                Quaternion.Euler(currentControllerPose.Rotation.eulerAngles + GripPoseOffset.Rotation.eulerAngles));
+                currentControllerPose.Position + currentControllerPose.Rotation * GripPoseOffset.Position,
+                currentControllerPose.Rotation * GripPoseOffset.Rotation);
         }
 
         private void UpdateDualAxisData(MixedRealityInteractionMapping interactionMapping)
