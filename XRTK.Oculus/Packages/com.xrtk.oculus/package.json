@@ -15,7 +15,7 @@
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
-    "com.xrtk.core": "0.2.0-preview.161"
+    "com.xrtk.core": "0.2.0-preview.173"
   },
   "profiles": [
     {
@@ -23,5 +23,5 @@
       "path": "Profiles~/"
     }
   ],
-  "unityRelease": "15f1"
+  "unityRelease": "17f1"
 }
