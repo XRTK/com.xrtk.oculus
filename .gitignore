@@ -65,8 +65,6 @@ ThirdParty/
 ThirdParty.meta
 --Version/
 
-XRTK-Core/Assets/StreamingAssets/GltfModels/
-XRTK-Core/Assets/StreamingAssets/GltfModels.meta
-XRTK-Core/Assets/StreamingAssets.meta
-XRTK.Lumin/Assets/MagicLeap/
-XRTK.Lumin/Assets/MagicLeap.meta
+XRTK.Oculus/Assets/XRTK.Generated/Oculus.meta
+XRTK.Oculus/Assets/XRTK.Generated/Oculus/Profiles
+XRTK.Oculus/Assets/XRTK.Generated/Oculus/Profiles.meta

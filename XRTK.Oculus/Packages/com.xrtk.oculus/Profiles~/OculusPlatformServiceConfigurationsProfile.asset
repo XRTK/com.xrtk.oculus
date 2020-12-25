@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da64fb88269149f8a95f1fb969d6a0b4, type: 3}
+  m_Name: OculusPlatformServiceConfigurationsProfile
+  m_EditorClassIdentifier: 
+  platformEntries:
+    runtimePlatforms:
+    - reference: c838c4f5-a87e-48c7-8742-09a4d85fc3bc
+    - reference: db1acc26-ec8d-4bc6-afca-c51351b2da2e
+  configurations:
+  - instancedType:
+      reference: 83eff552-adf4-47c8-ad53-df7406856d3f
+    name: Oculus Camera Data Provider
+    priority: 0
+    platformEntries:
+      runtimePlatforms:
+      - reference: c838c4f5-a87e-48c7-8742-09a4d85fc3bc
+      - reference: db1acc26-ec8d-4bc6-afca-c51351b2da2e
+    profile: {fileID: 11400000, guid: 69601914bd8789b49bc45cc0a9220b4d, type: 2}
+  - instancedType:
+      reference: 0de5da40-feb8-4891-b9b2-942eafd041b9
+    name: Oculus Controller Data Provider
+    priority: 1
+    platformEntries:
+      runtimePlatforms:
+      - reference: c838c4f5-a87e-48c7-8742-09a4d85fc3bc
+      - reference: db1acc26-ec8d-4bc6-afca-c51351b2da2e
+    profile: {fileID: 11400000, guid: b849f3a28dc36b84a92d2ec4d8239cd6, type: 2}
+  - instancedType:
+      reference: ea666456-baef-4412-a829-a4c7132e98c3
+    name: Oculus Hand Controller Data Provider
+    priority: 2
+    platformEntries:
+      runtimePlatforms:
+      - reference: c838c4f5-a87e-48c7-8742-09a4d85fc3bc
+      - reference: db1acc26-ec8d-4bc6-afca-c51351b2da2e
+    profile: {fileID: 11400000, guid: d9b3b9f611dffee4883c089dc35e0ce7, type: 2}

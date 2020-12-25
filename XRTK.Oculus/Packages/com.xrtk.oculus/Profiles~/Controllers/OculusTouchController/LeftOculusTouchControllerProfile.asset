@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d420c170b42dfe0438e2aa2a829775ed, type: 3}
+  m_Name: LeftOculusTouchControllerProfile
+  m_EditorClassIdentifier: 
+  controllerType:
+    reference: 1898974a-dbcd-4c88-8e03-726689848d52
+  handedness: 1
+  visualizationProfile: {fileID: 11400000, guid: 64083f0c076c83f49a716316f5ce901c,
+    type: 2}
+  useCustomInteractions: 0
+  interactionMappingProfiles:
+  - {fileID: 11400000, guid: d3c46e95cd50b9347b3ae2b984258b3c, type: 2}
+  - {fileID: 11400000, guid: 9bbed734892721644b6da3bd9c1f7b33, type: 2}
+  - {fileID: 11400000, guid: d85c1e429b274984faa59055b93190ff, type: 2}
+  - {fileID: 11400000, guid: dd799fbfb54e7c84dae7323ba609276f, type: 2}
+  - {fileID: 11400000, guid: 9947f38f310de894c9a897f071cade52, type: 2}
+  - {fileID: 11400000, guid: 15b05a8a0a9d281448ab94b8bf549e60, type: 2}
+  - {fileID: 11400000, guid: fdcc142fd435d81449934f1c47f2c7e6, type: 2}
+  - {fileID: 11400000, guid: a62d36f527a475448bce7121320d2e65, type: 2}
+  - {fileID: 11400000, guid: 5dacfe2e20ed1f74fb6b024adaa96243, type: 2}
+  - {fileID: 11400000, guid: fd37d827948d19e4287dc0cba0cee5fd, type: 2}
+  - {fileID: 11400000, guid: 108fcaa8f8b1b334f9e7c962dc72e975, type: 2}
+  - {fileID: 11400000, guid: 733e04f2316e4fa448bbf1b605beb5e6, type: 2}
+  - {fileID: 11400000, guid: 7bf684345285a0a4b86a5fd728f337b9, type: 2}
+  - {fileID: 11400000, guid: 030560660c2f6d442a305ecc72e0b461, type: 2}
+  - {fileID: 11400000, guid: 25da088bf8992fd44854880191082b59, type: 2}
+  - {fileID: 11400000, guid: 38d92e59b53a61541beea419e3c9e65c, type: 2}
+  - {fileID: 11400000, guid: fb9b971cf238bb4449528a3b93906c0a, type: 2}
+  - {fileID: 11400000, guid: a28ef8a54b31cd7429a330d53d37bda4, type: 2}
+  - {fileID: 11400000, guid: 4c2c7b74b24b9d946af40c80ee0d0e9a, type: 2}
+  - {fileID: 11400000, guid: 44d1dac04942dba44ab0f01ee529dec8, type: 2}
