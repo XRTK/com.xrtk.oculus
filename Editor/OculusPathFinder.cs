@@ -20,7 +20,7 @@ limitations under the License.
 ************************************************************************************/
 
 using UnityEngine;
-using XRTK.Utilities.Editor;
+using XRTK.Editor.Utilities;
 
 namespace XRTK.Oculus.Editor
 {
