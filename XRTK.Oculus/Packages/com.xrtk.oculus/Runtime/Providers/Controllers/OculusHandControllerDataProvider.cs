@@ -13,7 +13,6 @@ using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
 using XRTK.Oculus.Utilities;
 using XRTK.Providers.Controllers.Hands;
-using XRTK.Services;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
@@ -118,7 +117,7 @@ namespace XRTK.Oculus.Providers.Controllers
             detectedController.TryRenderControllerModel();
             AddController(detectedController);
             activeControllers.Add(handedness, detectedController);
-            MixedRealityToolkit.InputSystem?.RaiseSourceDetected(detectedController.InputSource, detectedController);
+            InputSystem?.RaiseSourceDetected(detectedController.InputSource, detectedController);
 
             return detectedController;
         }
@@ -127,7 +126,7 @@ namespace XRTK.Oculus.Providers.Controllers
         {
             if (TryGetController(handedness, out var controller))
             {
-                MixedRealityToolkit.InputSystem?.RaiseSourceLost(controller.InputSource, controller);
+                InputSystem?.RaiseSourceLost(controller.InputSource, controller);
 
                 if (removeFromRegistry)
                 {
