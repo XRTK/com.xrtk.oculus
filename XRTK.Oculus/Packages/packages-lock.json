@@ -82,7 +82,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.xrtk.core": "0.2.2"
+        "com.xrtk.core": "0.2.3"
       }
     },
     "com.unity.modules.ai": {
