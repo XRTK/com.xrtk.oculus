@@ -27,7 +27,12 @@ namespace XRTK.Oculus.Providers.Controllers
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
             handDataProvider = new OculusHandDataConverter();
 
-            postProcessor = new HandDataPostProcessor(TrackedPoses)
+            var globalSettingsProfile = MixedRealityToolkit.Instance.ActiveProfile.InputSystemProfile;
+            var isGrippingThreshold = profile.GripThreshold != globalSettingsProfile.GripThreshold
+                ? profile.GripThreshold
+                : globalSettingsProfile.GripThreshold;
+
+            postProcessor = new HandDataPostProcessor(TrackedPoses, isGrippingThreshold)
             {
                 PlatformProvidesPointerPose = true
             };
