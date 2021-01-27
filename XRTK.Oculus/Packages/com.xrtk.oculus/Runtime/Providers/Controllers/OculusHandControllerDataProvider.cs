@@ -7,12 +7,14 @@ using UnityEngine;
 using XRTK.Attributes;
 using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Devices;
+using XRTK.Definitions.InputSystem;
 using XRTK.Definitions.Utilities;
 using XRTK.Interfaces.InputSystem;
 using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
 using XRTK.Oculus.Utilities;
 using XRTK.Providers.Controllers.Hands;
+using XRTK.Services;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
@@ -24,13 +26,17 @@ namespace XRTK.Oculus.Providers.Controllers
         public OculusHandControllerDataProvider(string name, uint priority, OculusHandControllerDataProviderProfile profile, IMixedRealityInputSystem parentService)
             : base(name, priority, profile, parentService)
         {
+            if (!MixedRealityToolkit.TryGetSystemProfile<IMixedRealityInputSystem, MixedRealityInputSystemProfile>(out var inputSystemProfile))
+            {
+                throw new ArgumentException($"Unable to get a valid {nameof(MixedRealityInputSystemProfile)}!");
+            }
+
             MinConfidenceRequired = (OculusApi.TrackingConfidence)profile.MinConfidenceRequired;
             handDataProvider = new OculusHandDataConverter();
 
-            var globalSettingsProfile = MixedRealityToolkit.Instance.ActiveProfile.InputSystemProfile;
-            var isGrippingThreshold = profile.GripThreshold != globalSettingsProfile.GripThreshold
+            var isGrippingThreshold = profile.GripThreshold != inputSystemProfile.GripThreshold
                 ? profile.GripThreshold
-                : globalSettingsProfile.GripThreshold;
+                : inputSystemProfile.GripThreshold;
 
             postProcessor = new HandDataPostProcessor(TrackedPoses, isGrippingThreshold)
             {
