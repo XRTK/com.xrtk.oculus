@@ -8,6 +8,7 @@ using XRTK.Definitions.Controllers.Hands;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
 using XRTK.Extensions;
+using XRTK.Interfaces.CameraSystem;
 using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
 using XRTK.Services;
@@ -39,6 +40,23 @@ namespace XRTK.Oculus.Utilities
         private OculusApi.Skeleton handSkeleton = new OculusApi.Skeleton();
         private OculusApi.HandState handState = new OculusApi.HandState();
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
+
+        private Transform playspaceTransform = null;
+
+        private Transform PlayspaceTransform
+        {
+            get
+            {
+                if (playspaceTransform == null)
+                {
+                    playspaceTransform = MixedRealityToolkit.TryGetSystem<IMixedRealityCameraSystem>(out var cameraSystem)
+                        ? cameraSystem.MainCameraRig.PlayspaceTransform
+                        : CameraCache.Main.transform.parent;
+                }
+
+                return playspaceTransform;
+            }
+        }
 
         /// <summary>
         /// Reads hand APIs for the current frame and converts it to agnostic <see cref="HandData"/>.
@@ -266,7 +284,7 @@ namespace XRTK.Oculus.Utilities
             if (conversionProxyRootTransform.IsNull())
             {
                 conversionProxyRootTransform = new GameObject("Oculus Hand Conversion Proxy").transform;
-                conversionProxyRootTransform.transform.SetParent(MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform, false);
+                conversionProxyRootTransform.transform.SetParent(PlayspaceTransform, false);
                 conversionProxyRootTransform.gameObject.SetActive(false);
             }
 
@@ -297,9 +315,9 @@ namespace XRTK.Oculus.Utilities
         /// <returns>The hands <see cref="HandData.RootPose"/> value.</returns>
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
-            var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
-            var rootPosition = playspaceTransform.InverseTransformPoint(playspaceTransform.position + playspaceTransform.rotation * handState.RootPose.Position.FromFlippedZVector3f());
-            var rootRotation = Quaternion.Inverse(playspaceTransform.rotation) * playspaceTransform.rotation * handState.RootPose.Orientation.FromFlippedZQuatf();
+            var playspaceRotation = PlayspaceTransform.rotation;
+            var rootPosition = PlayspaceTransform.InverseTransformPoint(PlayspaceTransform.position + playspaceRotation * handState.RootPose.Position.FromFlippedZVector3f());
+            var rootRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.RootPose.Orientation.FromFlippedZQuatf();
 
             return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, OculusApi.EyeHeight, 0f), rootRotation));
         }
@@ -311,12 +329,11 @@ namespace XRTK.Oculus.Utilities
         /// <returns>The hands <see cref="HandData.PointerPose"/> value.</returns>
         private MixedRealityPose GetPointerPose(Handedness handedness)
         {
-            var playspaceTransform = MixedRealityToolkit.CameraSystem.MainCameraRig.PlayspaceTransform;
             var rootPose = GetHandRootPose(handedness);
+            var playspaceRotation = PlayspaceTransform.rotation;
             var platformRootPosition = handState.RootPose.Position.FromFlippedZVector3f();
-
             var platformPointerPosition = rootPose.Position + handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPosition;
-            var platformPointerRotation = Quaternion.Inverse(playspaceTransform.rotation) * playspaceTransform.rotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
+            var platformPointerRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
 
             return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }

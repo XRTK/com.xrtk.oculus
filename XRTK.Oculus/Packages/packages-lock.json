@@ -36,7 +36,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.20",
+      "version": "1.1.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -64,9 +64,19 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "com.xrtk.core": {
-      "version": "0.2.1",
+    "com.unity.xr.legacyinputhelpers": {
+      "version": "2.1.7",
       "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.vr": "1.0.0",
+        "com.unity.modules.xr": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.xrtk.core": {
+      "version": "0.2.6-preview.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
@@ -82,7 +92,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.xrtk.core": "0.2.3"
+        "com.xrtk.core": "0.2.6-preview.1"
       }
     },
     "com.unity.modules.ai": {
