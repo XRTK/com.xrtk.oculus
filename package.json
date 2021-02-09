@@ -9,13 +9,13 @@
     "reality",
     "oculus"
   ],
-  "version": "0.2.2",
+  "version": "0.2.3",
   "unity": "2019.4",
   "license": "MIT",
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
-    "com.xrtk.core": "0.2.3"
+    "com.xrtk.core": "0.2.6-preview.1"
   },
   "profiles": [
     {
@@ -23,5 +23,5 @@
       "path": "Profiles~/"
     }
   ],
-  "unityRelease": "17f1"
+  "unityRelease": "19f1"
 }
