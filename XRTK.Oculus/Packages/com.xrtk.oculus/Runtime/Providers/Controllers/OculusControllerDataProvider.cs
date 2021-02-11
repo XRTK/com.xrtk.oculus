@@ -11,7 +11,6 @@ using XRTK.Oculus.Extensions;
 using XRTK.Oculus.Plugins;
 using XRTK.Oculus.Profiles;
 using XRTK.Providers.Controllers;
-using XRTK.Services;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
@@ -199,7 +198,7 @@ namespace XRTK.Oculus.Providers.Controllers
 
             if (controller != null)
             {
-                MixedRealityToolkit.InputSystem?.RaiseSourceDetected(controller.InputSource, controller);
+                InputSystem?.RaiseSourceDetected(controller.InputSource, controller);
             }
         }
 
@@ -209,7 +208,7 @@ namespace XRTK.Oculus.Providers.Controllers
 
             if (controller != null)
             {
-                MixedRealityToolkit.InputSystem?.RaiseSourceLost(controller.InputSource, controller);
+                InputSystem?.RaiseSourceLost(controller.InputSource, controller);
                 RemoveController(controller);
             }
 
