@@ -75,8 +75,8 @@
       "url": "https://packages.unity.com"
     },
     "com.xrtk.core": {
-      "version": "0.2.6-preview.1",
-      "depth": 0,
+      "version": "0.2.7",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
@@ -92,7 +92,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.xrtk.core": "0.2.6-preview.1"
+        "com.xrtk.core": "0.2.7"
       }
     },
     "com.unity.modules.ai": {
