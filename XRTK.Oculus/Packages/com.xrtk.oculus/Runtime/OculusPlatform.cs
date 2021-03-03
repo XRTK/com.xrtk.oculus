@@ -16,26 +16,25 @@ namespace XRTK.Oculus
         public override bool IsAvailable => !UnityEngine.Application.isEditor && OculusApi.Version > NoVersion && OculusApi.Initialized;
 
         /// <inheritdoc />
-        public override bool IsBuildTargetAvailable
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android ||
-                        UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.StandaloneWindows ||
-                        UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.StandaloneWindows64) &&
-                        OculusApi.Version > NoVersion && OculusApi.Initialized;
-#else
-                return false;
-#endif
-            }
-        }
-
-        /// <inheritdoc />
         public override IMixedRealityPlatform[] PlatformOverrides { get; } =
         {
             new WindowsStandalonePlatform(),
             new AndroidPlatform()
         };
+
+#if UNITY_EDITOR
+
+        /// <inheritdoc />
+        public override bool IsBuildTargetAvailable => base.IsBuildTargetAvailable && OculusApi.Version > NoVersion && OculusApi.Initialized;
+
+        /// <inheritdoc />
+        public override UnityEditor.BuildTarget[] ValidBuildTargets { get; } =
+        {
+            UnityEditor.BuildTarget.Android,
+            UnityEditor.BuildTarget.StandaloneWindows,
+            UnityEditor.BuildTarget.StandaloneWindows64
+        };
+
+#endif // UNITY_EDITOR
     }
 }
