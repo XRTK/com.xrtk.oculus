@@ -1,0 +1,17 @@
+{
+    "name": "XRTK.Oculus.Editor.BuildPipeline",
+    "references": [
+        "GUID:075fa00213b563a4199fcd820baf506a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
