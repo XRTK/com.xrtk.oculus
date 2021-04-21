@@ -133,7 +133,9 @@ namespace XRTK.Oculus.Plugins
             get
             {
                 if (!Initialized)
+                {
                     return 0.0f;
+                }
 
                 return ovrp_GetUserEyeDepth();
             }
@@ -280,7 +282,9 @@ namespace XRTK.Oculus.Plugins
             set
             {
                 if (!Initialized)
+                {
                     return;
+                }
 
                 ovrp_SetEyeOcclusionMeshEnabled(ToBool(value));
             }
@@ -2348,7 +2352,10 @@ namespace XRTK.Oculus.Plugins
             float absB = b.sqrMagnitude;
 
             if (absA >= absB)
+            {
                 return a;
+            }
+
             return b;
         }
 
@@ -2358,19 +2365,27 @@ namespace XRTK.Oculus.Plugins
             float absB = (b >= 0) ? b : -b;
 
             if (absA >= absB)
+            {
                 return a;
+            }
+
             return b;
         }
 
         internal static Vector2 CalculateDeadzone(Vector2 a, float deadzone)
         {
             if (a.sqrMagnitude <= (deadzone * deadzone))
+            {
                 return Vector2.zero;
+            }
 
             a *= ((a.magnitude - deadzone) / (1.0f - deadzone));
 
             if (a.sqrMagnitude > 1.0f)
+            {
                 return a.normalized;
+            }
+
             return a;
         }
 
@@ -2379,12 +2394,17 @@ namespace XRTK.Oculus.Plugins
             float mag = (a >= 0) ? a : -a;
 
             if (mag <= deadzone)
+            {
                 return 0.0f;
+            }
 
             a *= (mag - deadzone) / (1.0f - deadzone);
 
             if ((a * a) > 1.0f)
+            {
                 return (a >= 0) ? 1.0f : -1.0f;
+            }
+
             return a;
         }
 
