@@ -3261,8 +3261,10 @@ namespace XRTK.Oculus.Plugins
             if (Version >= OVRP_1_49_0_version)
             {
 #if UNITY_ANDROID
-			if (colorSpace == ColorSpace.Unknown)
-				colorSpace = ColorSpace.Quest;
+                if (colorSpace == ColorSpace.Unknown)
+                {
+                    colorSpace = ColorSpace.Quest;
+                }
 #endif
                 return ovrp_SetClientColorDesc(colorSpace) == Result.Success;
             }
