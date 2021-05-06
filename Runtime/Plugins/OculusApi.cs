@@ -1381,33 +1381,33 @@ namespace XRTK.Oculus.Plugins
         /// <summary>
         /// Type of headset detected by the Oculus API
         /// </summary>
-	public enum SystemHeadset
-	{
-		None = 0,
+        public enum SystemHeadset
+        {
+            None = 0,
 
-		// Standalone headsets
-		Oculus_Quest = 8,
-		Oculus_Quest_2 = 9,
-		Placeholder_10,
-		Placeholder_11,
-		Placeholder_12,
-		Placeholder_13,
-		Placeholder_14,
+            // Standalone headsets
+            Oculus_Quest = 8,
+            Oculus_Quest_2 = 9,
+            Placeholder_10,
+            Placeholder_11,
+            Placeholder_12,
+            Placeholder_13,
+            Placeholder_14,
 
-		// PC headsets
-		Rift_DK1 = 0x1000,
-		Rift_DK2,
-		Rift_CV1,
-		Rift_CB,
-		Rift_S,
-		Oculus_Link_Quest,
-		PC_Placeholder_4102,
-		PC_Placeholder_4103,
-		PC_Placeholder_4104,
-		PC_Placeholder_4105,
-		PC_Placeholder_4106,
-		PC_Placeholder_4107
-	}
+            // PC headsets
+            Rift_DK1 = 0x1000,
+            Rift_DK2,
+            Rift_CV1,
+            Rift_CB,
+            Rift_S,
+            Oculus_Link_Quest,
+            PC_Placeholder_4102,
+            PC_Placeholder_4103,
+            PC_Placeholder_4104,
+            PC_Placeholder_4105,
+            PC_Placeholder_4106,
+            PC_Placeholder_4107
+        }
 
         public enum FixedFoveatedRenderingLevel
         {
@@ -3045,8 +3045,10 @@ namespace XRTK.Oculus.Plugins
             if (Version >= OVRP_1_49_0_version)
             {
 #if UNITY_ANDROID
-			if (colorSpace == ColorSpace.Unknown)
-				colorSpace = ColorSpace.Quest;
+                if (colorSpace == ColorSpace.Unknown)
+                {
+                    colorSpace = ColorSpace.Quest;
+                }
 #endif
                 return ovrp_SetClientColorDesc(colorSpace) == Result.Success;
             }
