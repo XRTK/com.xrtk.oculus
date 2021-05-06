@@ -39,7 +39,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         #region IMixedRealityBoundaryDataProvider Implementation
 
         /// <inheritdoc />
-        public BoundaryVisibility Visibility => BoundaryVisibility.Unknown;
+        public BoundaryVisibility Visibility => BoundaryVisibility.Visible;
 
         /// <inheritdoc />
         public bool IsPlatformConfigured
@@ -71,7 +71,6 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         private static int cachedVector3fSize = Marshal.SizeOf(typeof(OculusApi.Vector3f));
         private static OculusApi.OVRNativeBuffer cachedGeometryNativeBuffer = new OculusApi.OVRNativeBuffer(0);
         private static float[] cachedGeometryManagedBuffer = new float[0];
-        private List<Vector3> cachedGeometryList = new List<Vector3>();
 
         /// <summary>
         /// Returns an array of 3d points (in clockwise order) that define the specified boundary type.
