@@ -16,7 +16,7 @@ using XRTK.Services;
 namespace XRTK.Oculus.Providers.BoundarySystem
 {
     [RuntimePlatform(typeof(OculusPlatform))]
-    [System.Runtime.InteropServices.Guid("e61b047a-56ac-421a-b5f7-683fd44dd33c")]
+    [System.Runtime.InteropServices.Guid("8EF0CAB5-A37C-4912-AD5E-1E57E92A314D")]
     public class OculusBoundaryDataProvider : BaseDataProvider, IMixedRealityBoundaryDataProvider
     {
         /// <inheritdoc />
