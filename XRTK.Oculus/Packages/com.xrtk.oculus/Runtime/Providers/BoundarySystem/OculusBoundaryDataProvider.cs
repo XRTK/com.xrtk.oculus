@@ -39,7 +39,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         #region IMixedRealityBoundaryDataProvider Implementation
 
         /// <inheritdoc />
-        public BoundaryVisibility Visibility => BoundaryVisibility.Visible;
+        public BoundaryVisibility Visibility => OculusApi.GetBoundaryVisible() ? BoundaryVisibility.Visible : BoundaryVisibility.Hidden;
 
         /// <inheritdoc />
         public bool IsPlatformConfigured
