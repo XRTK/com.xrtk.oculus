@@ -114,7 +114,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
                                 x = cachedGeometryManagedBuffer[3 * i + 0],
                                 y = cachedGeometryManagedBuffer[3 * i + 1],
                                 z = cachedGeometryManagedBuffer[3 * i + 2],
-                            }.FromFlippedZVector3f();
+                            };
                         }
                     }
                 }
@@ -131,7 +131,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         /// </remarks>
         private Vector3 GetDimensions(OculusApi.BoundaryType boundaryType)
         {
-            return OculusApi.GetBoundaryDimensions(boundaryType).ToVector3();
+            return OculusApi.GetBoundaryDimensions(boundaryType).ToVector3FlippedZ();
         }
 
         #endregion Oculus Utils
