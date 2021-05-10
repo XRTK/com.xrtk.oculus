@@ -76,7 +76,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         /// Returns an array of 3d points (in clockwise order) that define the specified boundary type.
         /// All points are returned in local tracking space shared by tracked nodes and accessible through OVRCameraRig's trackingSpace anchor.
         /// </summary>
-        public Vector3[] GetGeometry(OculusApi.BoundaryType boundaryType)
+        private Vector3[] GetGeometry(OculusApi.BoundaryType boundaryType)
         {
             int pointsCount = 0;
             if (OculusApi.GetBoundaryGeometry((OculusApi.BoundaryType)boundaryType, IntPtr.Zero, ref pointsCount))
@@ -122,7 +122,10 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         /// <summary>
         /// Returns a vector that indicates the spatial dimensions of the specified boundary type. (x = width, y = height, z = depth)
         /// </summary>
-        public Vector3 GetDimensions(OculusApi.BoundaryType boundaryType)
+        /// <remarks>
+        /// Reserved for Future use.
+        /// </remarks>
+        private Vector3 GetDimensions(OculusApi.BoundaryType boundaryType)
         {
             return OculusApi.GetBoundaryDimensions((OculusApi.BoundaryType)boundaryType).ToVector3();
         }
