@@ -76,6 +76,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         private Vector3[] GetGeometry(OculusApi.BoundaryType boundaryType)
         {
             int pointsCount = 0;
+
             if (OculusApi.GetBoundaryGeometry((OculusApi.BoundaryType)boundaryType, IntPtr.Zero, ref pointsCount))
             {
                 //Assume if the number of points returned in the boundary is the same, it is the same boundary.
