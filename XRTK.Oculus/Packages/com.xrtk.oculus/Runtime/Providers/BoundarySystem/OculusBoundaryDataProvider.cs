@@ -101,7 +101,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
                         cachedGeometryManagedBuffer = new float[requiredManagedBufferCapacity];
                     }
 
-                    if (OculusApi.GetBoundaryGeometry((OculusApi.BoundaryType)boundaryType, cachedGeometryNativeBuffer.GetPointer(), ref pointsCount))
+                    if (OculusApi.GetBoundaryGeometry(boundaryType, cachedGeometryNativeBuffer.GetPointer(), ref pointsCount))
                     {
                         Marshal.Copy(cachedGeometryNativeBuffer.GetPointer(), cachedGeometryManagedBuffer, 0, requiredManagedBufferCapacity);
 
