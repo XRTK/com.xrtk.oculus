@@ -23,6 +23,7 @@ using System;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using XRTK.Editor.Utilities;
 
 namespace XRTK.Oculus.Editor.Build
 {
@@ -47,9 +48,7 @@ namespace XRTK.Oculus.Editor.Build
         [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Create Oculus Quest compatible AndroidManifest.xml", false, 100000)]
         public static void GenerateManifestForSubmission()
         {
-            var so = ScriptableObject.CreateInstance(typeof(OculusPathFinder));
-            var script = MonoScript.FromScriptableObject(so);
-            var assetPath = AssetDatabase.GetAssetPath(script);
+            var assetPath = PathFinderUtility.ResolvePath<IPathFinder>(typeof(OculusPathFinder));
             var editorDir = Directory.GetParent(assetPath).FullName;
             var srcFile = $"{editorDir}/BuildTools/{TEMPLATE_MANIFEST_FILE_NAME}";
 
@@ -112,7 +111,7 @@ namespace XRTK.Oculus.Editor.Build
         }
 
         /// <summary>
-        /// Removes any existing Andriod Manifest if it exists.
+        /// Removes any existing Android Manifest if it exists.
         /// </summary>
         [MenuItem("Mixed Reality Toolkit/Tools/Oculus/Remove AndroidManifest.xml", false, 100001)]
         public static void RemoveAndroidManifest()
