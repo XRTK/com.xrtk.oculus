@@ -77,7 +77,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         {
             int pointsCount = 0;
 
-            if (OculusApi.GetBoundaryGeometry((OculusApi.BoundaryType)boundaryType, IntPtr.Zero, ref pointsCount))
+            if (OculusApi.GetBoundaryGeometry(boundaryType, IntPtr.Zero, ref pointsCount))
             {
                 //Assume if the number of points returned in the boundary is the same, it is the same boundary.
                 if (cachedPoints.Length == pointsCount)
