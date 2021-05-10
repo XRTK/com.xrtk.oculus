@@ -26,5 +26,12 @@ namespace XRTK.Oculus.Providers.CameraSystem
             ResetRigTransforms();
             SyncRigTransforms();
         }
+
+        /// <inheritdoc />
+        public override void Update()
+        {
+            OculusApi.UpdateHMDEvents();
+            OculusApi.UpdateUserEvents();
+        }
     }
 }
