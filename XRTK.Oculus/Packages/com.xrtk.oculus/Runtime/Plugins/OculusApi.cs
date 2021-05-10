@@ -265,7 +265,7 @@ namespace XRTK.Oculus.Plugins
             get
             {
 #if OVRPLUGIN_UNSUPPORTED_PLATFORM
-			return false;
+                return false;
 #else
                 return Initialized && ovrp_GetSystemHeadphonesPresent() == Bool.True;
 #endif
