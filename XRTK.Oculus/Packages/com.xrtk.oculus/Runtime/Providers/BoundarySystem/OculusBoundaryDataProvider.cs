@@ -16,7 +16,7 @@ using XRTK.Services;
 namespace XRTK.Oculus.Providers.BoundarySystem
 {
     [RuntimePlatform(typeof(OculusPlatform))]
-    [System.Runtime.InteropServices.Guid("8EF0CAB5-A37C-4912-AD5E-1E57E92A314D")]
+    [Guid("8EF0CAB5-A37C-4912-AD5E-1E57E92A314D")]
     public class OculusBoundaryDataProvider : BaseDataProvider, IMixedRealityBoundaryDataProvider
     {
         private Vector3[] cachedPoints = new Vector3[0];
@@ -44,19 +44,14 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         public BoundaryVisibility Visibility => OculusApi.GetBoundaryVisible() ? BoundaryVisibility.Visible : BoundaryVisibility.Hidden;
 
         /// <inheritdoc />
-        public bool IsPlatformConfigured
-        {
-            get
-            {
-                return OculusApi.GetBoundaryConfigured();
-            }
-        }
+        public bool IsPlatformConfigured => OculusApi.GetBoundaryConfigured();
 
         /// <inheritdoc />
         public bool TryGetBoundaryGeometry(ref List<Vector3> geometry)
         {
             geometry.Clear();
-            Vector3[] oculusGeometry = GetGeometry(OculusApi.BoundaryType.PlayArea);
+            var oculusGeometry = GetGeometry(OculusApi.BoundaryType.PlayArea);
+
             if (oculusGeometry == null || oculusGeometry.Length == 0)
             {
                 return false;
@@ -70,8 +65,8 @@ namespace XRTK.Oculus.Providers.BoundarySystem
 
         #region Oculus Utils
 
-        private static readonly int cachedVector3fSize = Marshal.SizeOf(typeof(OculusApi.Vector3f));
         private static readonly OculusApi.OVRNativeBuffer cachedGeometryNativeBuffer = new OculusApi.OVRNativeBuffer(0);
+        private static readonly int cachedVector3fSize = Marshal.SizeOf(typeof(OculusApi.Vector3f));
         private static float[] cachedGeometryManagedBuffer = new float[0];
 
         /// <summary>
@@ -92,12 +87,14 @@ namespace XRTK.Oculus.Providers.BoundarySystem
                 if (pointsCount > 0)
                 {
                     int requiredNativeBufferCapacity = pointsCount * cachedVector3fSize;
+
                     if (cachedGeometryNativeBuffer.GetCapacity() < requiredNativeBufferCapacity)
                     {
                         cachedGeometryNativeBuffer.Reset(requiredNativeBufferCapacity);
                     }
 
                     int requiredManagedBufferCapacity = pointsCount * 3;
+
                     if (cachedGeometryManagedBuffer.Length < requiredManagedBufferCapacity)
                     {
                         cachedGeometryManagedBuffer = new float[requiredManagedBufferCapacity];
@@ -111,20 +108,18 @@ namespace XRTK.Oculus.Providers.BoundarySystem
 
                         for (int i = 0; i < pointsCount; i++)
                         {
-                            cachedPoints[i] = new OculusApi.Vector3f()
+                            cachedPoints[i] = new OculusApi.Vector3f
                             {
                                 x = cachedGeometryManagedBuffer[3 * i + 0],
                                 y = cachedGeometryManagedBuffer[3 * i + 1],
                                 z = cachedGeometryManagedBuffer[3 * i + 2],
                             }.FromFlippedZVector3f();
                         }
-
-                        return cachedPoints;
                     }
                 }
             }
 
-            return new Vector3[0];
+            return cachedPoints;
         }
 
         /// <summary>
@@ -135,7 +130,7 @@ namespace XRTK.Oculus.Providers.BoundarySystem
         /// </remarks>
         private Vector3 GetDimensions(OculusApi.BoundaryType boundaryType)
         {
-            return OculusApi.GetBoundaryDimensions((OculusApi.BoundaryType)boundaryType).ToVector3();
+            return OculusApi.GetBoundaryDimensions(boundaryType).ToVector3();
         }
 
         #endregion Oculus Utils
