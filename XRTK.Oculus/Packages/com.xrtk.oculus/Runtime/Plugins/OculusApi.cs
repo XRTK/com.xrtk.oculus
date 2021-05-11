@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using XRTK.Oculus.Extensions;
+using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus.Plugins
 {
@@ -21,10 +21,13 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_48_0_version = new Version(1, 48, 0);
         private static readonly Version OVRP_1_49_0_version = new Version(1, 49, 0);
         private static readonly Version OVRP_1_55_0_version = new Version(1, 55, 0);
+        private static readonly Version OVRP_1_55_1_version = new Version(1, 55, 1);
 
         private const string pluginName = "OVRPlugin";
 
         private static Version _version;
+
+        private static EventDataBuffer eventDataBuffer = new EventDataBuffer();
 
         /// <summary>
         /// Current version of the Oculus API library in use
@@ -123,6 +126,92 @@ namespace XRTK.Oculus.Plugins
 
         #endregion Oculus API Properties
 
+        #region Oculus Events
+
+        /// <summary>
+        /// Occurs when an HMD is put on the user's head.
+        /// </summary>
+        public static event Action HMDMounted;
+
+        /// <summary>
+        /// Occurs when an HMD is taken off the user's head.
+        /// </summary>
+        public static event Action HMDUnmounted;
+
+        /// <summary>
+        /// Occurs when the display refresh rate changes
+        /// @params (float fromRefreshRate, float toRefreshRate)
+        /// </summary>
+        public static event Action<float, float> DisplayRefreshRateChanged;
+
+        #endregion Oculus Events
+
+        #region Oculus Update
+
+        internal static void UpdateHMDEvents()
+        {
+            while (PollEvent(ref eventDataBuffer))
+            {
+                switch (eventDataBuffer.EventType)
+                {
+                    case EventType.DisplayRefreshRateChanged:
+                        if (DisplayRefreshRateChanged != null)
+                        {
+                            float FromRefreshRate = BitConverter.ToSingle(eventDataBuffer.EventData, 0);
+                            float ToRefreshRate = BitConverter.ToSingle(eventDataBuffer.EventData, 4);
+                            DisplayRefreshRateChanged(FromRefreshRate, ToRefreshRate);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private static bool _isUserPresent = false;
+        private static bool _wasUserPresent = false;
+
+        internal static void UpdateUserEvents()
+        {
+            _isUserPresent = UserPresent;
+
+            if (_wasUserPresent && !_isUserPresent)
+            {
+                try
+                {
+                    Debug.Log("[OVRManager] HMDUnmounted event");
+                    if (HMDUnmounted != null)
+                    {
+                        HMDUnmounted();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Caught Exception: " + e);
+                }
+            }
+
+            if (!_wasUserPresent && _isUserPresent)
+            {
+                try
+                {
+                    Debug.Log("[OVRManager] HMDMounted event");
+                    if (HMDMounted != null)
+                    {
+                        HMDMounted();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Caught Exception: " + e);
+                }
+            }
+
+            _wasUserPresent = _isUserPresent;
+        }
+
+        #endregion Oculus Update
+
         #region Oculus Device Characteristics
 
         /// <summary>
@@ -171,10 +260,22 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        public static bool HeadphonesPresent
+        {
+            get
+            {
+#if OVRPLUGIN_UNSUPPORTED_PLATFORM
+                return false;
+#else
+                return Initialized && ovrp_GetSystemHeadphonesPresent() == Bool.True;
+#endif
+            }
+        }
+
         /// <summary>
         /// Returns the current battery level of the device
         /// </summary>
-        public static float batteryLevel
+        public static float BatteryLevel
         {
             get
             {
@@ -185,7 +286,7 @@ namespace XRTK.Oculus.Plugins
         /// <summary>
         /// Returns the current battery temperature
         /// </summary>
-        public static float batteryTemperature
+        public static float BatteryTemperature
         {
             get
             {
@@ -544,13 +645,18 @@ namespace XRTK.Oculus.Plugins
         private static extern Result ovrp_GetSkeleton2(SkeletonType skeletonType, out Skeleton2Internal skeleton);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern Result ovrp_PollEvent(out EventDataBuffer eventDataBuffer);
+        private static extern Result ovrp_PollEvent(ref EventDataBuffer eventDataBuffer);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetNativeXrApiType(out XrApi xrApi);
 
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetNativeOpenXRHandles(out UInt64 xrInstance, out UInt64 xrSession);
+
+        // Ref V1_55_1
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Result ovrp_PollEvent2(ref EventType eventType, ref IntPtr eventData);
+
         #endregion Oculus API import
 
         #region Oculus Data Types
@@ -656,8 +762,8 @@ namespace XRTK.Oculus.Plugins
         [StructLayout(LayoutKind.Sequential)]
         public struct Recti
         {
-            Vector2i Pos;
-            Sizei Size;
+            public Vector2i Pos;
+            public Sizei Size;
         }
 
         /// <summary>
@@ -666,8 +772,8 @@ namespace XRTK.Oculus.Plugins
         [StructLayout(LayoutKind.Sequential)]
         public struct Rectf
         {
-            Vector2f Pos;
-            Sizef Size;
+            public Vector2f Pos;
+            public Sizef Size;
         }
 
         /// <summary>
@@ -701,6 +807,10 @@ namespace XRTK.Oculus.Plugins
         {
             public float x;
             public float y;
+
+            public static implicit operator Vector2f(Vector2 v) => new Vector2f { x = v.x, y = v.y };
+
+            public static implicit operator Vector2(Vector2f v) => new Vector2(v.x, v.y);
         }
 
         /// <summary>
@@ -716,6 +826,19 @@ namespace XRTK.Oculus.Plugins
             public override string ToString()
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}", x, y, z);
+            }
+
+            public static implicit operator Vector3f(Vector3 v) => new Vector3f { x = v.x, y = v.y, z = -v.z };
+
+            public static implicit operator Vector3(Vector3f v) => new Vector3(v.x, v.y, -v.z);
+
+            /// <summary>
+            /// Returns a <see cref="Vector3"/> from an <see cref="OculusApi.Vector3f"/>
+            /// </summary>
+            /// <returns>New <see cref="Vector3"/> with a flipped Z axis.</returns>
+            public Vector3 ToVector3FlippedZ()
+            {
+                return new Vector3(x, y, z);
             }
         }
 
@@ -734,6 +857,10 @@ namespace XRTK.Oculus.Plugins
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
+
+            public static implicit operator Vector4f(Vector4 v) => new Vector4f { x = v.x, y = v.y, z = v.z, w = v.w };
+
+            public static implicit operator Vector4(Vector4f v) => new Vector4(v.x, v.y, v.z, v.w);
         }
 
         /// <summary>
@@ -768,6 +895,19 @@ namespace XRTK.Oculus.Plugins
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
+
+            public static implicit operator Quatf(Quaternion q) => new Quatf { x = q.x, y = q.y, z = q.z, w = q.w };
+
+            public static implicit operator Quaternion(Quatf v) => new Quaternion(v.x, v.y, v.z, v.w);
+
+            /// <summary>
+            /// Gets a <see cref="Quaternion"/> from a flipped X and Y axis <see cref="OculusApi.Quatf"/>.
+            /// </summary>
+            /// <returns>Unity orientation.</returns>
+            public Quaternion ToQuaternionFlippedXY()
+            {
+                return new Quaternion(-x, -y, z, w);
+            }
         }
 
         /// <summary>
@@ -779,9 +919,34 @@ namespace XRTK.Oculus.Plugins
             public Quatf Orientation;
             public Vector3f Position;
             public static readonly Posef identity = new Posef { Orientation = Quatf.identity, Position = Vector3f.zero };
+
             public override string ToString()
             {
-                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "Position ({0}), Orientation({1})", Position, Orientation);
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                    "Position ({0}), Orientation({1})", Position, Orientation);
+            }
+
+            public static implicit operator Posef(MixedRealityPose p) =>
+                new Posef { Position = p.Position, Orientation = p.Rotation };
+
+            public static implicit operator MixedRealityPose(Posef p) =>
+                new MixedRealityPose(p.Position, p.Orientation);
+
+
+            /// <summary>
+            /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
+            /// </summary>
+            /// <param name="adjustForEyeHeight"></param>
+            /// <returns>Returns an XRTK MixedRealityPose</returns>
+            public MixedRealityPose ToMixedRealityPoseFlippedQuaternionXY(bool adjustForEyeHeight = false)
+            {
+                return new MixedRealityPose
+                (
+                    position: new Vector3(Position.x,
+                        adjustForEyeHeight ? Position.y + EyeHeight : Position.y,
+                        -Position.z),
+                    rotation: Orientation.ToQuaternionFlippedXY()
+                );
             }
         }
 
@@ -1352,7 +1517,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// CameraIntrinsics definition for the Oculus API 
+        /// CameraIntrinsics definition for the Oculus API
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct CameraIntrinsics
@@ -1366,7 +1531,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// CameraExtrinsics definition for the Oculus API 
+        /// CameraExtrinsics definition for the Oculus API
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct CameraExtrinsics
@@ -1456,6 +1621,116 @@ namespace XRTK.Oculus.Plugins
             public EventType EventType;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = EventDataBufferSize)]
             public byte[] EventData;
+        }
+
+        /// <summary>
+        /// Encapsulates an 8-byte-aligned of unmanaged memory.
+        /// </summary>
+        public class OVRNativeBuffer : IDisposable
+        {
+            private bool disposed = false;
+            private int m_numBytes = 0;
+            private IntPtr m_ptr = IntPtr.Zero;
+
+            /// <summary>
+            /// Creates a buffer of the specified size.
+            /// </summary>
+            public OVRNativeBuffer(int numBytes)
+            {
+                Reallocate(numBytes);
+            }
+
+            /// <summary>
+            /// Releases unmanaged resources and performs other cleanup operations before the <see cref="OVRNativeBuffer"/> is
+            /// reclaimed by garbage collection.
+            /// </summary>
+            ~OVRNativeBuffer()
+            {
+                Dispose(false);
+            }
+
+            /// <summary>
+            /// Reallocates the buffer with the specified new size.
+            /// </summary>
+            public void Reset(int numBytes)
+            {
+                Reallocate(numBytes);
+            }
+
+            /// <summary>
+            /// The current number of bytes in the buffer.
+            /// </summary>
+            public int GetCapacity()
+            {
+                return m_numBytes;
+            }
+
+            /// <summary>
+            /// A pointer to the unmanaged memory in the buffer, starting at the given offset in bytes.
+            /// </summary>
+            public IntPtr GetPointer(int byteOffset = 0)
+            {
+                return byteOffset < 0 || byteOffset >= m_numBytes
+                    ? IntPtr.Zero
+                    : (byteOffset == 0) ? m_ptr : new IntPtr(m_ptr.ToInt64() + byteOffset);
+            }
+
+            /// <summary>
+            /// Releases all resource used by the <see cref="OVRNativeBuffer"/> object.
+            /// </summary>
+            /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="OVRNativeBuffer"/>. The <see cref="Dispose"/>
+            /// method leaves the <see cref="OVRNativeBuffer"/> in an unusable state. After calling <see cref="Dispose"/>, you must
+            /// release all references to the <see cref="OVRNativeBuffer"/> so the garbage collector can reclaim the memory that
+            /// the <see cref="OVRNativeBuffer"/> was occupying.</remarks>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void Dispose(bool disposing)
+            {
+                if (disposed)
+                {
+                    return;
+                }
+
+                if (disposing)
+                {
+                    // dispose managed resources
+                }
+
+                // dispose unmanaged resources
+                Release();
+
+                disposed = true;
+            }
+
+            private void Reallocate(int numBytes)
+            {
+                Release();
+
+                if (numBytes > 0)
+                {
+                    m_ptr = Marshal.AllocHGlobal(numBytes);
+                    m_numBytes = numBytes;
+                }
+                else
+                {
+                    m_ptr = IntPtr.Zero;
+                    m_numBytes = 0;
+                }
+            }
+
+            private void Release()
+            {
+                if (m_ptr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(m_ptr);
+                    m_ptr = IntPtr.Zero;
+                    m_numBytes = 0;
+                }
+            }
         }
 
         #region Hands Implementation
@@ -2021,9 +2296,9 @@ namespace XRTK.Oculus.Plugins
             switch (controllerType)
             {
                 case Controller.LTouch:
-                    return GetNodePose(Node.HandLeft, stepType).GetPosePosition();
+                    return GetNodePose(Node.HandLeft, stepType).Position;
                 case Controller.RTouch:
-                    return GetNodePose(Node.HandRight, stepType).GetPosePosition();
+                    return GetNodePose(Node.HandRight, stepType).Position;
                 default:
                     return Vector3.zero;
             }
@@ -2212,7 +2487,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// Oculus native api translation, for querying of the boundary dimensions from the API 
+        /// Oculus native api translation, for querying of the boundary dimensions from the API
         /// </summary>
         /// <param name="boundaryType">Oculus native <see cref="BoundaryType"/> definition </param>
         /// <returns>Oculus Vector 3 of boundary whole boundary dimension</returns>
@@ -3086,17 +3361,39 @@ namespace XRTK.Oculus.Plugins
         /// </summary>
         /// <param name="eventDataBuffer">(out) Populated EventBuffer</param>
         /// <returns>Returns true if the poll was successful</returns>
-        public static bool PollEvent(out EventDataBuffer eventDataBuffer)
+        public static bool PollEvent(ref EventDataBuffer eventDataBuffer)
         {
-            if (Version >= OVRP_1_55_0_version)
+#if OVRPLUGIN_UNSUPPORTED_PLATFORM
+		eventDataBuffer = default(EventDataBuffer);
+		return false;
+#else
+            if (Version >= OVRP_1_55_1_version)
             {
-                return ovrp_PollEvent(out eventDataBuffer) == Result.Success;
+                IntPtr DataPtr = IntPtr.Zero;
+                if (eventDataBuffer.EventData == null)
+                {
+                    eventDataBuffer.EventData = new byte[EventDataBufferSize];
+                }
+                Result result = ovrp_PollEvent2(ref eventDataBuffer.EventType, ref DataPtr);
+
+                if (result != Result.Success || DataPtr == IntPtr.Zero)
+                {
+                    return false;
+                }
+
+                Marshal.Copy(DataPtr, eventDataBuffer.EventData, 0, EventDataBufferSize);
+                return true;
+            }
+            else if (Version >= OVRP_1_55_0_version)
+            {
+                return ovrp_PollEvent(ref eventDataBuffer) == Result.Success;
             }
             else
             {
                 eventDataBuffer = default(EventDataBuffer);
                 return false;
             }
+#endif
         }
 
         /// <summary>
