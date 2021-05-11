@@ -164,32 +164,32 @@ namespace XRTK.Oculus.Utilities
         {
             if (OculusApi.GetMesh(handedness.ToMeshType(), out handMesh))
             {
-                Vector3[] vertices = new Vector3[handMesh.NumVertices];
+                var vertices = new Vector3[handMesh.NumVertices];
 
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
-                    vertices[i] = handMesh.VertexPositions[i].FromFlippedZVector3f();
+                    vertices[i] = handMesh.VertexPositions[i];
                 }
 
-                Vector2[] uvs = new Vector2[handMesh.NumVertices];
+                var uvs = new Vector2[handMesh.NumVertices];
 
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
                     uvs[i] = new Vector2(handMesh.VertexUV0[i].x, -handMesh.VertexUV0[i].y);
                 }
 
-                int[] triangles = new int[handMesh.NumIndices];
+                var triangles = new int[handMesh.NumIndices];
 
                 for (int i = 0; i < handMesh.NumIndices; ++i)
                 {
                     triangles[i] = handMesh.Indices[handMesh.NumIndices - i - 1];
                 }
 
-                Vector3[] normals = new Vector3[handMesh.NumVertices];
+                var normals = new Vector3[handMesh.NumVertices];
 
                 for (int i = 0; i < handMesh.NumVertices; ++i)
                 {
-                    normals[i] = handMesh.VertexNormals[i].FromFlippedZVector3f();
+                    normals[i] = handMesh.VertexNormals[i];
                 }
 
                 data = new HandMeshData(vertices, triangles, normals, uvs);
@@ -234,8 +234,8 @@ namespace XRTK.Oculus.Utilities
             }
             else
             {
-                boneProxyTransform.localPosition = bone.Pose.Position.FromFlippedZVector3f();
-                boneProxyTransform.localRotation = handState.BoneRotations[(int)bone.Id].FromFlippedZQuatf();
+                boneProxyTransform.localPosition = bone.Pose.Position;
+                boneProxyTransform.localRotation = handState.BoneRotations[(int)bone.Id].ToQuaternionFlippedXY();
             }
 
             return FixRotation(handedness, new MixedRealityPose(
@@ -316,8 +316,8 @@ namespace XRTK.Oculus.Utilities
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
             var playspaceRotation = PlayspaceTransform.rotation;
-            var rootPosition = PlayspaceTransform.InverseTransformPoint(PlayspaceTransform.position + playspaceRotation * handState.RootPose.Position.FromFlippedZVector3f());
-            var rootRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.RootPose.Orientation.FromFlippedZQuatf();
+            var rootPosition = PlayspaceTransform.InverseTransformPoint(PlayspaceTransform.position + playspaceRotation * handState.RootPose.Position);
+            var rootRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.RootPose.Orientation.ToQuaternionFlippedXY();
 
             return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, OculusApi.EyeHeight, 0f), rootRotation));
         }
@@ -331,9 +331,9 @@ namespace XRTK.Oculus.Utilities
         {
             var rootPose = GetHandRootPose(handedness);
             var playspaceRotation = PlayspaceTransform.rotation;
-            var platformRootPosition = handState.RootPose.Position.FromFlippedZVector3f();
-            var platformPointerPosition = rootPose.Position + handState.PointerPose.Position.FromFlippedZVector3f() - platformRootPosition;
-            var platformPointerRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.PointerPose.Orientation.FromFlippedZQuatf();
+            var platformRootPosition = handState.RootPose.Position;
+            var platformPointerPosition = rootPose.Position + handState.PointerPose.Position - platformRootPosition;
+            var platformPointerRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.PointerPose.Orientation.ToQuaternionFlippedXY();
 
             return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }
