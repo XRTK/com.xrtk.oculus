@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using XRTK.Oculus.Extensions;
+using XRTK.Definitions.Utilities;
 
 namespace XRTK.Oculus.Plugins
 {
@@ -807,6 +807,10 @@ namespace XRTK.Oculus.Plugins
         {
             public float x;
             public float y;
+
+            public static implicit operator Vector2f(Vector2 v) => new Vector2f { x = v.x, y = v.y };
+
+            public static implicit operator Vector2(Vector2f v) => new Vector2(v.x, v.y);
         }
 
         /// <summary>
@@ -822,6 +826,19 @@ namespace XRTK.Oculus.Plugins
             public override string ToString()
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}", x, y, z);
+            }
+
+            public static implicit operator Vector3f(Vector3 v) => new Vector3f { x = v.x, y = v.y, z = -v.z };
+
+            public static implicit operator Vector3(Vector3f v) => new Vector3(v.x, v.y, -v.z);
+
+            /// <summary>
+            /// Returns a <see cref="Vector3"/> from an <see cref="OculusApi.Vector3f"/>
+            /// </summary>
+            /// <returns>New <see cref="Vector3"/> with a flipped Z axis.</returns>
+            public Vector3 ToVector3FlippedZ()
+            {
+                return new Vector3(x, y, z);
             }
         }
 
@@ -840,6 +857,10 @@ namespace XRTK.Oculus.Plugins
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
+
+            public static implicit operator Vector4f(Vector4 v) => new Vector4f { x = v.x, y = v.y, z = v.z, w = v.w };
+
+            public static implicit operator Vector4(Vector4f v) => new Vector4(v.x, v.y, v.z, v.w);
         }
 
         /// <summary>
@@ -874,6 +895,19 @@ namespace XRTK.Oculus.Plugins
             {
                 return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}", x, y, z, w);
             }
+
+            public static implicit operator Quatf(Quaternion q) => new Quatf { x = q.x, y = q.y, z = q.z, w = q.w };
+
+            public static implicit operator Quaternion(Quatf v) => new Quaternion(v.x, v.y, v.z, v.w);
+
+            /// <summary>
+            /// Gets a <see cref="Quaternion"/> from a flipped X and Y axis <see cref="OculusApi.Quatf"/>.
+            /// </summary>
+            /// <returns>Unity orientation.</returns>
+            public Quaternion ToQuaternionFlippedXY()
+            {
+                return new Quaternion(-x, -y, z, w);
+            }
         }
 
         /// <summary>
@@ -885,9 +919,34 @@ namespace XRTK.Oculus.Plugins
             public Quatf Orientation;
             public Vector3f Position;
             public static readonly Posef identity = new Posef { Orientation = Quatf.identity, Position = Vector3f.zero };
+
             public override string ToString()
             {
-                return string.Format(System.Globalization.CultureInfo.InvariantCulture, "Position ({0}), Orientation({1})", Position, Orientation);
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                    "Position ({0}), Orientation({1})", Position, Orientation);
+            }
+
+            public static implicit operator Posef(MixedRealityPose p) =>
+                new Posef { Position = p.Position, Orientation = p.Rotation };
+
+            public static implicit operator MixedRealityPose(Posef p) =>
+                new MixedRealityPose(p.Position, p.Orientation);
+
+
+            /// <summary>
+            /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
+            /// </summary>
+            /// <param name="adjustForEyeHeight"></param>
+            /// <returns>Returns an XRTK MixedRealityPose</returns>
+            public MixedRealityPose ToMixedRealityPoseFlippedQuaternionXY(bool adjustForEyeHeight = false)
+            {
+                return new MixedRealityPose
+                (
+                    position: new Vector3(Position.x,
+                        adjustForEyeHeight ? Position.y + EyeHeight : Position.y,
+                        -Position.z),
+                    rotation: Orientation.ToQuaternionFlippedXY()
+                );
             }
         }
 
@@ -1458,7 +1517,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// CameraIntrinsics definition for the Oculus API 
+        /// CameraIntrinsics definition for the Oculus API
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct CameraIntrinsics
@@ -1472,7 +1531,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// CameraExtrinsics definition for the Oculus API 
+        /// CameraExtrinsics definition for the Oculus API
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct CameraExtrinsics
@@ -2237,9 +2296,9 @@ namespace XRTK.Oculus.Plugins
             switch (controllerType)
             {
                 case Controller.LTouch:
-                    return GetNodePose(Node.HandLeft, stepType).GetPosePosition();
+                    return GetNodePose(Node.HandLeft, stepType).Position;
                 case Controller.RTouch:
-                    return GetNodePose(Node.HandRight, stepType).GetPosePosition();
+                    return GetNodePose(Node.HandRight, stepType).Position;
                 default:
                     return Vector3.zero;
             }
@@ -2428,7 +2487,7 @@ namespace XRTK.Oculus.Plugins
         }
 
         /// <summary>
-        /// Oculus native api translation, for querying of the boundary dimensions from the API 
+        /// Oculus native api translation, for querying of the boundary dimensions from the API
         /// </summary>
         /// <param name="boundaryType">Oculus native <see cref="BoundaryType"/> definition </param>
         /// <returns>Oculus Vector 3 of boundary whole boundary dimension</returns>
