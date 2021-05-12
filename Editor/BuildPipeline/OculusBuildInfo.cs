@@ -3,6 +3,7 @@
 
 using UnityEditor.Build.Reporting;
 using XRTK.Attributes;
+using XRTK.Interfaces;
 using XRTK.Oculus;
 
 namespace XRTK.Editor.BuildPipeline
@@ -10,6 +11,9 @@ namespace XRTK.Editor.BuildPipeline
     [RuntimePlatform(typeof(OculusPlatform))]
     public class OculusBuildInfo : AndroidBuildInfo
     {
+        /// <inheritdoc />
+        public override IMixedRealityPlatform BuildPlatform => new OculusPlatform();
+
         /// <inheritdoc />
         public override void OnPreProcessBuild(BuildReport report)
         {
