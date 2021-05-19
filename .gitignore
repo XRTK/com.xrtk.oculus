@@ -72,7 +72,3 @@ artifacts/
 ThirdParty/
 ThirdParty.meta
 --Version/
-
-XRTK.Oculus/Assets/XRTK.Generated/Oculus.meta
-XRTK.Oculus/Assets/XRTK.Generated/Oculus/Profiles
-XRTK.Oculus/Assets/XRTK.Generated/Oculus/Profiles.meta
