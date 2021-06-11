@@ -49,9 +49,9 @@ namespace XRTK.Oculus.Editor.Build
         public static void GenerateManifestForSubmission()
         {
             var assetPath = PathFinderUtility.ResolvePath<IPathFinder>(typeof(OculusPathFinder));
-            var editorDir = Directory.GetParent(assetPath).FullName;
-            var srcFile = $"{editorDir}/BuildTools/{TEMPLATE_MANIFEST_FILE_NAME}";
-
+            var editorDir = $"{Path.GetFullPath(assetPath)}/Editor";
+            var srcFile = $"{editorDir}/BuildPipeline/{TEMPLATE_MANIFEST_FILE_NAME}";
+            
             if (!File.Exists(srcFile))
             {
                 Debug.LogError("Cannot find Android manifest template for submission. Please reimport the XRTK.Oculus package.");
