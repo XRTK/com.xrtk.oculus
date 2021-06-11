@@ -4,7 +4,6 @@
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
-using UnityEngine;
 using XRTK.Attributes;
 using XRTK.Interfaces;
 using XRTK.Oculus;

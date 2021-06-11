@@ -20,8 +20,7 @@ namespace XRTK.Oculus
         /// <inheritdoc />
         public override IMixedRealityPlatform[] PlatformOverrides { get; } =
         {
-            new AndroidPlatform(),
-            new WindowsStandalonePlatform()
+            new AndroidPlatform()
         };
 
 #if UNITY_EDITOR
@@ -31,9 +30,7 @@ namespace XRTK.Oculus
         /// <inheritdoc />
         public override UnityEditor.BuildTarget[] ValidBuildTargets { get; } =
         {
-            UnityEditor.BuildTarget.Android,
-            UnityEditor.BuildTarget.StandaloneWindows64,
-            UnityEditor.BuildTarget.StandaloneWindows
+            UnityEditor.BuildTarget.Android
         };
 #endif // UNITY_EDITOR
     }
