@@ -5,7 +5,7 @@
 
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.2.9")]
+[assembly: AssemblyVersion("0.3.0")]
 [assembly: AssemblyTitle("com.xrtk.oculus.editor")]
 [assembly: AssemblyCompany("XRTK")]
 [assembly: AssemblyCopyright("Copyright (c) XRTK. All rights reserved.")]
