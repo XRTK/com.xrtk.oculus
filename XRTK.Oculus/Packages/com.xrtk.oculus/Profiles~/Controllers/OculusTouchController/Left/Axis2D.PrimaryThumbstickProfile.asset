@@ -19,8 +19,8 @@ MonoBehaviour:
     inputType: 17
     inputAction:
       profileGuid: 399335ccc89c4d12b79f3539ca7771db
-      id: 13
-      description: Movement Direction
+      id: 5
+      description: Teleport Direction
       axisConstraint: 4
     keyCode: 0
     inputName: LThumbstick
