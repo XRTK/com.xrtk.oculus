@@ -20,14 +20,6 @@ namespace XRTK.Oculus.Providers.CameraSystem
         }
 
         /// <inheritdoc />
-        protected override void ApplySettingsForDefaultHeadHeight()
-        {
-            HeadHeight = OculusApi.EyeHeight;
-            ResetRigTransforms();
-            SyncRigTransforms();
-        }
-
-        /// <inheritdoc />
         public override void Update()
         {
             OculusApi.UpdateHMDEvents();
