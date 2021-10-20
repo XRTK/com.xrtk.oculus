@@ -971,6 +971,7 @@ namespace XRTK.Oculus.Plugins
                 new MixedRealityPose(p.Position, p.Orientation);
 
 
+#if XRTK_USE_XRSDK
             /// <summary>
             /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
             /// </summary>
@@ -983,6 +984,23 @@ namespace XRTK.Oculus.Plugins
                     rotation: Orientation.ToQuaternionFlippedXY()
                 );
             }
+#else
+            /// <summary>
+            /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
+            /// </summary>
+            /// /// <param name="adjustForEyeHeight"></param>
+            /// <returns>Returns an XRTK MixedRealityPose</returns>
+            public MixedRealityPose ToMixedRealityPoseFlippedQuaternionXY(bool adjustForEyeHeight = false)
+            {
+                return new MixedRealityPose
+                (
+                    position: new Vector3(Position.x,
+                        adjustForEyeHeight ? Position.y + EyeHeight : Position.y,
+                        -Position.z),
+                    rotation: Orientation.ToQuaternionFlippedXY()
+                );
+            }
+#endif
         }
 
         /// <summary>
