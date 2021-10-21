@@ -971,7 +971,7 @@ namespace XRTK.Oculus.Plugins
                 new MixedRealityPose(p.Position, p.Orientation);
 
 
-#if XRTK_USE_XRSDK
+#if !XRTK_USE_LEGACYVR
             /// <summary>
             /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
             /// </summary>
