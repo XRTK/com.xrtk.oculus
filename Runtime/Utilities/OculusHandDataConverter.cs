@@ -41,20 +41,20 @@ namespace XRTK.Oculus.Utilities
         private OculusApi.HandState handState = new OculusApi.HandState();
         private OculusApi.Mesh handMesh = new OculusApi.Mesh();
 
-        private Transform playspaceTransform = null;
+        private Transform rigTransform = null;
 
-        private Transform PlayspaceTransform
+        private Transform RigTransform
         {
             get
             {
-                if (playspaceTransform == null)
+                if (rigTransform == null)
                 {
-                    playspaceTransform = MixedRealityToolkit.TryGetSystem<IMixedRealityCameraSystem>(out var cameraSystem)
-                        ? cameraSystem.MainCameraRig.PlayspaceTransform
+                    rigTransform = MixedRealityToolkit.TryGetSystem<IMixedRealityCameraSystem>(out var cameraSystem)
+                        ? cameraSystem.MainCameraRig.RigTransform
                         : CameraCache.Main.transform.parent;
                 }
 
-                return playspaceTransform;
+                return rigTransform;
             }
         }
 
@@ -284,7 +284,7 @@ namespace XRTK.Oculus.Utilities
             if (conversionProxyRootTransform.IsNull())
             {
                 conversionProxyRootTransform = new GameObject("Oculus Hand Conversion Proxy").transform;
-                conversionProxyRootTransform.transform.SetParent(PlayspaceTransform, false);
+                conversionProxyRootTransform.transform.SetParent(RigTransform, false);
                 conversionProxyRootTransform.gameObject.SetActive(false);
             }
 
@@ -315,9 +315,9 @@ namespace XRTK.Oculus.Utilities
         /// <returns>The hands <see cref="HandData.RootPose"/> value.</returns>
         private MixedRealityPose GetHandRootPose(Handedness handedness)
         {
-            var playspaceRotation = PlayspaceTransform.rotation;
-            var rootPosition = PlayspaceTransform.InverseTransformPoint(PlayspaceTransform.position + playspaceRotation * handState.RootPose.Position);
-            var rootRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.RootPose.Orientation.ToQuaternionFlippedXY();
+            var rigRotation = RigTransform.rotation;
+            var rootPosition = RigTransform.InverseTransformPoint(RigTransform.position + rigRotation * handState.RootPose.Position);
+            var rootRotation = Quaternion.Inverse(rigRotation) * rigRotation * handState.RootPose.Orientation.ToQuaternionFlippedXY();
 
 #if XRTK_USE_LEGACYVR
             return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, OculusApi.EyeHeight, 0f), rootRotation));
@@ -334,10 +334,10 @@ namespace XRTK.Oculus.Utilities
         private MixedRealityPose GetPointerPose(Handedness handedness)
         {
             var rootPose = GetHandRootPose(handedness);
-            var playspaceRotation = PlayspaceTransform.rotation;
+            var rigRotation = RigTransform.rotation;
             var platformRootPosition = handState.RootPose.Position;
             var platformPointerPosition = rootPose.Position + handState.PointerPose.Position - platformRootPosition;
-            var platformPointerRotation = Quaternion.Inverse(playspaceRotation) * playspaceRotation * handState.PointerPose.Orientation.ToQuaternionFlippedXY();
+            var platformPointerRotation = Quaternion.Inverse(rigRotation) * rigRotation * handState.PointerPose.Orientation.ToQuaternionFlippedXY();
 
             return new MixedRealityPose(platformPointerPosition, platformPointerRotation);
         }
