@@ -5,9 +5,13 @@
 [Oo]bj/
 [Bb]in/
 [Bb]uilds/
+[Uu]serSettings/
 [Bb]uild/
 [Ll]ibrary/
 [Aa]pp/
+[Aa]pp.meta
+[Ll]ogs/
+UserSettings/
 UWP/
 WindowsStoreApp/
 UnityGenerated/
@@ -19,6 +23,7 @@ project.lock.json
 *.package
 TextMesh Pro.meta
 TextMesh Pro/
+UIElementsSchema/
 *packages-lock.json
 
 # ============ #
