@@ -319,11 +319,7 @@ namespace XRTK.Oculus.Utilities
             var rootPosition = RigTransform.InverseTransformPoint(RigTransform.position + rigRotation * handState.RootPose.Position);
             var rootRotation = Quaternion.Inverse(rigRotation) * rigRotation * handState.RootPose.Orientation.ToQuaternionFlippedXY();
 
-#if XRTK_USE_LEGACYVR
-            return FixRotation(handedness, new MixedRealityPose(rootPosition + new Vector3(0f, OculusApi.EyeHeight, 0f), rootRotation));
-#else
             return FixRotation(handedness, new MixedRealityPose(rootPosition, rootRotation));
-#endif
         }
 
         /// <summary>

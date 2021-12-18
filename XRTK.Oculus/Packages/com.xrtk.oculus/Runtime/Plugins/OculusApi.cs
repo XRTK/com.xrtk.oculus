@@ -970,8 +970,6 @@ namespace XRTK.Oculus.Plugins
             public static implicit operator MixedRealityPose(Posef p) =>
                 new MixedRealityPose(p.Position, p.Orientation);
 
-
-#if !XRTK_USE_LEGACYVR
             /// <summary>
             /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
             /// </summary>
@@ -984,7 +982,7 @@ namespace XRTK.Oculus.Plugins
                     rotation: Orientation.ToQuaternionFlippedXY()
                 );
             }
-#else
+
             /// <summary>
             /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
             /// </summary>
@@ -1000,7 +998,6 @@ namespace XRTK.Oculus.Plugins
                     rotation: Orientation.ToQuaternionFlippedXY()
                 );
             }
-#endif
         }
 
         /// <summary>
