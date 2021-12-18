@@ -19,7 +19,7 @@
   "src": "Assets/XRTK.Oculus",
   "author": "XRTK Team (https://github.com/XRTK)",
   "dependencies": {
-    "com.xrtk.core": "0.3.0-preview.39",
+    "com.xrtk.core": "0.3.0-preview.42",
     "com.unity.xr.oculus": "1.10.0"
   },
   "profiles": [
