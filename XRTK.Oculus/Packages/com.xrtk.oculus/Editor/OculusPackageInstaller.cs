@@ -13,7 +13,7 @@ namespace XRTK.Oculus.Editor
     internal static class OculusPackageInstaller
     {
         private static readonly string DefaultPath = $"{MixedRealityPreferences.ProfileGenerationPath}Oculus";
-        private static readonly string HiddenPath = Path.GetFullPath($"{PathFinderUtility.ResolvePath<IPathFinder>(typeof(OculusPathFinder)).BackSlashes()}\\{MixedRealityPreferences.HIDDEN_PROFILES_PATH}");
+        private static readonly string HiddenPath = Path.GetFullPath($"{PathFinderUtility.ResolvePath<IPathFinder>(typeof(OculusPathFinder)).BackSlashes()}{Path.DirectorySeparatorChar}{MixedRealityPreferences.HIDDEN_PROFILES_PATH}");
 
         static OculusPackageInstaller()
         {
@@ -23,7 +23,7 @@ namespace XRTK.Oculus.Editor
         [MenuItem("Mixed Reality Toolkit/Packages/Install Oculus Package Assets...", true)]
         private static bool ImportPackageAssetsValidation()
         {
-            return !Directory.Exists($"{DefaultPath}\\Profiles");
+            return !Directory.Exists($"{DefaultPath}{Path.DirectorySeparatorChar}Profiles");
         }
 
         [MenuItem("Mixed Reality Toolkit/Packages/Install Oculus Package Assets...")]
@@ -37,7 +37,7 @@ namespace XRTK.Oculus.Editor
         {
             if (!EditorPreferences.Get($"{nameof(OculusPackageInstaller)}.Profiles", false))
             {
-                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}.Profiles", PackageInstaller.TryInstallAssets(HiddenPath, $"{DefaultPath}\\Profiles"));
+                EditorPreferences.Set($"{nameof(OculusPackageInstaller)}.Profiles", PackageInstaller.TryInstallAssets(HiddenPath, $"{DefaultPath}{Path.DirectorySeparatorChar}Profiles"));
             }
         }
     }

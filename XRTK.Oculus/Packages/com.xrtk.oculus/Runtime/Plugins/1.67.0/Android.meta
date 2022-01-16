@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:XRTK.Oculus/Assets/XR/Settings/Oculus Settings.asset.meta
+guid: 14fd6c7b61914ae43a0d2c29955869f1
+NativeFormatImporter:
+========
+guid: d06bc61e83f089c4cabc21cfaba2f9d1
+folderAsset: yes
+DefaultImporter:
+>>>>>>>> bf8b7bc02115826ec77b5494e476ba85736fd878:XRTK.Oculus/Packages/com.xrtk.oculus/Runtime/Plugins/1.67.0/Android.meta
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
