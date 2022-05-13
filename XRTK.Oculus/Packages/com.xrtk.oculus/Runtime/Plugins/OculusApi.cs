@@ -22,6 +22,8 @@ namespace XRTK.Oculus.Plugins
         private static readonly Version OVRP_1_49_0_version = new Version(1, 49, 0);
         private static readonly Version OVRP_1_55_0_version = new Version(1, 55, 0);
         private static readonly Version OVRP_1_55_1_version = new Version(1, 55, 1);
+        private static readonly Version OVRP_1_57_0_version = new Version(1, 57, 0);
+        private static readonly Version OVRP_1_63_0_version = new Version(1, 63, 0);
 
         private const string pluginName = "OVRPlugin";
 
@@ -653,9 +655,45 @@ namespace XRTK.Oculus.Plugins
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_GetNativeOpenXRHandles(out UInt64 xrInstance, out UInt64 xrSession);
 
-        // Ref V1_55_1
         [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
         private static extern Result ovrp_PollEvent2(ref EventType eventType, ref IntPtr eventData);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_SetEyeFovPremultipliedAlphaMode(Bool enabled);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_GetEyeFovPremultipliedAlphaMode(ref Bool enabled);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_SetKeyboardOverlayUV(Vector2f uv);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_InitializeInsightPassthrough();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_ShutdownInsightPassthrough();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Bool ovrp_GetInsightPassthroughInitialized();
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_SetInsightPassthroughStyle(int layerId, InsightPassthroughStyle style);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_CreateInsightTriangleMesh(
+            int layerId, IntPtr vertices, int vertexCount, IntPtr triangles, int triangleCount, out ulong meshHandle);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_DestroyInsightTriangleMesh(ulong meshHandle);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_AddInsightPassthroughSurfaceGeometry(int layerId, ulong meshHandle, Matrix4x4 T_world_model, out ulong geometryInstanceHandle);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_DestroyInsightPassthroughGeometryInstance(ulong geometryInstanceHandle);
+
+        [DllImport(pluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result ovrp_UpdateInsightPassthroughGeometryTransform(ulong geometryInstanceHandle, Matrix4x4 T_world_model);
 
         #endregion Oculus API import
 
@@ -933,10 +971,24 @@ namespace XRTK.Oculus.Plugins
                 new MixedRealityPose(p.Position, p.Orientation);
 
 
+#if !XRTK_USE_LEGACYVR
             /// <summary>
             /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
             /// </summary>
-            /// <param name="adjustForEyeHeight"></param>
+            /// <returns>Returns an XRTK MixedRealityPose</returns>
+            public MixedRealityPose ToMixedRealityPoseFlippedQuaternionXY()
+            {
+                return new MixedRealityPose
+                (
+                    position: new Vector3(Position.x, Position.y, -Position.z),
+                    rotation: Orientation.ToQuaternionFlippedXY()
+                );
+            }
+#else
+            /// <summary>
+            /// Extension method to convert a <see cref="OculusApi.Posef"/> to a <see cref="MixedRealityPose"/>
+            /// </summary>
+            /// /// <param name="adjustForEyeHeight"></param>
             /// <returns>Returns an XRTK MixedRealityPose</returns>
             public MixedRealityPose ToMixedRealityPoseFlippedQuaternionXY(bool adjustForEyeHeight = false)
             {
@@ -948,6 +1000,7 @@ namespace XRTK.Oculus.Plugins
                     rotation: Orientation.ToQuaternionFlippedXY()
                 );
             }
+#endif
         }
 
         /// <summary>
@@ -1733,6 +1786,31 @@ namespace XRTK.Oculus.Plugins
             }
         }
 
+        public enum InsightPassthroughColorMapType
+        {
+            None = 0,
+            MonoToRgba = 1,
+            MonoToMono = 2,
+        }
+
+        public enum InsightPassthroughStyleFlags
+        {
+            HasTextureOpacityFactor = 1 << 0,
+            HasEdgeColor = 1 << 1,
+            HasTextureColorMap = 1 << 2
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct InsightPassthroughStyle
+        {
+            public InsightPassthroughStyleFlags Flags;
+            public float TextureOpacityFactor;
+            public Colorf EdgeColor;
+            public InsightPassthroughColorMapType TextureColorMapType;
+            public uint TextureColorMapDataSize;
+            public IntPtr TextureColorMapData;
+        }
+
         #region Hands Implementation
 
         /// <summary>
@@ -2516,6 +2594,169 @@ namespace XRTK.Oculus.Plugins
         public static bool SetBoundaryVisible(bool value)
         {
             return ovrp_SetBoundaryVisible(value) == Bool.True;
+        }
+
+        public static bool InitializeInsightPassthrough()
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_InitializeInsightPassthrough();
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool ShutdownInsightPassthrough()
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_ShutdownInsightPassthrough();
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool IsInsightPassthroughInitialized()
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Bool result = ovrp_GetInsightPassthroughInitialized();
+                return result == Bool.True;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool CreateInsightTriangleMesh(int layerId, Vector3[] vertices, int[] triangles, out ulong meshHandle)
+        {
+            meshHandle = 0;
+            if (Version >= OVRP_1_63_0_version)
+            {
+                if (vertices == null || triangles == null || vertices.Length == 0 || triangles.Length == 0)
+                {
+                    return false;
+                }
+                int vertexCount = vertices.Length;
+                int triangleCount = triangles.Length / 3;
+                GCHandle pinnedVertexData = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+                IntPtr vertexDataPtr = pinnedVertexData.AddrOfPinnedObject();
+                GCHandle pinnedTriangleData = GCHandle.Alloc(triangles, GCHandleType.Pinned);
+                IntPtr triangleDataPtr = pinnedTriangleData.AddrOfPinnedObject();
+                Result result = ovrp_CreateInsightTriangleMesh(
+                    layerId, vertexDataPtr, vertexCount, triangleDataPtr, triangleCount, out meshHandle);
+                pinnedTriangleData.Free();
+                pinnedVertexData.Free();
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool DestroyInsightTriangleMesh(ulong meshHandle)
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_DestroyInsightTriangleMesh(meshHandle);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool AddInsightPassthroughSurfaceGeometry(int layerId, ulong meshHandle, Matrix4x4 T_world_model, out ulong geometryInstanceHandle)
+        {
+            geometryInstanceHandle = 0;
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_AddInsightPassthroughSurfaceGeometry(layerId, meshHandle, T_world_model, out geometryInstanceHandle);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool DestroyInsightPassthroughGeometryInstance(ulong geometryInstanceHandle)
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_DestroyInsightPassthroughGeometryInstance(geometryInstanceHandle);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool UpdateInsightPassthroughGeometryTransform(ulong geometryInstanceHandle, Matrix4x4 transform)
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_UpdateInsightPassthroughGeometryTransform(geometryInstanceHandle, transform);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static bool SetInsightPassthroughStyle(int layerId, InsightPassthroughStyle style)
+        {
+            if (Version >= OVRP_1_63_0_version)
+            {
+                Result result = ovrp_SetInsightPassthroughStyle(layerId, style);
+                if (result != Result.Success)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion Oculus Boundary Functions
@@ -3428,6 +3669,40 @@ namespace XRTK.Oculus.Plugins
                 }
             }
             return 0;
+        }
+
+
+        public static bool SetKeyboardOverlayUV(Vector2f uv)
+        {
+            if (Version >= OVRP_1_57_0_version)
+            {
+                Result result = ovrp_SetKeyboardOverlayUV(uv);
+                return (result == Result.Success);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool eyeFovPremultipliedAlphaModeEnabled
+        {
+            get
+            {
+                Bool isEnabled = Bool.True;
+                if (Version >= OVRP_1_57_0_version)
+                {
+                    ovrp_GetEyeFovPremultipliedAlphaMode(ref isEnabled);
+                }
+                return isEnabled == Bool.True ? true : false;
+            }
+            set
+            {
+                if (Version >= OVRP_1_57_0_version)
+                {
+                    ovrp_SetEyeFovPremultipliedAlphaMode(ToBool(value));
+                }
+            }
         }
 
         #endregion
