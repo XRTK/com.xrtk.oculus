@@ -16,15 +16,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-editor-installation:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+          - os: macos
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          clean: true
+
+      - name: validate editor installation
+        uses: xrtk/unity-validate@main
+
   build:
+    needs: validate-editor-installation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: windows
             build-target: Android
+          - os: windows
+            build-target: StandaloneWindows64
+          - os: macos
+            build-target: Android
 
     steps:
+      - name: clean git
+        run: |
+          if (Test-Path -Path '.git') {
+            Remove-Item '.git' -Recurse -Force
+          }
+
+          if (Test-Path -Path 'Submodules') {
+            Remove-Item 'Submodules' -Recurse -Force
+          }
+        shell: pwsh
+
       - uses: actions/checkout@v2
         with:
           submodules: recursive
