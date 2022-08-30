@@ -118,7 +118,7 @@ namespace XRTK.Oculus.Providers.Controllers
             MixedRealityHandController detectedController;
             try
             {
-                detectedController = new MixedRealityHandController(this, TrackingState.Tracked, handedness, GetControllerMappingProfile(typeof(MixedRealityHandController), handedness));
+                detectedController = new MixedRealityHandController(this, TrackingState.Tracked, handedness, GetControllerProfile(typeof(MixedRealityHandController), handedness));
             }
             catch (Exception e)
             {

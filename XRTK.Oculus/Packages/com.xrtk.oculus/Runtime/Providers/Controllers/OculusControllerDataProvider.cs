@@ -102,7 +102,7 @@ namespace XRTK.Oculus.Providers.Controllers
 
             try
             {
-                detectedController = Activator.CreateInstance(controllerType, this, TrackingState.NotTracked, handedness, GetControllerMappingProfile(controllerType, handedness), controllerMask, nodeType) as BaseOculusController;
+                detectedController = Activator.CreateInstance(controllerType, this, TrackingState.NotTracked, handedness, GetControllerProfile(controllerType, handedness), controllerMask, nodeType) as BaseOculusController;
             }
             catch (Exception e)
             {
