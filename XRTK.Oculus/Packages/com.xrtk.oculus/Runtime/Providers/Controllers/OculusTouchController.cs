@@ -1,6 +1,7 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using XRTK.Definitions.Controllers;
 using XRTK.Definitions.Devices;
 using XRTK.Definitions.Utilities;
@@ -9,6 +10,7 @@ using XRTK.Oculus.Plugins;
 
 namespace XRTK.Oculus.Providers.Controllers
 {
+    [Obsolete]
     [System.Runtime.InteropServices.Guid("1898974A-DBCD-4C88-8E03-726689848D52")]
     public class OculusTouchController : BaseOculusController
     {

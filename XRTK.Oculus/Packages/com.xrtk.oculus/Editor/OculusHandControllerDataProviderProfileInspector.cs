@@ -1,6 +1,7 @@
 ﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using UnityEditor;
 using UnityEngine;
 using XRTK.Editor.Extensions;
@@ -13,6 +14,7 @@ namespace XRTK.Oculus.Editor
     /// <summary>
     /// Default inspector for <see cref="OculusHandControllerDataProviderProfile"/>.
     /// </summary>
+    [Obsolete]
     [CustomEditor(typeof(OculusHandControllerDataProviderProfile))]
     public class OculusHandControllerDataProviderProfileInspector : BaseMixedRealityHandControllerDataProviderProfileInspector
     {
