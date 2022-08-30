@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00d813fd5a164e19a160f322b2926006, type: 3}
   m_Name: OculusCameraDataProviderProfile
   m_EditorClassIdentifier: 
-  trackingOriginMode: 2
+  trackingType: 0
+  trackingOriginMode: 1
+  eyeTextureResolution: 1
   isCameraPersistent: 1
-  nearClipPlaneOpaqueDisplay: 0.1
+  nearClipPlaneOpaqueDisplay: 0.01
   cameraClearFlagsOpaqueDisplay: 1
   backgroundColorOpaqueDisplay: {r: 0, g: 0, b: 0, a: 1}
   opaqueQualityLevel: 2
@@ -24,6 +26,7 @@ MonoBehaviour:
   transparentQualityLevel: 0
   cameraRigType:
     reference: 8e0ee4fc-c8a5-4b10-9fca-ee55b6d421ff
-  defaultHeadHeight: 1.6
+  defaultHeadHeight: 1.36144
   bodyAdjustmentAngle: 60
   bodyAdjustmentSpeed: 1
+  applyQualitySettings: 1
